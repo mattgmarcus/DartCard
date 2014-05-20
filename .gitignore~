@@ -24,5 +24,3 @@ proguard/
 
 # Private folder
 src/edu/dartmouth/cs/dartcard_private/
-
-*~
