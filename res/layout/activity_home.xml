@@ -1,7 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -9,8 +10,55 @@
     tools:context=".HomeActivity" >
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:text="@string/app_name" 
+		android:gravity="center"
+		android:layout_marginTop="25dp"
+		android:layout_marginBottom="50dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+    
+    <Button
+		android:id="@+id/btnTake"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="1"
+	    android:layout_margin="15dp"
+	    android:layout_marginRight="15dp"
+	    android:layout_marginLeft="15dp"
+	    android:layout_marginTop="300dp"
+	    android:layout_marginBottom="50dp"
+	    android:onClick="onTakeClicked"
+	    android:text="@string/take_photo" >
+	</Button>
+	
+	<Button
+		android:id="@+id/btnFind"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="1"
+	    android:layout_marginRight="15dp"
+	    android:layout_marginLeft="15dp"
+	    android:layout_marginTop="50dp"
+	    android:layout_marginBottom="50dp"
+	    android:layout_gravity="bottom"
+	    android:onClick="onFindClicked"
+	    android:text="@string/find_local" >
+	</Button>
+	
+	<Button
+		android:id="@+id/btnChoose"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="1"
+	    android:layout_marginRight="15dp"
+	    android:layout_marginLeft="15dp"
+	    android:layout_marginTop="50dp"
+	    android:layout_marginBottom="80dp"
+	    android:layout_gravity="bottom"
+	    android:onClick="onChooseClicked"
+	    android:text="@string/choose_gallery" >
+	</Button>
+	
 
-</RelativeLayout>
+</LinearLayout>

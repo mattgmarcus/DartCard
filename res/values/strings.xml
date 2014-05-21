@@ -5,6 +5,23 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_photo_map">PhotoMapActivity</string>
+    <string name="map_tab_name">Map</string>
+    <string name="grid_tab_name">Grid</string>
+    <string name="title_activity_photo_view">PhotoViewActivity</string>
+    <string name="button_title_make_card">Make Card</string>
+    
+     <!-- Strings in Home Activity -->
+    <string name="take_photo">Take a Photo</string>
+    <string name="find_local">Find Local Images</string>
+    <string name="choose_gallery">Choose from Gallery</string>
+    <string name="shared_prefs_name">photo_store</string>
+    <string name="selected_photo_name">selected_photo</string>
+    
+    <!-- Strings in PhotoViewActivity -->
+    <string name="photo_check">Is this photo okay?</string>
+    <string name="photo_okay">Yes!  Looks good.</string>
+    <string name="photo_not_okay">No, find another.</string>
+	<string name="selected_photo">Selected photo</string>
     <string name="title_activity_message">MessageActivity</string>
     <string name="title_activity_recipient">RecipientActivity</string>
     <string name="title_activity_pay">PayActivity</string>
