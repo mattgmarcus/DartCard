@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="recipient_name" type="id"/>
+    <item name="recipient_street1" type="id"/>
+    <item name="recipient_street2" type="id"/>
+    <item name="recipient_city" type="id"/>
+    <item name="recipient_state" type="id"/>
+    <item name="recipient_zip" type="id"/>
+    <item name="recipient_message" type="id"/>
+</resources>

@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MessageActivity" 
+    android:orientation="vertical" >
+    <TextView
+        android:id="@+id/ui_message_activity_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/ui_message_activity_header_text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <Button
+        android:id="@+id/ui_message_activity_nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ui_message_activity_enterMessage"
+        android:layout_centerHorizontal="true"
+        android:text="@string/ui_message_activity_nextButton_text" />
+
+    <EditText
+        android:id="@+id/ui_message_activity_enterMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="340dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:ems="10"
+        android:hint="@string/ui_message_activity_enterMessage_hint"
+        android:inputType="textMultiLine"
+        android:maxLength="350" >
+
+        <requestFocus />
+    </EditText>
+
+
+</RelativeLayout>
