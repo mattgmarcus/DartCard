@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -44,10 +45,10 @@ public class PhotoViewActivity extends Activity {
     
     public void onOkayClicked(View v) {
     	finish();
-    	/*
-    	Intent intent = new Intent(MessageActivity.class, this);
+    	
+    	Intent intent = new Intent(this, FromActivity.class);
     	startActivity(intent);
-    	*/
+    	
     }
     
 }
