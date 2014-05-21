@@ -47,7 +47,26 @@
 
         <activity
             android:name="edu.dartmouth.cs.dartcard.PhotoViewActivity"
-            android:label="@string/title_activity_photo_view" >
+            android:label="@string/title_activity_photo_view" />
+        <activity
+            android:name="edu.dartmouth.cs.dartcard.MessageActivity"
+            android:label="@string/title_activity_message"
+            android:parentActivityName="edu.dartmouth.cs.dartcard.FromActivity" >
+        </activity>
+        <activity
+            android:name="edu.dartmouth.cs.dartcard.RecipientActivity"
+            android:label="@string/title_activity_recipient"
+            android:parentActivityName="edu.dartmouth.cs.dartcard.MessageActivity" >
+        </activity>
+        <activity
+            android:name="edu.dartmouth.cs.dartcard.PayActivity"
+            android:label="@string/title_activity_pay" 
+            android:parentActivityName="edu.dartmouth.cs.dartcard.RecipientActivity" >
+        </activity>
+        <activity
+            android:name="edu.dartmouth.cs.dartcard.FromActivity"
+            android:label="@string/title_activity_from"
+            android:parentActivityName="edu.dartmouth.cs.dartcard.HomeActivity" >
         </activity>
     </application>
 

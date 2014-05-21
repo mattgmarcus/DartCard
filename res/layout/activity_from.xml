@@ -1,0 +1,91 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+	android:orientation="vertical" 
+    tools:context=".FromActivity" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+	    <TextView
+	        android:id="@+id/ui_from_activity_header"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentTop="true"
+	        android:layout_centerHorizontal="true"
+	        android:text="@string/ui_from_activity_header_text"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </RelativeLayout>
+    
+    <EditText
+    android:id="@+id/ui_from_activity_enterName"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ems="10"
+    android:hint="@string/ui_from_activity_enterName_hint"
+    android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/ui_from_activity_enterAddress1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/ui_from_activity_enterAddress1_hint"
+        android:inputType="textPostalAddress" >
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/ui_from_activity_enterAddress2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/ui_from_activity_enterAddress2_hint"
+        android:inputType="textPostalAddress" />
+
+    <EditText
+        android:id="@+id/ui_from_activity_enterCity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/ui_from_activity_enterCity_hint"
+        android:inputType="textPostalAddress" />
+
+    <EditText
+        android:id="@+id/ui_from_activity_enterState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/ui_from_activity_enterState_hint"
+        android:inputType="textPostalAddress" />
+
+    <EditText
+        android:id="@+id/ui_from_activity_enterZip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/ui_from_activity_enterZip_hint"
+        android:inputType="number" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/ui_from_activity_nextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="@string/ui_from_activity_nextButton_text" />
+
+    </RelativeLayout>
+
+</LinearLayout>
