@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="dialog_key_default">-1</integer>
+    <integer name="dialog_key_save_photo">0</integer>
+    
+    
+    
+</resources>

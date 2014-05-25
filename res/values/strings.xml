@@ -60,5 +60,15 @@
     <string name="ui_pay_activity_recipient_card_hint">1234 1234 1234 1234</string>
     <string name="ui_pay_activity_recipient_expiry_hint">MM/YY</string>
     <string name="ui_pay_activity_recipient_cvc_hint">123</string>
+    
+    <string name="dialog_title_save_photo">Save Photo to Database?</string>
+    <string name="button_save_title">Save</string>
+    <string name="button_no_save_title">Don\'t Save</string>
+    <string name="dialog_title_try_save_again">Location not found. Unable to save photo. Try again?</string>
+    <string name="button_try_again_title">Try Again</string>
+    <string name="button_cancel_title">Cancel</string>
+    
 
+    
+    
 </resources>
