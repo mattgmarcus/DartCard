@@ -2,6 +2,7 @@ package edu.dartmouth.cs.dartcard;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -24,8 +25,9 @@ public class PhotoGridFragment extends Fragment {
 
 	private GridView gridView;
 	private ImageView chosenPhoto;
-	private Integer[] pics = new Integer[100];
+//	private Integer[] pics = new Integer[100];
 	private Context context;
+	private ArrayList<PhotoEntry> photos;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,15 +35,17 @@ public class PhotoGridFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		context = getActivity();
 		
+		//get photo list
+		//load photos from database
+		PhotoEntryDbHelper db = new PhotoEntryDbHelper(context);
+		photos = db.fetchEntries();
+		Log.d("DartCard", "size of photo list is " + photos.size());
 		
-		// setup pics for view
-		for (int i = 0; i < 100; i++) {
-			pics[i] = R.drawable.ic_launcher;
-			Log.i("DartCard", "adding to grid list");
-		}
 
 		gridView = new GridView(getActivity());
+		
 		gridView.setAdapter(new ImageAdapter(getActivity()));
+		
 		gridView.setNumColumns(3);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -49,6 +53,7 @@ public class PhotoGridFragment extends Fragment {
 				chosenPhoto = (ImageView) gridView.getChildAt(position);
 				savePhoto();
 				Intent intent = new Intent(context, PhotoViewActivity.class);
+				intent.putExtra(Globals.IS_FROM_DB_KEY, true);
 				startActivity(intent);
 			}
 		});
@@ -61,13 +66,12 @@ public class PhotoGridFragment extends Fragment {
 
 		public ImageAdapter(Context c) {
 			mContext = c;
-
 		}
 
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			return pics.length;
+			return photos.size();
 		}
 
 		@Override
@@ -104,7 +108,7 @@ public class PhotoGridFragment extends Fragment {
 				imageView = (ImageView) convertView;
 			}
 
-			imageView.setImageResource(pics[position]);
+			imageView.setImageBitmap(photos.get(position).getBitmapPhoto());
 
 			return imageView;
 
