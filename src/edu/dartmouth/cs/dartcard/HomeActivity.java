@@ -2,21 +2,22 @@ package edu.dartmouth.cs.dartcard;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Toast;
 
 public class HomeActivity extends Activity {
 	
@@ -37,6 +38,7 @@ public class HomeActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
+//		deleteDatabase("photos.db");
 	}
 
 	@Override
@@ -80,6 +82,9 @@ public class HomeActivity extends Activity {
 	
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d("DartCard", "in onactivityresult");
+		Toast.makeText(this, "in onactivityresult", Toast.LENGTH_SHORT)
+		.show();
 		String key = getString(R.string.shared_prefs_name);
         SharedPreferences prefs = getSharedPreferences(key, MODE_PRIVATE);
 		if (resultCode != RESULT_OK)
@@ -93,6 +98,9 @@ public class HomeActivity extends Activity {
 			// Update image view after image crop
 			Bundle extras = data.getExtras();
 			try {
+				Log.d("DartCard", "onactivityresult from cropphoto");
+				Toast.makeText(this, "back from crop", Toast.LENGTH_SHORT)
+				.show();
 				Bitmap photo = (Bitmap) extras.getParcelable("data");
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				photo.compress(Bitmap.CompressFormat.PNG, 100, bos);
@@ -105,6 +113,7 @@ public class HomeActivity extends Activity {
 	            fos.close();
 				bos.close();
 				Intent intent = new Intent(this, PhotoViewActivity.class);
+				intent.putExtra(Globals.IS_FROM_DB_KEY, false);
 				startActivity(intent);
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
@@ -140,8 +149,8 @@ public class HomeActivity extends Activity {
         intent.setDataAndType(mImageCaptureUri, IMAGE_UNSPECIFIED);
 
         // Specify image size
-        intent.putExtra("outputX", 600);
-        intent.putExtra("outputY", 600);
+        intent.putExtra("outputX", 90);
+        intent.putExtra("outputY", 60);
 
         // Specify aspect ratio, 1:1
         intent.putExtra("aspectX", 3);
