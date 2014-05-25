@@ -2,6 +2,14 @@ package edu.dartmouth.cs.dartcard;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.lob.Lob;
+import com.lob.exception.LobException;
+import com.lob.model.Address;
+import com.lob.model.DeletedStatus;
+import com.lob.model.AddressCollection;
+import com.lob.model.Verify;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Recipient implements Parcelable {
 	private String fullName;
@@ -37,7 +45,33 @@ public class Recipient implements Parcelable {
 	public String getName() {
 		return fullName;
 	}
+	
+	public Map<String, String> toAddressMap() {
+		Map<String, String> addressMap = new HashMap<String, String>();
+		addressMap.put("name", this.fullName);
+		addressMap.put("address_line1", this.street1);
+		addressMap.put("address_line2", this.street2);
+		addressMap.put("address_city", this.city);
+		addressMap.put("address_state", this.state);
+		addressMap.put("address_zip", this.zip);
+        
+        return addressMap; 
+	}
 
+	public Map<String, String> toPostcardMap() {
+		Map<String, String> addressMap = new HashMap<String, String>();
+		addressMap.put("to[name]", this.fullName);
+		addressMap.put("to[address_line1]", this.street1);
+		addressMap.put("to[address_line2]", this.street2);
+		addressMap.put("to[address_city]", this.city);
+		addressMap.put("to[address_state]", this.state);
+		addressMap.put("to[address_zip]", this.zip);
+		addressMap.put("message", this.message);
+        
+        return addressMap; 
+	}
+	
+	//Parcelable stuff
 	@Override
 	public int describeContents() {
 		return 0;
