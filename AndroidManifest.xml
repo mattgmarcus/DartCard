@@ -9,10 +9,10 @@
         android:targetSdkVersion="18" />
 
     <permission
-        android:name="edu.dartmouth.cs.whereami_5.MAPS_RECEIVE"
+        android:name="edu.dartmouth.cs.dartcard.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="edu.dartmouth.cs.whereami_5.MAPS_RECEIVE" />
+    <uses-permission android:name="your.application.package.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
@@ -38,9 +38,10 @@
             android:name="edu.dartmouth.cs.dartcard.PhotoMapActivity"
             android:label="@string/title_activity_photo_map" >
         </activity>
+
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBqJrWdvbJP_3giuGRwiXygy61UfA6aMyo" />
+            android:value="AIzaSyDWnr88kU3q7Xg4vYo6eblQx0kHgPVJsFk" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -60,7 +61,7 @@
         </activity>
         <activity
             android:name="edu.dartmouth.cs.dartcard.PayActivity"
-            android:label="@string/title_activity_pay" 
+            android:label="@string/title_activity_pay"
             android:parentActivityName="edu.dartmouth.cs.dartcard.RecipientActivity" >
         </activity>
         <activity
@@ -69,5 +70,6 @@
             android:parentActivityName="edu.dartmouth.cs.dartcard.HomeActivity" >
         </activity>
     </application>
+
 
 </manifest>
