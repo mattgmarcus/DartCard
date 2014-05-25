@@ -27,7 +27,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
-        
+			<Spinner
+			    android:id="@+id/ui_pay_activity_recipient_card_choices"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content" />
+			        
         	<EditText
 		        android:id="@+id/ui_pay_activity_recipient_email"
 		        android:layout_width="match_parent"
@@ -82,6 +86,14 @@
         android:id="@+id/ui_pay_activity_paybutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    
+    <ImageButton
+		android:id="@+id/ui_pay_activity_stripe"
+		android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/stripe"
+        android:contentDescription="@string/ui_pay_activity_stripe_description"
+        android:background="@android:color/transparent"/>
 
 
 </LinearLayout>

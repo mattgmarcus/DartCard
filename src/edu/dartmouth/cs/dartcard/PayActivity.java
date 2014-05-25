@@ -9,6 +9,7 @@ import com.stripe.android.model.Card;
 import com.stripe.model.Customer;
 
 import edu.dartmouth.cs.dartcard.RecipientActivity.LobTask;
+import edu.dartmouth.cs.dartcard.StripeUtilities.CardResponse;
 
 import android.os.AsyncTask;
 import android.os.Build;
@@ -18,7 +19,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
@@ -29,6 +29,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,7 +56,15 @@ public class PayActivity extends Activity {
 	
 	private ProgressDialog mProgressDialog;
 	
-	private Double COST_PER_CARD = 1.15;
+	private Double COST_PER_CARD = 1.50;
+	
+	private CardDBHelper mCardDBHelper;
+	private Spinner mCardChoices;
+
+	private ArrayList<edu.dartmouth.cs.dartcard.Card> mUserCards;
+	
+	private boolean isUsingSavedCard;
+	private String customerId;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +103,14 @@ public class PayActivity extends Activity {
 			mRecipients = new ArrayList<Recipient>();
 		}
 		
+		mCardDBHelper = new CardDBHelper(this);
+		mUserCards = mCardDBHelper.fetchCards();
+		isUsingSavedCard = false;
+		customerId = "";
+
+		mCardChoices = (Spinner) findViewById(R.id.ui_pay_activity_recipient_card_choices);
+		populateCardChoices();
+		
 		setPayButtonText();
 		
 		mPayButton.setOnClickListener(new View.OnClickListener() {
@@ -104,27 +122,120 @@ public class PayActivity extends Activity {
 
 	}
 	
-	private String getCustomerId() {
-		SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-		return sharedPref.getString(getString(R.string.customer_id), null);
+	private void populateCardChoices() {
+	    ArrayList<String> cardTypes = new ArrayList<String>();
+	    cardTypes.add("Select a saved card");
+	    for (int i = 0; i < mUserCards.size(); i++) {
+	    	cardTypes.add(mUserCards.get(i).getType() + "--" + mUserCards.get(i).getLastFour());
+	    }
+		ArrayAdapter<CharSequence> adapter = 
+	    		new ArrayAdapter(this, android.R.layout.simple_list_item_1, cardTypes);
+	    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	    mCardChoices.setAdapter(adapter);
 	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+		mCardChoices.setOnItemSelectedListener(new OnItemSelectedListener() {
+		    @Override
+		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+		        //Update position to account for the first choice in the spinner
+		    	position = position - 1;
+		    	if (-1 == position) {
+		    		isUsingSavedCard = false;
+
+		    		enableFields();
+		    		mEmailField.setText("");
+		    		mCardField.setText("");
+		    		mMonthSpinner.setSelection(0);
+		    		mYearSpinner.setSelection(0);
+		    	}
+		    	else {
+		    		isUsingSavedCard = true;
+		    		
+		    		edu.dartmouth.cs.dartcard.Card card = mUserCards.get(position);
+		    		String email = card.getEmail();
+		    		if (email.isEmpty())
+		    			mEmailField.setText("None saved");
+		    		else
+		    			mEmailField.setText(email);
+		    		
+		    		String type = card.getType();
+		    		if ("American Express" == type) {
+			    		mCardField.setText("**** ****** *"+card.getLastFour());
+		    		}
+		    		else if ("Diners Club" == type) {
+		    			String lastFour = card.getLastFour();
+			    		mCardField.setText("**** **** **"+lastFour.substring(0, 2) 
+			    				+ " " + lastFour.substring(2, 4));
+		    		}
+		    		else if (("Visa" == type) || ("MasterCard" == type) || ("Discover" == type)
+		    				|| ("JCB" == type)) {
+			    		mCardField.setText("**** **** **** "+card.getLastFour());
+		    		}
+		    		mMonthSpinner.setSelection(card.getExpMonth());
+		    		mYearSpinner.setSelection(getYearChoice(card.getExpYear()));
+		    		disableFields();
+		    		
+		    		customerId = card.getCusId();
+		    	}
+		    }
+		    
+		    private void enableFields() {
+	    		mEmailField.setEnabled(true);
+	    		mCardField.setEnabled(true);
+	    		mCVCField.setEnabled(true);
+	    		mMonthSpinner.setEnabled(true);
+	    		mYearSpinner.setEnabled(true);
+	    		
+	    		mRememberSwitch.setSelected(false);
+	    		mRememberSwitch.setEnabled(true);
+		    }
+		    
+		    private void disableFields() {
+	    		mEmailField.setEnabled(false);
+	    		mCardField.setEnabled(false);
+	    		mCVCField.setEnabled(false);
+	    		mMonthSpinner.setEnabled(false);
+	    		mYearSpinner.setEnabled(false);
+	    		
+	    		mRememberSwitch.setSelected(true);
+	    		mRememberSwitch.setEnabled(false);
+		    }
+		    
+		    private int getYearChoice(int year) {
+		    	if (2013 > year) {
+		    		return 0;
+		    	}
+		    	else {
+		    		//Maps 2014 to 1, 2015 to 2, etc.
+		    		return year - 2013;
+		    	}
+		    }
+
+		    @Override
+		    public void onNothingSelected(AdapterView<?> parentView) {}
+
+		});
+
+	}
+
 	
 	private void onPayClicked(View v) {
 		mPayButton.setEnabled(false);
 		
-		String customer_id = getCustomerId();
 		boolean validCard = true;
-		boolean rememberMe = mRememberSwitch.isChecked();
 
 		Map<String, String> params;
-		if ((null == customer_id) || (!rememberMe))  {
+		if (!isUsingSavedCard)  {
 			params = makeCardParams();
 			validCard = validateCard(params);
 		}
 		else {
-
 			params = new HashMap<String, String>();
-			params.put(getString(R.string.customer_id), customer_id);
+			params.put(getString(R.string.customer_id), customerId);
 		}
 
 		if (validCard) {
@@ -169,7 +280,11 @@ public class PayActivity extends Activity {
 	private void setRecipientListview() {
 		ArrayList<String> recipientNames = new ArrayList<String>();
 		for (Recipient recipient : mRecipients) {
-			recipientNames.add(recipient.getName());
+			String name = recipient.getName();
+			if (name.equals(""))
+				recipientNames.add("No name entered");
+			else
+				recipientNames.add(name);
 		}
 		
 		ListView listView = (ListView) findViewById(R.id.ui_pay_activity_recipients_list);
@@ -245,21 +360,41 @@ public class PayActivity extends Activity {
 
 	    @Override
 	    public void afterTextChanged(Editable s) {
-	        // Remove spacing char
-	        if (s.length() > 0 && (s.length() % 5) == 0) {
-	            final char c = s.charAt(s.length() - 1);
-	            if (space == c) {
-	                s.delete(s.length() - 1, s.length());
-	            }
-	        }
-	        // Insert char where needed.
-	        if (s.length() > 0 && (s.length() % 5) == 0) {
-	            char c = s.charAt(s.length() - 1);
-	            // Only if its a digit where there should be a space we insert a space
-	            if (Character.isDigit(c) && TextUtils.split(s.toString(), String.valueOf(space)).length <= 3) {
-	                s.insert(s.length() - 1, String.valueOf(space));
-	            }
-	        }
+	    	if (s.length() > 0) {
+		    	switch(s.toString().charAt(0)) {
+		    	//To do for format: xxxx xxxxxx xxxxx
+		    	case '3':
+			        // Remove spacing char
+			        if (s.length() > 0 && (s.length() % 5) == 0) {
+			            final char c = s.charAt(s.length() - 1);
+			            if (space == c) {
+			                s.delete(s.length() - 1, s.length());
+			            }
+			        }
+			        if (s.length() > 0 && (s.length() % 5) == 0) {
+			            char c = s.charAt(s.length() - 1);
+			            if (Character.isDigit(c) && TextUtils.split(s.toString(), String.valueOf(space)).length <= 3) {
+			                s.insert(s.length() - 1, String.valueOf(space));
+			            }
+			        }
+		    	default:
+			        // Remove spacing char
+			        if (s.length() > 0 && (s.length() % 5) == 0) {
+			            final char c = s.charAt(s.length() - 1);
+			            if (space == c) {
+			                s.delete(s.length() - 1, s.length());
+			            }
+			        }
+			        // Insert char where needed.
+			        if (s.length() > 0 && (s.length() % 5) == 0) {
+			            char c = s.charAt(s.length() - 1);
+			            // Only if it's a digit where there should be a space we insert a space
+			            if (Character.isDigit(c) && TextUtils.split(s.toString(), String.valueOf(space)).length <= 3) {
+			                s.insert(s.length() - 1, String.valueOf(space));
+			            }
+			        }
+		    	}
+	    	}
 	    }
 	    
 	    @Override
@@ -282,6 +417,7 @@ public class PayActivity extends Activity {
 		protected Boolean doInBackground(Void ... p) {
 
 			if (params.containsKey(getString(R.string.customer_id))) {
+				Log.d("doInBackground", "Using customer id");
 				Map<String, String> chargeParams = new HashMap<String, String>();
 				chargeParams.put("customer", params.get(getString(R.string.customer_id)));
 
@@ -291,7 +427,9 @@ public class PayActivity extends Activity {
 				
 				return StripeUtilities.charge(chargeParams);
 			}
-			else {
+			else if (mRememberSwitch.isChecked()){
+				Log.d("doInBackground", "New customer with remember me");
+
 				Map<String, String> customerParams = new HashMap<String, String>();
 				String email = params.get(getString(R.string.email));
 				customerParams.put("description", 
@@ -301,16 +439,15 @@ public class PayActivity extends Activity {
 				String customerId = 
 						StripeUtilities.createCustomer(customerParams, getApplicationContext());
 				
-				if (null != customerId) {
-					saveId(customerId);
-					
+				if (null != customerId) {					
 					Map<String, String> cardParams = new HashMap<String, String>();
 					cardParams.put("card[number]", params.get(getString(R.string.card_number)));
 					cardParams.put("card[exp_month]", params.get(getString(R.string.exp_month)));
 					cardParams.put("card[exp_year]", params.get(getString(R.string.exp_year)));
 					cardParams.put("card[cvc]", params.get(getString(R.string.cvc)));
 	
-					StripeUtilities.createCard(cardParams, customerId);
+					CardResponse resp = StripeUtilities.createCard(cardParams, customerId);
+					saveCard(email, resp);
 					
 					Map<String, String> chargeParams = new HashMap<String, String>();
 					chargeParams.put("customer", customerId);
@@ -325,8 +462,34 @@ public class PayActivity extends Activity {
 					return false;
 				}
 			}
+			
+			else {
+				Log.d("doInBackground", "New customer without remember me");
+
+				Map<String, String> chargeParams = new HashMap<String, String>();
+				chargeParams.put("card[number]", params.get(getString(R.string.card_number)));
+				chargeParams.put("card[exp_month]", params.get(getString(R.string.exp_month)));
+				chargeParams.put("card[exp_year]", params.get(getString(R.string.exp_year)));
+				chargeParams.put("card[cvc]", params.get(getString(R.string.cvc)));
+				chargeParams.put("description", "Charge for " + params.get(getString(R.string.email)));
+
+				chargeParams.put("amount", 
+						String.valueOf(costToCents(calculateCost(mRecipients.size()))));
+				chargeParams.put("currency", "usd");
+
+				return StripeUtilities.charge(chargeParams);	
+
+			}
 		}
 		
+		private void saveCard(String email, CardResponse resp) {
+			edu.dartmouth.cs.dartcard.Card card = new edu.dartmouth.cs.dartcard.Card(email, resp.getCustomer(), 
+					resp.getlast4(), resp.getType(), resp.getExpMonth(), resp.getExpYear());
+			
+			mCardDBHelper.insertCard(card);
+			
+		}
+
 		@Override
 		protected void onPostExecute(Boolean result) {
 			mProgressDialog.dismiss();
@@ -340,13 +503,6 @@ public class PayActivity extends Activity {
 				
 				activity.startActivity(intent);
 			}
-		}
-		
-		private void saveId(String id) {
-			SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
-			SharedPreferences.Editor editor = sharedPref.edit();
-			editor.putString(getString(R.string.customer_id), id);
-			editor.commit();
 		}
 	};
 
