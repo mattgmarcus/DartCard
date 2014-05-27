@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -39,6 +40,7 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 		fromDatabase = getIntent().getBooleanExtra(Globals.IS_FROM_DB_KEY,
 				false);
 		mImageView = (ImageView) findViewById(R.id.imageView);
+		
 		loadImage();
 
 		mLocationClient = new LocationClient(this, this, this);
@@ -98,8 +100,11 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 
 				// create new Photo entry
 				PhotoEntry photo = new PhotoEntry();
-				photo.setLatitude(location.getLatitude());
-				photo.setLongitude(location.getLongitude());
+				double lat = location.getLatitude();
+				double longi = location.getLongitude();
+				photo.setLatitude(lat);
+				photo.setLongitude(longi);
+				photo.setSectorId(SectorHelper.getSectorIdFromLatLong(lat, longi));
 				mImageView.buildDrawingCache();
 				photo.setPhotoFromBitmap(mImageView.getDrawingCache());
 				PhotoEntryDbHelper db = new PhotoEntryDbHelper(this);
