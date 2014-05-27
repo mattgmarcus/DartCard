@@ -24,6 +24,7 @@ public class DartCardDialogFragment extends DialogFragment {
 	public interface DialogExitListener {
 		void onSavePhotoExit(boolean savePhoto);
 		void onTrySaveAgainExit(boolean tryAgain);
+		void onReturn();
 	}
 
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class DartCardDialogFragment extends DialogFragment {
 							listener.onSavePhotoExit(false);
 						}
 					});
-			return builder.create();
+			break;
 			
 		case Globals.DIALOG_KEY_TRY_SAVE_AGAIN:
 			builder.setTitle(R.string.dialog_title_try_save_again);
@@ -70,10 +71,35 @@ public class DartCardDialogFragment extends DialogFragment {
 							listener.onTrySaveAgainExit(false);
 						}
 					});
+			break;
+			
+		case Globals.DIALOG_RECIPIENT_ERRORS:
+			builder.setTitle(R.string.dialog_title_recipient_error);
+			builder.setNeutralButton(R.string.dialog_button_recipient_error,
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							//Do nothing
+						}
+					});
+			break;
+			
+		case Globals.DIALOG_PHOTO_MAP_ERROR:
+			builder.setTitle(R.string.dialog_title_photo_map_error);
+			builder.setMessage(R.string.dialog_message_photo_map_error);
+			builder.setNeutralButton(R.string.dialog_button_photo_map_error,
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							listener.onReturn();
+						}
+					});
+			break;
 		
 		default:
-			return null;
-
+			break;
 		}
+		return builder.create();
+
 	}
 }

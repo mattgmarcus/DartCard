@@ -15,6 +15,7 @@ import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -32,11 +33,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import edu.dartmouth.cs.dartcard.DartCardDialogFragment.DialogExitListener;
 import edu.dartmouth.cs.dartcard.PayActivity.StripeTask;
 import edu.dartmouth.cs.dartcard.StripeUtilities.CardResponse;
 
 public class PhotoMapActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,
-GooglePlayServicesClient.OnConnectionFailedListener{
+GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 	private static final String TAB_KEY_INDEX = "tab_key";
 
 	PhotoMapFragment mapFragment;
@@ -46,6 +48,8 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	private GoogleMap map;
 
 	PriorityQueue<PhotoEntry> closest100Photos;
+	
+	private ProgressDialog mProgressDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +90,13 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 		
 		mLocationClient = new LocationClient(this, this, this);
 		map = mapFragment.getMap();
+		
+		mProgressDialog = new ProgressDialog(this);
+		mProgressDialog.setTitle("Loading images");
+		mProgressDialog.setMessage("This should take only a second");
+		mProgressDialog.setCanceledOnTouchOutside(false);
+		mProgressDialog.show();
+
 
 	}
 
@@ -162,7 +173,6 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 
 	@Override
 	public void onConnected(Bundle arg0) {
-		Toast.makeText(getApplicationContext(), "connected to location client", Toast.LENGTH_SHORT).show();
 		location = mLocationClient.getLastLocation();
 		
 		PhotoTask task = new PhotoTask(this);
@@ -185,7 +195,11 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 		params.put("sector", String.valueOf(sectorId));
 		Log.d("params", params.toString());
 		String result = HttpUtilities.get(getString(R.string.server_addr)+"/serve?sector="+sectorId);
-		Log.d("result is ", result);
+		
+		if (null == result) {
+			return null;
+		}
+		
 		try {
 			JSONArray jsonArray = new JSONArray(result);
 			for (int i = 0; i < jsonArray.length(); i++) {
@@ -193,6 +207,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 		        photos.add(new PhotoEntry(data));
 			}
 		} catch (JSONException e) {
+			return null;
 		}
 		
 		return photos;
@@ -208,6 +223,9 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 		
 		ArrayList<PhotoEntry> sectorPhotoList = fetchPhotos(sectorId);
 		
+		if (null == sectorPhotoList) {
+			return null;
+		}
 		
 		//go through all entries, if the list fills up, keep the shortest
 		//distanced photos
@@ -292,7 +310,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 		
 	}
 	
-	public class PhotoTask extends AsyncTask<Void,Void,Void> {
+	public class PhotoTask extends AsyncTask<Void,Void,Boolean> {
 		private Activity activity;
 		
 		public PhotoTask(Activity activity) {
@@ -300,18 +318,37 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 		}
 		
 		@Override
-		protected Void doInBackground(Void ... p) {
+		protected Boolean doInBackground(Void ... p) {
 			closest100Photos = fetch100ClosestPhotoEntries(activity, location);
-			Log.d("photos", closest100Photos.toString());
-			return null;
+			return null != closest100Photos;
 		}
 		
 
 		@Override
-		protected void onPostExecute(Void result) {
-			//refresh both fragments once connected
-			gridFragment.updateGridView(closest100Photos);
-			mapFragment.updateMap(closest100Photos);
+		protected void onPostExecute(Boolean success) {
+			if (!success) {
+				DartCardDialogFragment frag = DartCardDialogFragment
+						.newInstance(Globals.DIALOG_PHOTO_MAP_ERROR);
+				frag.show(getFragmentManager(), "photo map error dialog");
+			}
+			else {
+				//refresh both fragments once connected
+				gridFragment.updateGridView(closest100Photos);
+				mapFragment.updateMap(closest100Photos);
+				
+				mProgressDialog.dismiss();
+			}
 		}
+	}
+
+	@Override
+	public void onReturn() {
+		finish();
 	};
+
+	@Override
+	public void onSavePhotoExit(boolean savePhoto) {}
+	@Override
+	public void onTrySaveAgainExit(boolean tryAgain) {}
+
 }

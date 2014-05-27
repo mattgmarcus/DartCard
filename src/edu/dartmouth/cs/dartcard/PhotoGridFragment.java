@@ -118,7 +118,7 @@ public class PhotoGridFragment extends Fragment {
 										// attributes
 				imageView = new ImageView(mContext);
 				imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
-				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+				imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 				imageView.setPadding(8, 8, 8, 8);
 
 				// set image view to one third width of phone

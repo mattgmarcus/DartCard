@@ -20,6 +20,17 @@ public class Recipient implements Parcelable {
 	private String zip;
 	private String message;
 	
+	public Recipient(String fullName, String street1, String street2, String city,
+			String state, String zip) {
+		this.fullName = fullName;
+		this.street1 = street1;
+		this.street2 = street2;
+		this.city = city;
+		this.state = state;
+		this.zip = zip;
+		this.message = "";
+	}
+
 	
 	public Recipient(String fullName, String street1, String street2, String city,
 			String state, String zip, String message) {
@@ -46,6 +57,66 @@ public class Recipient implements Parcelable {
 		return fullName;
 	}
 	
+	public String getStreet1() {
+		return street1;
+	}
+
+
+	public void setStreet1(String street1) {
+		this.street1 = street1;
+	}
+
+
+	public String getStreet2() {
+		return street2;
+	}
+
+
+	public void setStreet2(String street2) {
+		this.street2 = street2;
+	}
+
+
+	public String getCity() {
+		return city;
+	}
+
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+
+	public String getState() {
+		return state;
+	}
+
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+
+	public String getZip() {
+		return zip;
+	}
+
+
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+
+
+	public String getMessage() {
+		return message;
+	}
+
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+
 	public Map<String, String> toAddressMap() {
 		Map<String, String> addressMap = new HashMap<String, String>();
 		addressMap.put("name", this.fullName);

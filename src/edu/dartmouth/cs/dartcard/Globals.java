@@ -10,5 +10,8 @@ public class Globals {
 	
 	public static final String KEY_PHOTO_LIST = "photo_list";
 	public static final String IS_FROM_DB_KEY = "from_database";
+	
+	public static final int DIALOG_RECIPIENT_ERRORS = 2;
+	public static final int DIALOG_PHOTO_MAP_ERROR = 3;
 
 }

@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -61,6 +62,9 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 
 	private boolean fromDatabase;
 	private Bitmap bmap;
+	
+	private ProgressDialog mProgressDialog;
+
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -116,17 +120,10 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 			Location location = mLocationClient.getLastLocation();
 
 			if (location == null) {
-				// DartCardDialogFragment frag =
-				// DartCardDialogFragment.newInstance(Globals.DIALOG_KEY_TRY_SAVE_AGAIN);
-				// frag.show(getFragmentManager(), "try again save dialog");
-				Toast.makeText(getApplicationContext(), "no location found",
-						Toast.LENGTH_SHORT).show();
-
+				DartCardDialogFragment frag = 
+						DartCardDialogFragment.newInstance(Globals.DIALOG_KEY_TRY_SAVE_AGAIN);
+				frag.show(getFragmentManager(), "try again save dialog");
 			} else {
-				Toast.makeText(getApplicationContext(),
-						"inserting photo with location", Toast.LENGTH_SHORT)
-						.show();
-
 				// create new Photo entry
 				PhotoEntry photo = new PhotoEntry();
 				//mImageView.buildDrawingCache();
@@ -140,9 +137,11 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 				savePhoto(photo);
 				PhotoEntryDbHelper db = new PhotoEntryDbHelper(this);
 				db.insertPhoto(photo);
-				//Intent intent = new Intent(this, FromActivity.class);
-				//startActivity(intent);
 			}
+		}
+		else {
+			Intent intent = new Intent(this, FromActivity.class);
+			startActivity(intent);
 		}
 
 	}
@@ -189,6 +188,12 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 	}
 	
 	private boolean savePhoto(PhotoEntry photo) {
+		mProgressDialog = new ProgressDialog(this);
+		mProgressDialog.setTitle("Saving");
+		mProgressDialog.setMessage("This should take only a second");
+		mProgressDialog.setCanceledOnTouchOutside(false);
+		mProgressDialog.show();
+
 		PhotoTask task = new PhotoTask(photo, this);
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -200,17 +205,17 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 
 	}
 
-	public class PhotoTask extends AsyncTask<Void,Void,Void> {
+	public class PhotoTask extends AsyncTask<Void,Void,Boolean> {
 		private PhotoEntry photo;
 		private Activity activity;
-		private boolean DEBUG = true;
+		private boolean DEBUG = false;
 		
 		public PhotoTask(PhotoEntry photo, Activity activity) {
 			this.photo = photo;
 			this.activity = activity;
 		}
 		
-		protected Void doInBackground(Void ... p) {
+		protected Boolean doInBackground(Void ... p) {
 			HttpClient httpClient = new DefaultHttpClient();
 
 	        HttpGet get = new HttpGet(activity.getString(R.string.server_addr)+"/blob/getuploadurl");
@@ -218,20 +223,23 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 			try {
 				response = httpClient.execute(get);
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			}
+			
+			if (null == response) {
+				return false;
 			}
 			
 	        String uploadURL = "";
 	        try {
 				uploadURL = EntityUtils.toString(response.getEntity()).trim();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return false;
 			}
 	        
 			httpClient = new DefaultHttpClient();
 			if (DEBUG) {
+		        Log.d("original upload url is", uploadURL);
+
 				String[] url_parts = uploadURL.split("_");
 				uploadURL = activity.getString(R.string.server_addr)+"/_"+url_parts[1];
 			}
@@ -250,98 +258,43 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 
 			try {
 				response = httpClient.execute(httppost);
-				//Kinda hacky way to get the blobKey from the entity
-				blobKey = EntityUtils.toString(response.getEntity()).split(":")[1].split("\"")[1];
+				String returnString = EntityUtils.toString(response.getEntity());
+
+				blobKey = returnString.split(":")[1].split("\"")[1];
 				Log.d("blobkey is ", blobKey);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return false;
 			}
+
 			JSONArray jsonArray = new JSONArray();
 			jsonArray.put(photo.toJSONObject());
-			Log.d("photo json", jsonArray.toString());
 
 			HashMap<String, String> data = new HashMap<String, String>();
 			data.put("blobKey", blobKey);
 			data.put("data", jsonArray.toString());
-			HttpUtilities.post(activity.getString(R.string.server_addr)+"/save", data);
-
-			return null;
+			return HttpUtilities.post(activity.getString(R.string.server_addr)+"/save", data);
 		}
-		/*@Override
-		protected Void doInBackground(Void ... p) {
-			String url = 
-					HttpUtilities.get(activity.getString(R.string.server_addr)+"/blob/getuploadurl");
-			
-			Log.d("return url is", url);
-			if (null != url) {
-				HttpClient httpclient = new DefaultHttpClient();
-				if (DEBUG) {
-					String[] url_parts = url.split(":");
-					url = activity.getString(R.string.server_addr)+url_parts[1];
-				}
-				HttpPost httppost = new HttpPost(url);
-
-				ContentBody attachment = new ByteArrayBody(photo.getPhotoByteArray(), "image");				MultipartEntity reqEntity = new MultipartEntity();
-
-				reqEntity.addPart("file", attachment);
-
-				httppost.setEntity(reqEntity);
-				HttpResponse response = null;
-				try {
-					response = httpclient.execute(httppost);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				Log.d("Got a rsponse!", response.toString());
-				
-				JSONObject resultJson = null;
-				try {
-					resultJson = new JSONObject(response.toString());
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				//Last step
-				String blobKey = null;
-				try {
-					blobKey = resultJson.getString("blobKey");
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				JSONArray jsonArray = new JSONArray();
-				jsonArray.put(photo.toJSONObject());
-
-				HashMap<String, String> data = new HashMap<String, String>();
-				data.put("blobKey", blobKey);
-				data.put("data", jsonArray.toString());
-				HttpUtilities.post(activity.getString(R.string.server_addr)+"/save", data);
-			}
-			return null;
-		}*/
 		
 
 		@Override
-		protected void onPostExecute(Void result) {
-			/*mProgressDialog.dismiss();
+		protected void onPostExecute(Boolean result) {
+			mProgressDialog.dismiss();
 			if (!result) {
-				Log.d("PayActivity.async.onpostexecute", "Failed!");
-				
-				mPayButton.setEnabled(true);	
+				DartCardDialogFragment frag = DartCardDialogFragment
+						.newInstance(Globals.DIALOG_KEY_TRY_SAVE_AGAIN);
+				frag.show(activity.getFragmentManager(), "try again save dialog");
+
 			}
 			else {
-				Intent intent = new Intent(activity, HomeActivity.class);
+				Intent intent = new Intent(activity, FromActivity.class);
 				
 				activity.startActivity(intent);
-			}*/
-			Intent intent = new Intent(activity, FromActivity.class);
-			activity.startActivity(intent);
+			}
 		}
-	};
+	}
+
+	@Override
+	public void onReturn() {};
 
 
 }
