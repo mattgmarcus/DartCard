@@ -28,7 +28,6 @@ public class PhotoGridFragment extends Fragment {
 
 	private GridView gridView;
 	private ImageView chosenPhoto;
-	// private Integer[] pics = new Integer[100];
 	private Context context;
 	private ArrayList<PhotoEntry> photos;
 	private boolean photosLoaded = false;
@@ -40,6 +39,7 @@ public class PhotoGridFragment extends Fragment {
 		context = getActivity();
 
 		gridView = new GridView(getActivity());
+<<<<<<< HEAD
 		
 		if (photos == null){
 			Log.d("DartCard","photolist is null");
@@ -49,6 +49,12 @@ public class PhotoGridFragment extends Fragment {
 			Log.d("DartCard", "photolist is not null");
 		}
 		gridView.setAdapter(new ImageAdapter(getActivity()));
+=======
+
+		PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closest100Photos;
+		updateGridView(photoQueue);
+		//setAdapter();
+>>>>>>> dc56789e8c81b1b4f5df00998089abfa843462be
 		gridView.setNumColumns(3);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -79,26 +85,25 @@ public class PhotoGridFragment extends Fragment {
 		} else {
 			Log.d("DartCard", "photoQueue is null in photogridfragment");
 		}
+<<<<<<< HEAD
 	}
 	
 	public void updateGridView(PriorityQueue<PhotoEntry> pq){
 		getPhotoListFromQueue(pq);
+=======
+    	setAdapter();
+
+		//gridView.setAdapter(new ImageAdapter(getActivity()));
+	}
+	
+	public void setAdapter() {
+>>>>>>> dc56789e8c81b1b4f5df00998089abfa843462be
 		gridView.setAdapter(new ImageAdapter(getActivity()));
 	}
-
-	// private void priQueueToSortedArrayList(
-	// PriorityQueue<PhotoEntry> priQueue, ArrayList<PhotoEntry> list) {
-	// Comparator c = new
-	// PhotoMapActivity.LocationComparator(((PhotoMapActivity)
-	// getActivity()).location);
-	// PriorityQueue<PhotoEntry> pq = new
-	// PriorityQueue<PhotoEntry>(priQueue.size());
-	// pq.addAll(priQueue);
-	// while (!pq.isEmpty()){
-	// list.add(pq.poll());
-	// }
-	// Collections.reverse(list);
-	// }
+	
+	public void setNumColumns(int numColumns) {
+		gridView.setNumColumns(numColumns);
+	}
 
 	public class ImageAdapter extends BaseAdapter {
 

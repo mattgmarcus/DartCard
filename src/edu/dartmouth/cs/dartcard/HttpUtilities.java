@@ -70,6 +70,33 @@ public class HttpUtilities {
 		return bytes;
 	}
 	
+	private static HttpURLConnection makeGetConnection(URL url) throws IOException {
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		//conn.setUseCaches(false);
+		//conn.setRequestMethod("GET");
+		//conn.setRequestProperty("Content-Type",
+				//"application/x-www-form-urlencoded;charset=UTF-8");		
+		
+		
+		return conn;
+	}
+	
+	private static HttpURLConnection makeGetConnection(URL url, byte[] bytes) throws IOException {
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setDoOutput(true);
+		conn.setUseCaches(false);
+		conn.setFixedLengthStreamingMode(bytes.length);
+		conn.setRequestProperty("Content-Type",
+				"application/x-www-form-urlencoded;charset=UTF-8");
+				
+		OutputStream out = conn.getOutputStream();
+		out.write(bytes);
+		out.close();
+
+		return conn;
+	}
+
+
 	private static HttpURLConnection makePostConnection(URL url, byte[] bytes) throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
@@ -245,4 +272,130 @@ public class HttpUtilities {
 		return null;
 
 	}
+	
+	public static String get(String endpoint) {
+		URL url = null;
+		try {
+			url = new URL(endpoint);
+		} catch (MalformedURLException e) {
+			//Fail silently
+		}
+		Log.d("url is", endpoint);
+		
+		HttpURLConnection conn;
+
+		long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
+		for (int i = 1; i <= HttpUtilities.MAX_ATTEMPTS; i++) {
+			try {
+					conn = makeGetConnection(url);
+					Log.d("url should be ", conn.toString());
+
+					// handle the response
+					int status = conn.getResponseCode();
+					Log.d("HttpUtilities", "get-status" + status);
+
+					if (status == 200) {	
+						Log.d("httputilities.get", "stauts is 200");
+						
+						BufferedReader br = 
+								new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		                StringBuilder sb = new StringBuilder();
+		                String line;
+		                while ((line = br.readLine()) != null) {
+		                    sb.append(line+"\n");
+		                }
+		                br.close();
+		                
+						if (null != conn) {
+							conn.disconnect();
+						}
+
+		                return sb.toString();
+					}	
+					
+					else if (500 > status) {
+						if (null != conn) {
+							conn.disconnect();
+						}
+						return null;
+					}
+			} catch (IOException e) {
+				try {
+					Thread.sleep(backoff);
+				} catch (InterruptedException e1) {
+					// Activity finished before we complete - exit.
+					Thread.currentThread().interrupt();
+				}
+				// increase backoff exponentially
+				backoff *= 2;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static String get(String endpoint, Map<String, String> params) {
+		URL url = null;
+		try {
+			url = new URL(endpoint);
+		} catch (MalformedURLException e) {
+			//Fail silently
+		}
+		
+		byte[] bytes = constructParams(params);
+
+		Log.d("url is", endpoint);
+		
+		HttpURLConnection conn;
+
+		long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
+		for (int i = 1; i <= HttpUtilities.MAX_ATTEMPTS; i++) {
+			try {
+					conn = makeGetConnection(url, bytes);
+					Log.d("url should be ", conn.toString());
+
+					// handle the response
+					int status = conn.getResponseCode();
+					Log.d("HttpUtilities", "get-status" + status);
+
+					if (status == 200) {	
+						Log.d("httputilities.get", "stauts is 200");
+						
+						BufferedReader br = 
+								new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		                StringBuilder sb = new StringBuilder();
+		                String line;
+		                while ((line = br.readLine()) != null) {
+		                    sb.append(line+"\n");
+		                }
+		                br.close();
+		                
+						if (null != conn) {
+							conn.disconnect();
+						}
+
+		                return sb.toString();
+					}	
+					
+					else if (500 > status) {
+						if (null != conn) {
+							conn.disconnect();
+						}
+						return null;
+					}
+			} catch (IOException e) {
+				try {
+					Thread.sleep(backoff);
+				} catch (InterruptedException e1) {
+					// Activity finished before we complete - exit.
+					Thread.currentThread().interrupt();
+				}
+				// increase backoff exponentially
+				backoff *= 2;
+			}
+		}
+		
+		return null;
+	}
+
 }

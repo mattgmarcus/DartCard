@@ -144,13 +144,15 @@ public class PayActivity extends Activity {
 		        //Update position to account for the first choice in the spinner
 		    	position = position - 1;
 		    	if (-1 == position) {
-		    		isUsingSavedCard = false;
+		    		if (isUsingSavedCard == true) {
+		    			isUsingSavedCard = false;
 
-		    		enableFields();
-		    		mEmailField.setText("");
-		    		mCardField.setText("");
-		    		mMonthSpinner.setSelection(0);
-		    		mYearSpinner.setSelection(0);
+			    		enableFields();
+			    		mEmailField.setText("");
+			    		mCardField.setText("");
+			    		mMonthSpinner.setSelection(0);
+			    		mYearSpinner.setSelection(0);
+		    		}
 		    	}
 		    	else {
 		    		isUsingSavedCard = true;

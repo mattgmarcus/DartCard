@@ -10,6 +10,8 @@
     <string name="title_activity_photo_view">PhotoViewActivity</string>
     <string name="button_title_make_card">Make Card</string>
     
+    <string name="server_addr">http://10.31.230.229:8888</string>
+    
      <!-- Strings in Home Activity -->
     <string name="take_photo">Take a Photo</string>
     <string name="find_local">Find Local Images</string>
