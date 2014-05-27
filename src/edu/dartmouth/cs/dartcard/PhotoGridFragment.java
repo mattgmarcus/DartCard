@@ -39,7 +39,6 @@ public class PhotoGridFragment extends Fragment {
 		context = getActivity();
 
 		gridView = new GridView(getActivity());
-<<<<<<< HEAD
 		
 		if (photos == null){
 			Log.d("DartCard","photolist is null");
@@ -48,13 +47,8 @@ public class PhotoGridFragment extends Fragment {
 		}else{
 			Log.d("DartCard", "photolist is not null");
 		}
-		gridView.setAdapter(new ImageAdapter(getActivity()));
-=======
+		setAdapter();
 
-		PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closest100Photos;
-		updateGridView(photoQueue);
-		//setAdapter();
->>>>>>> dc56789e8c81b1b4f5df00998089abfa843462be
 		gridView.setNumColumns(3);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -85,19 +79,14 @@ public class PhotoGridFragment extends Fragment {
 		} else {
 			Log.d("DartCard", "photoQueue is null in photogridfragment");
 		}
-<<<<<<< HEAD
 	}
 	
 	public void updateGridView(PriorityQueue<PhotoEntry> pq){
 		getPhotoListFromQueue(pq);
-=======
     	setAdapter();
-
-		//gridView.setAdapter(new ImageAdapter(getActivity()));
 	}
 	
 	public void setAdapter() {
->>>>>>> dc56789e8c81b1b4f5df00998089abfa843462be
 		gridView.setAdapter(new ImageAdapter(getActivity()));
 	}
 	
