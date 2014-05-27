@@ -1,6 +1,10 @@
 package edu.dartmouth.cs.dartcard;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,49 +19,51 @@ public class PhotoEntry {
 	private double latitude;
 	private double longitude;
 	private int sectorId;
+
+	public PhotoEntry() {
+	}
+
+	public Long getId(){
+		return this.id;
+	}
 	
-	public PhotoEntry(){}
-	
-	public byte[] getPhoto(){
+	public byte[] getPhoto() {
 		return photo;
 	}
-	public void setPhoto(byte[] pic){
+
+	public void setPhoto(byte[] pic) {
 		photo = pic;
 	}
-	
-	public double getLatitude(){
+
+	public double getLatitude() {
 		return latitude;
 	}
-	
-	public double getLongitude(){
+
+	public double getLongitude() {
 		return longitude;
 	}
-	
-	public void setLatitude(double lat){
-		latitude=lat;
+
+	public void setLatitude(double lat) {
+		latitude = lat;
 	}
-	
-	public void setLongitude(double longi){
-		longitude=longi;
-	}
-	
-	public void setSectorId(Location location){
-		//calculate sector Id
+
+	public void setLongitude(double longi) {
+		longitude = longi;
 	}
 
 	public void setSectorId(int secId) {
 		sectorId = secId;
-		
+
 	}
 
 	public void setPhotoFromByteArray(byte[] blob) {
 		photo = blob;
-		
+
 	}
 
 	public void setId(long long1) {
 		id = long1;
-		
+
 	}
 
 	public int getSectorId() {
@@ -93,7 +99,6 @@ public class PhotoEntry {
 		return obj;
 
 	}
-	
 	
 	
 

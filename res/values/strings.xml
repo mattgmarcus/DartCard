@@ -17,7 +17,7 @@
     <string name="find_local">Find Local Images</string>
     <string name="choose_gallery">Choose from Gallery</string>
     <string name="shared_prefs_name">photo_store</string>
-    <string name="selected_photo_name">selected_photo</string>
+    <string name="selected_photo_name">selected_photo.png</string>
     
     <!-- Strings in PhotoViewActivity -->
     <string name="photo_check">Is this photo okay?</string>
