@@ -98,8 +98,11 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 
 				// create new Photo entry
 				PhotoEntry photo = new PhotoEntry();
-				photo.setLatitude(location.getLatitude());
-				photo.setLongitude(location.getLongitude());
+				double lat = location.getLatitude();
+				double longi = location.getLongitude();
+				photo.setLatitude(lat);
+				photo.setLongitude(longi);
+				photo.setSectorId(SectorHelper.getSectorIdFromLatLong(lat, longi));
 				mImageView.buildDrawingCache();
 				photo.setPhotoFromBitmap(mImageView.getDrawingCache());
 				PhotoEntryDbHelper db = new PhotoEntryDbHelper(this);

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Location;
 import android.util.Log;
 
 public class PhotoEntryDbHelper extends SQLiteOpenHelper {
@@ -14,11 +15,11 @@ public class PhotoEntryDbHelper extends SQLiteOpenHelper {
 	public static final String TABLE_NAME_ENTRIES = "entries";
 	public static final String KEY_ROW_ID = "row_id";
 	public static final String KEY_PHOTO = "photo";
-	public static final String KEY_LAT = "latitude";
-	public static final String KEY_LONG = "longitude";
+	public static final String KEY_LATITUDE = "latitude";
+	public static final String KEY_LONGITUDE = "longitude";
 	public static final String KEY_SECTOR_ID = "sector_id";
 
-	private String[] allColumns = { KEY_ROW_ID, KEY_PHOTO, KEY_LAT, KEY_LONG,
+	private String[] allColumns = { KEY_ROW_ID, KEY_PHOTO, KEY_LATITUDE, KEY_LONGITUDE,
 			KEY_SECTOR_ID };
 
 	private static final String DATABASE_NAME = "photos.db";
@@ -33,9 +34,9 @@ public class PhotoEntryDbHelper extends SQLiteOpenHelper {
 			+ " INTEGER PRIMARY KEY AUTOINCREMENT, "
 			+ KEY_PHOTO
 			+ " BLOB, "
-			+ KEY_LAT
+			+ KEY_LATITUDE
 			+ " DOUBLE, "
-			+ KEY_LONG
+			+ KEY_LONGITUDE
 			+ " DOUBLE, "
 			+ KEY_SECTOR_ID
 			+ " INTEGER " + ");";
@@ -62,14 +63,15 @@ public class PhotoEntryDbHelper extends SQLiteOpenHelper {
 	public long insertPhoto(PhotoEntry entry) {
 		ContentValues values = new ContentValues();
 		values.put(KEY_PHOTO, entry.getPhotoByteArray());
-		values.put(KEY_LAT, entry.getLatitude());
-		values.put(KEY_LONG, entry.getLongitude());
+		values.put(KEY_LATITUDE, entry.getLatitude());
+		values.put(KEY_LONGITUDE, entry.getLongitude());
 		values.put(KEY_SECTOR_ID, entry.getSectorId());
 
 		dbObject = getWritableDatabase();
 		long entryId = dbObject.insert(TABLE_NAME_ENTRIES, null, values);
 		dbObject.close();
-		Log.d("DartCard", "inserted photo with id: " + entryId);
+		Log.d("DartCard", "inserted photo with id: " + entryId
+				+ "\n and with sector id: " + entry.getSectorId());
 		return entryId;
 	}
 
@@ -115,6 +117,27 @@ public class PhotoEntryDbHelper extends SQLiteOpenHelper {
 		return entries;
 	}
 
+	public ArrayList<PhotoEntry> fetchSectorEntries(int sectorId) {
+		ArrayList<PhotoEntry> entries = new ArrayList<PhotoEntry>();
+
+		dbObject = getReadableDatabase();
+
+		Cursor cursor = dbObject.query(TABLE_NAME_ENTRIES, allColumns, KEY_SECTOR_ID + "=" + Integer.toString(sectorId), null,
+				null, null, null);
+
+		cursor.moveToFirst();
+//		 while (cursor.moveToNext()) {
+		while (!cursor.isAfterLast()) {
+			PhotoEntry entry = cursorToEntry(cursor);
+			entries.add(entry);
+			cursor.moveToNext();
+		}
+		// Make sure to close the cursor
+		cursor.close();
+		dbObject.close();
+		return entries;
+	}
+
 	private PhotoEntry cursorToEntry(Cursor cursor) {
 		PhotoEntry entry = new PhotoEntry();
 		entry.setId(cursor.getLong(0));
@@ -124,7 +147,6 @@ public class PhotoEntryDbHelper extends SQLiteOpenHelper {
 		entry.setSectorId(cursor.getInt(4));
 
 		return entry;
-
 	}
 
 }

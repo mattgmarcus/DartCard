@@ -3,6 +3,9 @@ package edu.dartmouth.cs.dartcard;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -25,7 +28,7 @@ public class PhotoGridFragment extends Fragment {
 
 	private GridView gridView;
 	private ImageView chosenPhoto;
-//	private Integer[] pics = new Integer[100];
+	// private Integer[] pics = new Integer[100];
 	private Context context;
 	private ArrayList<PhotoEntry> photos;
 
@@ -34,18 +37,12 @@ public class PhotoGridFragment extends Fragment {
 			Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		context = getActivity();
-		
-		//get photo list
-		//load photos from database
-		PhotoEntryDbHelper db = new PhotoEntryDbHelper(context);
-		photos = db.fetchEntries();
-		Log.d("DartCard", "size of photo list is " + photos.size());
-		
 
 		gridView = new GridView(getActivity());
-		
-		gridView.setAdapter(new ImageAdapter(getActivity()));
-		
+
+		PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closest100Photos;
+		updateGridView(photoQueue);
+
 		gridView.setNumColumns(3);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -59,6 +56,36 @@ public class PhotoGridFragment extends Fragment {
 		});
 		return gridView;
 	}
+
+	public void updateGridView(PriorityQueue<PhotoEntry> photoQueue) {
+		// get photo list
+		// load photos from database
+		photos = new ArrayList<PhotoEntry>();
+		if (photoQueue != null) {
+			for (PhotoEntry photo : photoQueue) {
+				Log.d("DartCard", "In photogridfragment, photoqueue has photo "
+						+ photo.getId());
+			}
+//			priQueueToSortedArrayList(photoQueue, photos);
+			photos.addAll(photoQueue);
+			//reverse order of photos so closest come up first
+			Collections.reverse(photos); 
+		} else {
+			Log.d("DartCard", "photoQueue is null in photogridfragment");
+		}
+		gridView.setAdapter(new ImageAdapter(getActivity()));
+	}
+
+//	private void priQueueToSortedArrayList(
+//			PriorityQueue<PhotoEntry> priQueue, ArrayList<PhotoEntry> list) {
+//		Comparator c = new PhotoMapActivity.LocationComparator(((PhotoMapActivity) getActivity()).location);
+//		PriorityQueue<PhotoEntry> pq = new PriorityQueue<PhotoEntry>(priQueue.size());
+//		pq.addAll(priQueue);
+//		while (!pq.isEmpty()){
+//			list.add(pq.poll());
+//		}
+//		Collections.reverse(list);
+//	}
 
 	public class ImageAdapter extends BaseAdapter {
 
@@ -97,9 +124,10 @@ public class PhotoGridFragment extends Fragment {
 				imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
 				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 				imageView.setPadding(8, 8, 8, 8);
-				
-				//set image view to one third width of phone
-				WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+
+				// set image view to one third width of phone
+				WindowManager wm = (WindowManager) context
+						.getSystemService(Context.WINDOW_SERVICE);
 				DisplayMetrics metrics = new DisplayMetrics();
 				wm.getDefaultDisplay().getMetrics(metrics);
 				imageView.getLayoutParams().width = metrics.widthPixels / 3;
@@ -116,18 +144,21 @@ public class PhotoGridFragment extends Fragment {
 
 	}
 
-	private void savePhoto(){
-		//the image we want to save is displayed in the image view for the profile
-		//photo, so take the bitmap representation of that photo that photo, 
-		//and save it to the pre-defined file name on the phone
+	private void savePhoto() {
+		// the image we want to save is displayed in the image view for the
+		// profile
+		// photo, so take the bitmap representation of that photo that photo,
+		// and save it to the pre-defined file name on the phone
 		chosenPhoto.buildDrawingCache();
 		Bitmap bmapProfPhoto = chosenPhoto.getDrawingCache();
-		try{
-			FileOutputStream fileOut = context.openFileOutput(getString(R.string.selected_photo_name), context.MODE_PRIVATE);
+		try {
+			FileOutputStream fileOut = context.openFileOutput(
+					getString(R.string.selected_photo_name),
+					context.MODE_PRIVATE);
 			bmapProfPhoto.compress(Bitmap.CompressFormat.PNG, 100, fileOut);
 			fileOut.flush();
 			fileOut.close();
-		} catch (IOException e){
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

@@ -1,10 +1,8 @@
 package edu.dartmouth.cs.dartcard;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -12,7 +10,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,25 +19,20 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 public class PhotoMapActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,
 GooglePlayServicesClient.OnConnectionFailedListener{
 	private static final String TAB_KEY_INDEX = "tab_key";
 
-	MapFragment mapFragment;
+	PhotoMapFragment mapFragment;
+	PhotoGridFragment gridFragment;
 	Location location;
 	private LocationClient mLocationClient;
 	private GoogleMap map;
 
-	
-
-	ArrayList<PhotoEntry> photos;
+	PriorityQueue<PhotoEntry> closest100Photos;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +51,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 				getString(R.string.map_tab_name));
 
 		// set up the fragments that correspond to the tabs
-		Fragment gridFragment = new PhotoGridFragment();
+		gridFragment = new PhotoGridFragment();
 		mapFragment = new PhotoMapFragment();
 
 		// link fragments to tabs by setting up listeners for tabs
@@ -144,6 +136,10 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	public void onConnected(Bundle arg0) {
 		Toast.makeText(getApplicationContext(), "connected to location client", Toast.LENGTH_SHORT).show();
 		location = mLocationClient.getLastLocation();
+		closest100Photos = fetch100ClosestPhotoEntries(this, location);
+		//refresh both fragments once connected
+		gridFragment.updateGridView(closest100Photos);
+		mapFragment.updateMap(closest100Photos);
 	}
 
 	@Override
@@ -151,9 +147,75 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 		// TODO Auto-generated method stub
 		
 	}
-
-
-
-
-
+	
+	public static PriorityQueue<PhotoEntry> fetch100ClosestPhotoEntries(Context context, Location location) {
+		Comparator<PhotoEntry> comparator = new LocationComparator(location);
+		PriorityQueue<PhotoEntry> photoQueue = new PriorityQueue<PhotoEntry>(100, comparator);
+		//calculate the sector id for current location
+		int sectorId = SectorHelper.getSectorIdFromLatLong(location.getLatitude(), location.getLongitude());
+		Log.d("DartCard", "Current Sector Id is " + sectorId);
+		PhotoEntryDbHelper db = new PhotoEntryDbHelper(context);
+		ArrayList<PhotoEntry> sectorPhotoList = db.fetchSectorEntries(sectorId);
+		ArrayList<PhotoEntry> allPhotos = db.fetchEntries();
+		Log.d("DartCard", "size of photolist for sector is " + sectorPhotoList.size());
+		Log.d("DartCard", "number of photos in database is " + allPhotos.size());
+		//go through all entries, if the list fills up, keep the shortest
+		//distanced photos
+		for (PhotoEntry currEntry : sectorPhotoList){
+			photoQueue.add(currEntry);
+			if (photoQueue.size() > 100){
+				photoQueue.poll();
+			}
+		}
+		
+		//once you've gotten all photos from the current sector, if you
+		//aren't at the limit yet, get photos from adjacent sectors, also, mainting
+		//the hundred closest photos in the queue. locations in adjacent sectors could be closer,
+		//so just keep adding
+		if (photoQueue.size() < 100){
+			int[] adjacentSectors = SectorHelper.getAdjacentSectors(sectorId);
+			//if it's a boundary case for adjacent secotrs, the getADjacentSEctors
+			//call will return an empty array and only the current sector will be loaded
+			for (int i = 0; i < adjacentSectors.length; i++){
+				int currSecId = adjacentSectors[i];
+				ArrayList<PhotoEntry> secPhotoList = db.fetchSectorEntries(currSecId);
+				for (PhotoEntry currEntry : secPhotoList){
+					photoQueue.add(currEntry);
+					if (photoQueue.size() > 100){
+						photoQueue.poll();
+					}
+				}
+			}
+		}
+			
+		
+		return photoQueue;
+	}
+	
+	public static class LocationComparator implements Comparator<PhotoEntry>{
+		
+		private Location location;
+		public LocationComparator(Location loc){
+			location = loc;
+		}
+		
+		@Override
+		public int compare(PhotoEntry photo1, PhotoEntry photo2) {
+			
+			Location location1 = new Location("");
+			location1.setLatitude(photo1.getLatitude());
+			location1.setLongitude(photo1.getLongitude());
+			
+			Location location2 = new Location("");
+			location1.setLatitude(photo2.getLatitude());
+			location1.setLongitude(photo2.getLongitude());
+			
+			double distance1 = location.distanceTo(location1);
+			double distance2 = location.distanceTo(location2);
+			//want the furtherst distance to stay at top of queue, so we can get it when
+			//we poll. so return positive if distance 1 is greater than distance 2
+			return distance1 > distance2 ? 1: -1;
+		}
+		
+	}
 }
