@@ -66,26 +66,29 @@ public class PhotoGridFragment extends Fragment {
 				Log.d("DartCard", "In photogridfragment, photoqueue has photo "
 						+ photo.getId());
 			}
-//			priQueueToSortedArrayList(photoQueue, photos);
+			// priQueueToSortedArrayList(photoQueue, photos);
 			photos.addAll(photoQueue);
-			//reverse order of photos so closest come up first
-			Collections.reverse(photos); 
+			// reverse order of photos so closest come up first
+			Collections.reverse(photos);
 		} else {
 			Log.d("DartCard", "photoQueue is null in photogridfragment");
 		}
 		gridView.setAdapter(new ImageAdapter(getActivity()));
 	}
 
-//	private void priQueueToSortedArrayList(
-//			PriorityQueue<PhotoEntry> priQueue, ArrayList<PhotoEntry> list) {
-//		Comparator c = new PhotoMapActivity.LocationComparator(((PhotoMapActivity) getActivity()).location);
-//		PriorityQueue<PhotoEntry> pq = new PriorityQueue<PhotoEntry>(priQueue.size());
-//		pq.addAll(priQueue);
-//		while (!pq.isEmpty()){
-//			list.add(pq.poll());
-//		}
-//		Collections.reverse(list);
-//	}
+	// private void priQueueToSortedArrayList(
+	// PriorityQueue<PhotoEntry> priQueue, ArrayList<PhotoEntry> list) {
+	// Comparator c = new
+	// PhotoMapActivity.LocationComparator(((PhotoMapActivity)
+	// getActivity()).location);
+	// PriorityQueue<PhotoEntry> pq = new
+	// PriorityQueue<PhotoEntry>(priQueue.size());
+	// pq.addAll(priQueue);
+	// while (!pq.isEmpty()){
+	// list.add(pq.poll());
+	// }
+	// Collections.reverse(list);
+	// }
 
 	public class ImageAdapter extends BaseAdapter {
 

@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -39,6 +40,7 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 		fromDatabase = getIntent().getBooleanExtra(Globals.IS_FROM_DB_KEY,
 				false);
 		mImageView = (ImageView) findViewById(R.id.imageView);
+		
 		loadImage();
 
 		mLocationClient = new LocationClient(this, this, this);
