@@ -36,7 +36,8 @@
         </activity>
         <activity
             android:name="edu.dartmouth.cs.dartcard.PhotoMapActivity"
-            android:label="@string/title_activity_photo_map" >
+            android:label="@string/title_activity_photo_map"
+            android:configChanges="orientation|screenSize" >
         </activity>
 
         <meta-data

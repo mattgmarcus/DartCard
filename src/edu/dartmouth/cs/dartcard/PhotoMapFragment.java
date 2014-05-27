@@ -60,7 +60,6 @@ public class PhotoMapFragment extends MapFragment implements
 				Marker marker = map.addMarker(new MarkerOptions()
 						.position(latlng));
 				markerPhotos.put(marker, photo);
-
 			}
 		}
 	}
