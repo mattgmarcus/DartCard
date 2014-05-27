@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.util.Base64;
+import android.util.Log;
 
 public class PhotoEntry {
 	private Long id;
@@ -21,6 +23,10 @@ public class PhotoEntry {
 	private int sectorId;
 
 	public PhotoEntry() {
+	}
+
+	public PhotoEntry(JSONObject data) {
+		fromJSONObject(data);
 	}
 
 	public Long getId(){
@@ -84,6 +90,16 @@ public class PhotoEntry {
 		return BitmapFactory.decodeByteArray(photo, 0, photo.length);
 	}
 
+	public void fromJSONObject(JSONObject obj) {
+			try {
+				setPhotoFromByteArray(Base64.decode(obj.getString("image").getBytes(), Base64.DEFAULT));
+				latitude = obj.getDouble("latitude");
+				longitude = obj.getDouble("longitude");
+				sectorId = obj.getInt("sector");
+			} catch (JSONException e) {
+				Log.d("photoentry", "Issue getting from json object " + obj.toString());
+			}
+	}
 	public JSONObject toJSONObject() {
 		JSONObject obj = new JSONObject();
 		

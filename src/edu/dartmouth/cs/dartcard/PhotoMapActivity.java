@@ -2,7 +2,13 @@ package edu.dartmouth.cs.dartcard;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -10,7 +16,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.location.Location;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -21,6 +31,9 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+
+import edu.dartmouth.cs.dartcard.PayActivity.StripeTask;
+import edu.dartmouth.cs.dartcard.StripeUtilities.CardResponse;
 
 public class PhotoMapActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks,
 GooglePlayServicesClient.OnConnectionFailedListener{
@@ -124,6 +137,21 @@ GooglePlayServicesClient.OnConnectionFailedListener{
         mLocationClient.disconnect();
         super.onStop();
     }
+    
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        	gridFragment.setAdapter();
+        	gridFragment.setNumColumns(3);
+           
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+        	gridFragment.setAdapter();
+        	gridFragment.setNumColumns(3);
+        }
+    }
 
 	
 	@Override
@@ -136,10 +164,13 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	public void onConnected(Bundle arg0) {
 		Toast.makeText(getApplicationContext(), "connected to location client", Toast.LENGTH_SHORT).show();
 		location = mLocationClient.getLastLocation();
-		closest100Photos = fetch100ClosestPhotoEntries(this, location);
-		//refresh both fragments once connected
-		gridFragment.updateGridView(closest100Photos);
-		mapFragment.updateMap(closest100Photos);
+		
+		PhotoTask task = new PhotoTask(this);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[])null);
+		else
+			task.execute((Void[])null);
+
 	}
 
 	@Override
@@ -148,7 +179,49 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 		
 	}
 	
-	public static PriorityQueue<PhotoEntry> fetch100ClosestPhotoEntries(Context context, Location location) {
+	private ArrayList<PhotoEntry> fetchPhotos(int sectorId) {
+		ArrayList<PhotoEntry> photos = new ArrayList<PhotoEntry>(); 
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put("sector", String.valueOf(sectorId));
+		Log.d("params", params.toString());
+		String result = HttpUtilities.get(getString(R.string.server_addr)+"/serve?sector="+sectorId);
+		Log.d("result is ", result);
+		try {
+			JSONArray jsonArray = new JSONArray(result);
+			for (int i = 0; i < jsonArray.length(); i++) {
+		        JSONObject data = jsonArray.getJSONObject(i);
+		        photos.add(new PhotoEntry(data));
+			}
+		} catch (JSONException e) {
+		}
+		
+		return photos;
+		
+	}
+	
+	public PriorityQueue<PhotoEntry> fetch100ClosestPhotoEntries(Context context, Location location) {
+		Comparator<PhotoEntry> comparator = new LocationComparator(location);
+		PriorityQueue<PhotoEntry> photoQueue = new PriorityQueue<PhotoEntry>(100, comparator);
+		//calculate the sector id for current location
+		int sectorId = SectorHelper.getSectorIdFromLatLong(location.getLatitude(), location.getLongitude());
+		Log.d("DartCard", "Current Sector Id is " + sectorId);
+		
+		ArrayList<PhotoEntry> sectorPhotoList = fetchPhotos(sectorId);
+		
+		
+		//go through all entries, if the list fills up, keep the shortest
+		//distanced photos
+		for (PhotoEntry currEntry : sectorPhotoList){
+			photoQueue.add(currEntry);
+			if (photoQueue.size() > 100){
+				photoQueue.poll();
+			}
+		}			
+		
+		return photoQueue;
+	}
+
+	/*public static PriorityQueue<PhotoEntry> fetch100ClosestPhotoEntries(Context context, Location location) {
 		Comparator<PhotoEntry> comparator = new LocationComparator(location);
 		PriorityQueue<PhotoEntry> photoQueue = new PriorityQueue<PhotoEntry>(100, comparator);
 		//calculate the sector id for current location
@@ -190,7 +263,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 			
 		
 		return photoQueue;
-	}
+	}*/
 	
 	public static class LocationComparator implements Comparator<PhotoEntry>{
 		
@@ -218,4 +291,27 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 		}
 		
 	}
+	
+	public class PhotoTask extends AsyncTask<Void,Void,Void> {
+		private Activity activity;
+		
+		public PhotoTask(Activity activity) {
+			this.activity = activity;
+		}
+		
+		@Override
+		protected Void doInBackground(Void ... p) {
+			closest100Photos = fetch100ClosestPhotoEntries(activity, location);
+			Log.d("photos", closest100Photos.toString());
+			return null;
+		}
+		
+
+		@Override
+		protected void onPostExecute(Void result) {
+			//refresh both fragments once connected
+			gridFragment.updateGridView(closest100Photos);
+			mapFragment.updateMap(closest100Photos);
+		}
+	};
 }

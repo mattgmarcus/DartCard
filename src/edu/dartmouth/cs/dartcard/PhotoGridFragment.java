@@ -28,7 +28,6 @@ public class PhotoGridFragment extends Fragment {
 
 	private GridView gridView;
 	private ImageView chosenPhoto;
-	// private Integer[] pics = new Integer[100];
 	private Context context;
 	private ArrayList<PhotoEntry> photos;
 
@@ -42,7 +41,7 @@ public class PhotoGridFragment extends Fragment {
 
 		PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closest100Photos;
 		updateGridView(photoQueue);
-
+		//setAdapter();
 		gridView.setNumColumns(3);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -73,22 +72,18 @@ public class PhotoGridFragment extends Fragment {
 		} else {
 			Log.d("DartCard", "photoQueue is null in photogridfragment");
 		}
+    	setAdapter();
+
+		//gridView.setAdapter(new ImageAdapter(getActivity()));
+	}
+	
+	public void setAdapter() {
 		gridView.setAdapter(new ImageAdapter(getActivity()));
 	}
-
-	// private void priQueueToSortedArrayList(
-	// PriorityQueue<PhotoEntry> priQueue, ArrayList<PhotoEntry> list) {
-	// Comparator c = new
-	// PhotoMapActivity.LocationComparator(((PhotoMapActivity)
-	// getActivity()).location);
-	// PriorityQueue<PhotoEntry> pq = new
-	// PriorityQueue<PhotoEntry>(priQueue.size());
-	// pq.addAll(priQueue);
-	// while (!pq.isEmpty()){
-	// list.add(pq.poll());
-	// }
-	// Collections.reverse(list);
-	// }
+	
+	public void setNumColumns(int numColumns) {
+		gridView.setNumColumns(numColumns);
+	}
 
 	public class ImageAdapter extends BaseAdapter {
 
