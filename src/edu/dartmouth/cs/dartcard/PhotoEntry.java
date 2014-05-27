@@ -2,6 +2,9 @@ package edu.dartmouth.cs.dartcard;
 
 import java.io.ByteArrayOutputStream;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -73,6 +76,22 @@ public class PhotoEntry {
 
 	public Bitmap getBitmapPhoto() {
 		return BitmapFactory.decodeByteArray(photo, 0, photo.length);
+	}
+
+	public JSONObject toJSONObject() {
+		JSONObject obj = new JSONObject();
+		
+		try {
+			obj.put("latitude", latitude);
+			obj.put("longitude", longitude);
+			obj.put("sector", sectorId);
+		} 
+		catch (JSONException e) {
+			return null;
+		}
+		
+		return obj;
+
 	}
 	
 	
