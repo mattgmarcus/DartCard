@@ -27,7 +27,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
-        
+			<Spinner
+			    android:id="@+id/ui_pay_activity_recipient_card_choices"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content" />
+			        
         	<EditText
 		        android:id="@+id/ui_pay_activity_recipient_email"
 		        android:layout_width="match_parent"
@@ -42,29 +46,54 @@
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
 		        android:ems="10"
-		        android:inputType="textPassword" 
+		        android:inputType="phone"
+		        android:maxLength="19" 
 		        android:hint="@string/ui_pay_activity_recipient_card_hint"/>
-		
-		    <EditText
-		        android:id="@+id/ui_pay_activity_recipient_expiry"
+		    <LinearLayout
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
-		        android:ems="10" 
-		        android:hint="@string/ui_pay_activity_recipient_expiry_hint"/>
-		
+		        android:orientation="horizontal">
+				<Spinner
+				    android:id="@+id/ui_pay_activity_recipient_expiry_month"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content" 
+				    android:entries="@array/ui_pay_activity_recipient_expiry_month"/>
+				<Spinner
+				    android:id="@+id/ui_pay_activity_recipient_expiry_year"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content" 
+				    android:entries="@array/ui_pay_activity_recipient_expiry_year"/>
+			</LinearLayout>
+					
 		    <EditText
 		        android:id="@+id/ui_pay_activity_recipient_cvc"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
 		        android:ems="10"
 		        android:inputType="number" 
+		        android:maxLength="4"
 		        android:hint="@string/ui_pay_activity_recipient_cvc_hint"/>
 		        
+			<Switch
+		        android:id="@+id/ui_pay_activity_recipient_remember"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="@string/ui_pay_activity_recipient_remember_text" />
+		    
     </LinearLayout>
 
     <Button
         android:id="@+id/ui_pay_activity_paybutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    
+    <ImageButton
+		android:id="@+id/ui_pay_activity_stripe"
+		android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/stripe"
+        android:contentDescription="@string/ui_pay_activity_stripe_description"
+        android:background="@android:color/transparent"/>
+
 
 </LinearLayout>

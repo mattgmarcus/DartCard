@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="14"
         android:targetSdkVersion="18" />
 
     <permission
@@ -57,7 +57,7 @@
         <activity
             android:name="edu.dartmouth.cs.dartcard.RecipientActivity"
             android:label="@string/title_activity_recipient"
-            android:parentActivityName="edu.dartmouth.cs.dartcard.MessageActivity" >
+            android:parentActivityName="edu.dartmouth.cs.dartcard.MessageActivity" >          
         </activity>
         <activity
             android:name="edu.dartmouth.cs.dartcard.PayActivity"

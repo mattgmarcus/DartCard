@@ -56,10 +56,40 @@
     
     <!-- Pay Activity -->
     <string name="ui_pay_activity_recipient_header_text">Recipients</string>
-    <string name="ui_pay_activity_recipient_email_hint">you@email.com</string>
+    <string name="ui_pay_activity_recipient_email_hint">you@email.com (optional)</string>
     <string name="ui_pay_activity_recipient_card_hint">1234 1234 1234 1234</string>
-    <string name="ui_pay_activity_recipient_expiry_hint">MM/YY</string>
     <string name="ui_pay_activity_recipient_cvc_hint">123</string>
+    <string name="ui_pay_activity_recipient_remember_text">Remember me</string>
+    <string name="ui_pay_activity_stripe_description">Powered by Stripe</string>
+    <string-array name="ui_pay_activity_recipient_expiry_year">
+        <item>YY</item>
+        <item>14</item>
+        <item>15</item>
+		<item>16</item>
+		<item>17</item>
+	</string-array>
+	<string-array name="ui_pay_activity_recipient_expiry_month">
+        <item>MM</item>
+        <item>01</item>
+        <item>02</item>
+		<item>03</item>
+		<item>04</item>
+		<item>05</item>
+		<item>06</item>
+		<item>07</item>
+		<item>08</item>
+		<item>09</item>
+		<item>10</item>
+		<item>11</item>
+		<item>12</item>
+	</string-array>
+	<string name="customer_id">Customer ID</string>
+	<string name="card_number">Card number</string>
+	<string name="cvc">CVC</string>
+	<string name="email">Email</string>
+	<string name="exp_month">Expire month</string>
+	<string name="exp_year">Expire year</string>
+	
     
     <string name="dialog_title_save_photo">Save Photo to Database?</string>
     <string name="button_save_title">Save</string>

@@ -7,7 +7,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MessageActivity" 
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:id="@+id/ui_message_relative_layout" >
     <TextView
         android:id="@+id/ui_message_activity_header"
         android:layout_width="wrap_content"
@@ -21,11 +22,12 @@
         android:id="@+id/ui_message_activity_nextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ui_message_activity_enterMessage"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|center_horizontal"
         android:layout_centerHorizontal="true"
         android:text="@string/ui_message_activity_nextButton_text" />
 
-    <EditText
+    <!-- <edu.dartmouth.cs.dartcard.LimitedEditText
         android:id="@+id/ui_message_activity_enterMessage"
         android:layout_width="wrap_content"
         android:layout_height="340dp"
@@ -38,7 +40,7 @@
         android:maxLength="350" >
 
         <requestFocus />
-    </EditText>
+    </edu.dartmouth.cs.dartcard.LimitedEditText>-->
 
 
 </RelativeLayout>
