@@ -41,7 +41,7 @@ public class PhotoGridFragment extends Fragment {
 
 		PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closest100Photos;
 		updateGridView(photoQueue);
-		//setAdapter();
+
 		gridView.setNumColumns(3);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -73,8 +73,6 @@ public class PhotoGridFragment extends Fragment {
 			Log.d("DartCard", "photoQueue is null in photogridfragment");
 		}
     	setAdapter();
-
-		//gridView.setAdapter(new ImageAdapter(getActivity()));
 	}
 	
 	public void setAdapter() {
