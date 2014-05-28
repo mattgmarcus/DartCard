@@ -41,7 +41,6 @@ public class StripeUtilities extends HttpUtilities {
 
 	public static CardResponse createCard(Map<String, String> information, String id) {
 		String url = BASE_URL + "/customers/" + id + "/cards";
-		Log.d("StripeUtilities", "card");
 		
 		key = Passwords.getStripeKey();
 
@@ -52,7 +51,6 @@ public class StripeUtilities extends HttpUtilities {
 		else {
 			Gson gson = new GsonBuilder().create();
 			CardResponse resp = gson.fromJson(results, CardResponse.class);
-			Log.d("Stripeutilitlies.createCard", resp.toString());
 			return resp;
 		}
 

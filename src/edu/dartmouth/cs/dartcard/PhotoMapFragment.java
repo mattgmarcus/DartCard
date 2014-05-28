@@ -71,11 +71,6 @@ public class PhotoMapFragment extends MapFragment implements
 		// launch photoviewactivity with photo corresponding to marker
 		// so save the photo to the location where photoviewactivity will load
 		// from
-
-		Log.d("DartCard", "clicked on marker with sector id: "
-				+ markerPhotos.get(marker).getSectorId());
-		Log.d("DartCard", "clicked on marker with photo id: "
-				+ markerPhotos.get(marker).getId());
 		byte[] pic = markerPhotos.get(marker).getPhoto();
 		try {
 			FileOutputStream fileOut = context.openFileOutput(
