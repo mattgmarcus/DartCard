@@ -106,7 +106,7 @@ public class CardDBHelper extends SQLiteOpenHelper {
 		GetReadableDatabase
 		Set Cursor object to the result of querying your database at the specified id
 		Cursor represents the row
-		If you�re in the first position of that row (cursor.moveToFirst()) and then get the entry 
+		If youre in the first position of that row (cursor.moveToFirst()) and then get the entry 
 		Remember to close the cursor, and close the database
 		*/
 	}
@@ -125,6 +125,7 @@ public class CardDBHelper extends SQLiteOpenHelper {
 	
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+		db.execSQL("DROP TABLE IF EXISTS ");
+		onCreate(db);
 	}
 }

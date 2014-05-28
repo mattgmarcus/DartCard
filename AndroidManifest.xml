@@ -29,7 +29,7 @@
         <activity
             android:name="edu.dartmouth.cs.dartcard.HomeActivity"
             android:label="@string/app_name" >
-            <intent-filter>
+                        <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -57,6 +57,7 @@
         </activity>
         <activity
             android:name="edu.dartmouth.cs.dartcard.RecipientActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_recipient" >
         </activity>
         <activity

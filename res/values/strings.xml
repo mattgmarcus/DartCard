@@ -38,9 +38,11 @@
     <string name="ui_from_activity_enterState_hint">State</string>
     <string name="ui_from_activity_enterZip_hint">Zip Code</string>
     <string name="from_activity_intent_key">From activity recipient key</string>
+    <string name="ui_from_activity_addressLabel_hint">Address Label (If saving address)</string>
+    <string name="ui_from_activity_saveButton_text">Save</string>
 
     <!-- Message Activity -->
-    <string name="ui_message_activity_enterMessage_hint">Message</string>
+    <string name="ui_message_activity_enterMessage_hint">Type message here</string>
     <string name="ui_message_activity_nextButton_text">Next</string>
     <string name="ui_message_activity_header_text">Write a message</string>
     <string name="message_activity_intent_key">Message key</string>
@@ -94,18 +96,28 @@
     <string name="exp_month">Expire month</string>
     <string name="exp_year">Expire year</string>
     <string name="pdf_name">postcard.pdf</string>
-    <string name="dialog_title_save_photo">Save Photo to Database?</string>
+    <string name="dialog_title_save_photo">Save Photo to DartCard Database?</string>
     <string name="button_save_title">Save</string>
     <string name="button_no_save_title">Don\'t Save</string>
     <string name="dialog_title_try_save_again">Unable to save photo. Try again?</string>
     <string name="button_try_again_title">Try Again</string>
     <string name="button_cancel_title">Cancel</string>
-    <string name="dialog_title_recipient_error">Fix the highlighted addresses and resubmit</string>
+    <string name="dialog_title_recipient_error">Fix the highlighted addresses and resubmit. Make sure you\'re connected to the internet too</string>
     <string name="dialog_button_recipient_error">Ok</string>
     <string name="dialog_title_photo_map_error">Issue loading the photo map</string>
     <string name="dialog_message_photo_map_error">Check your internet connection and try again.</string>
     <string name="dialog_button_photo_map_error">Ok</string>
-    <string name="dialog_title_lob_error">There was an issue sending</string>
+    <string name="dialog_title_lob_error">There was an issue sending. Check your internet</string>
     <string name="title_activity_result">ResultActivity</string>
+    <string name="dialog_title_message_error">Message invalid.</string>
+    <string name="dialog_text_message_error">Make sure the message isn\'t blank, does not have more than 10 lines, and does not contain a word longer than 28 characters.</string>
+    <string name="title_activity_finish">FinishActivity</string>
 
+    
+    <!-- Finish Activity -->
+    <string name="finish_activity_header_text">Congratulations! Your postcard has been sent.</string>
+    <string name="button_title_send_another">Send another!</string>
+    
+    <string name="ui_activity_result_header_text">Congratulations! Your postcards have been sent. Click any links below to check them out. Note that the back will contain the addresses when it\'s printed</string>
+    
 </resources>

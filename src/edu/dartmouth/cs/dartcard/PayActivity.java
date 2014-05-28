@@ -3,6 +3,7 @@ package edu.dartmouth.cs.dartcard;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.stripe.android.model.Card;
@@ -62,51 +63,52 @@ public class PayActivity extends Activity implements DialogExitListener {
 	private EditText mEmailField;
 	private EditText mCardField;
 	private EditText mCVCField;
-	
+
 	private Spinner mMonthSpinner;
 	private Spinner mYearSpinner;
-	
+
 	private Switch mRememberSwitch;
-		
+
 	private Button mPayButton;
-		
+
 	private ProgressDialog mProgressDialog;
-	
+
 	private Double COST_PER_CARD = 1.50;
-	
+
 	private CardDBHelper mCardDBHelper;
 	private Spinner mCardChoices;
 
 	private ArrayList<edu.dartmouth.cs.dartcard.Card> mUserCards;
-	
+
 	private boolean isUsingSavedCard;
 	private String customerId;
-	
+
 	private ActionBar mActionBar;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_pay);
-		
+
 		mEmailField = (EditText) findViewById(R.id.ui_pay_activity_recipient_email);
 		mCardField = (EditText) findViewById(R.id.ui_pay_activity_recipient_card);
 		mCVCField = (EditText) findViewById(R.id.ui_pay_activity_recipient_cvc);
-		
+
 		mCardField.addTextChangedListener(new CreditCardFormatWatcher());
-		
+
 		mMonthSpinner = (Spinner) findViewById(R.id.ui_pay_activity_recipient_expiry_month);
 		mYearSpinner = (Spinner) findViewById(R.id.ui_pay_activity_recipient_expiry_year);
-		
+
 		mRememberSwitch = (Switch) findViewById(R.id.ui_pay_activity_recipient_remember);
 		mRememberSwitch.setTextOn("Yes");
 		mRememberSwitch.setTextOff("No");		
 
 		mPayButton = (Button) findViewById(R.id.ui_pay_activity_paybutton);
-		
-		//This line prevents the focus from automatically going into the
-		//text fields when they're created
-	    this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+		// This line prevents the focus from automatically going into the
+		// text fields when they're created
+		this.getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 		mActionBar = getActionBar();
 		mActionBar.setDisplayShowTitleEnabled(false);
@@ -114,15 +116,15 @@ public class PayActivity extends Activity implements DialogExitListener {
 
 		Bundle bundle = getIntent().getExtras();
 		if (null != bundle) {
-			mRecipients = bundle.getParcelableArrayList(
-					getString(R.string.recipient_activity_intent_key));
+			mRecipients = bundle
+					.getParcelableArrayList(getString(R.string.recipient_activity_intent_key));
 			setRecipientListview();
-			mSender = bundle.getParcelable(getString(R.string.from_activity_intent_key));
-		}
-		else {
+			mSender = bundle
+					.getParcelable(getString(R.string.from_activity_intent_key));
+		} else {
 			mRecipients = new ArrayList<Recipient>();
 		}
-		
+
 		mCardDBHelper = new CardDBHelper(this);
 		mUserCards = mCardDBHelper.fetchCards();
 		isUsingSavedCard = false;
@@ -130,132 +132,132 @@ public class PayActivity extends Activity implements DialogExitListener {
 
 		mCardChoices = (Spinner) findViewById(R.id.ui_pay_activity_recipient_card_choices);
 		populateCardChoices();
-		
+
 		setPayButtonText();
-		
+
 		mPayButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				onPayClicked(v);
 			}
-		});		
+		});
 	}
-	
+
 	private void populateCardChoices() {
-	    ArrayList<String> cardTypes = new ArrayList<String>();
-	    cardTypes.add("Select a saved card");
-	    for (int i = 0; i < mUserCards.size(); i++) {
-	    	cardTypes.add(mUserCards.get(i).getType() + "--" + mUserCards.get(i).getLastFour());
-	    }
-		ArrayAdapter<CharSequence> adapter = 
-	    		new ArrayAdapter(this, android.R.layout.simple_list_item_1, cardTypes);
-	    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-	    mCardChoices.setAdapter(adapter);
+		ArrayList<String> cardTypes = new ArrayList<String>();
+		cardTypes.add("Select a saved card or add a new one");
+		for (int i = 0; i < mUserCards.size(); i++) {
+			cardTypes.add(mUserCards.get(i).getType() + "--"
+					+ mUserCards.get(i).getLastFour());
+		}
+		ArrayAdapter<CharSequence> adapter = new ArrayAdapter(this,
+				android.R.layout.simple_list_item_1, cardTypes);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mCardChoices.setAdapter(adapter);
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
-		
+
 		mCardChoices.setOnItemSelectedListener(new OnItemSelectedListener() {
-		    @Override
-		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-		        //Update position to account for the first choice in the spinner
-		    	position = position - 1;
-		    	if (-1 == position) {
-		    		if (isUsingSavedCard == true) {
-		    			isUsingSavedCard = false;
+			@Override
+			public void onItemSelected(AdapterView<?> parentView,
+					View selectedItemView, int position, long id) {
+				// Update position to account for the first choice in the
+				// spinner
+				position = position - 1;
+				if (-1 == position) {
+					if (isUsingSavedCard == true) {
+						isUsingSavedCard = false;
 
-			    		enableFields();
-			    		mEmailField.setText("");
-			    		mCardField.setText("");
-			    		mMonthSpinner.setSelection(0);
-			    		mYearSpinner.setSelection(0);
-		    		}
-		    	}
-		    	else {
-		    		isUsingSavedCard = true;
-		    		
-		    		edu.dartmouth.cs.dartcard.Card card = mUserCards.get(position);
-		    		String email = card.getEmail();
-		    		if (email.isEmpty())
-		    			mEmailField.setText("None saved");
-		    		else
-		    			mEmailField.setText(email);
-		    		
-		    		String type = card.getType();
-		    		if ("American Express" == type) {
-			    		mCardField.setText("**** ****** *"+card.getLastFour());
-		    		}
-		    		else if ("Diners Club" == type) {
-		    			String lastFour = card.getLastFour();
-			    		mCardField.setText("**** **** **"+lastFour.substring(0, 2) 
-			    				+ " " + lastFour.substring(2, 4));
-		    		}
-		    		else if (("Visa" == type) || ("MasterCard" == type) || ("Discover" == type)
-		    				|| ("JCB" == type)) {
-			    		mCardField.setText("**** **** **** "+card.getLastFour());
-		    		}
-		    		mMonthSpinner.setSelection(card.getExpMonth());
-		    		mYearSpinner.setSelection(getYearChoice(card.getExpYear()));
-		    		disableFields();
-		    		
-		    		customerId = card.getCusId();
-		    	}
-		    }
-		    
-		    private void enableFields() {
-	    		mEmailField.setEnabled(true);
-	    		mCardField.setEnabled(true);
-	    		mCVCField.setEnabled(true);
-	    		mMonthSpinner.setEnabled(true);
-	    		mYearSpinner.setEnabled(true);
-	    		
-	    		mRememberSwitch.setSelected(false);
-	    		mRememberSwitch.setEnabled(true);
-		    }
-		    
-		    private void disableFields() {
-	    		mEmailField.setEnabled(false);
-	    		mCardField.setEnabled(false);
-	    		mCVCField.setEnabled(false);
-	    		mMonthSpinner.setEnabled(false);
-	    		mYearSpinner.setEnabled(false);
-	    		
-	    		mRememberSwitch.setSelected(true);
-	    		mRememberSwitch.setEnabled(false);
-		    }
-		    
-		    private int getYearChoice(int year) {
-		    	if (2013 > year) {
-		    		return 0;
-		    	}
-		    	else {
-		    		//Maps 2014 to 1, 2015 to 2, etc.
-		    		return year - 2013;
-		    	}
-		    }
+						enableFields();
+						mEmailField.setText("");
+						mCardField.setText("");
+						mMonthSpinner.setSelection(0);
+						mYearSpinner.setSelection(0);
+					}
+				} else {
+					isUsingSavedCard = true;
 
-		    @Override
-		    public void onNothingSelected(AdapterView<?> parentView) {}
+					edu.dartmouth.cs.dartcard.Card card = mUserCards
+							.get(position);
+					String email = card.getEmail();
+					if (email.isEmpty())
+						mEmailField.setText("None saved");
+					else
+						mEmailField.setText(email);
+
+					String type = card.getType();
+					if ("American Express" == type) {
+						mCardField.setText("**** ****** *" + card.getLastFour());
+					} else if ("Diners Club" == type) {
+						String lastFour = card.getLastFour();
+						mCardField.setText("**** **** **"
+								+ lastFour.substring(0, 2) + " "
+								+ lastFour.substring(2, 4));
+					} else if (("Visa" == type) || ("MasterCard" == type)
+							|| ("Discover" == type) || ("JCB" == type)) {
+						mCardField.setText("**** **** **** "
+								+ card.getLastFour());
+					}
+					mMonthSpinner.setSelection(card.getExpMonth());
+					mYearSpinner.setSelection(getYearChoice(card.getExpYear()));
+					disableFields();
+
+					customerId = card.getCusId();
+				}
+			}
+
+			private void enableFields() {
+				mEmailField.setEnabled(true);
+				mCardField.setEnabled(true);
+				mCVCField.setEnabled(true);
+				mMonthSpinner.setEnabled(true);
+				mYearSpinner.setEnabled(true);
+
+				mRememberSwitch.setSelected(false);
+				mRememberSwitch.setEnabled(true);
+			}
+
+			private void disableFields() {
+				mEmailField.setEnabled(false);
+				mCardField.setEnabled(false);
+				mCVCField.setEnabled(false);
+				mMonthSpinner.setEnabled(false);
+				mYearSpinner.setEnabled(false);
+
+				mRememberSwitch.setSelected(true);
+				mRememberSwitch.setEnabled(false);
+			}
+
+			private int getYearChoice(int year) {
+				if (2013 > year) {
+					return 0;
+				} else {
+					// Maps 2014 to 1, 2015 to 2, etc.
+					return year - 2013;
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parentView) {
+			}
 
 		});
 
 	}
 
-
-	
 	private void onPayClicked(View v) {
 		mPayButton.setEnabled(false);
-		
+
 		boolean validCard = true;
 
 		Map<String, String> params;
-		if (!isUsingSavedCard)  {
+		if (!isUsingSavedCard) {
 			params = makeCardParams();
 			validCard = validateCard(params);
-		}
-		else {
+		} else {
 			params = new HashMap<String, String>();
 			params.put(getString(R.string.customer_id), customerId);
 		}
@@ -268,26 +270,29 @@ public class PayActivity extends Activity implements DialogExitListener {
 
 			StripeTask stripe_task = new StripeTask(this, params);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				stripe_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[])null);
+				stripe_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+						(Void[]) null);
 			else
-				stripe_task.execute((Void[])null);
-		}
-		else {
+				stripe_task.execute((Void[]) null);
+		} else {
 			mPayButton.setEnabled(true);
 		}
 	}
-	
+
 	private Map<String, String> makeCardParams() {
 		Map<String, String> cardParams = new HashMap<String, String>();
-		cardParams.put(getString(R.string.card_number), mCardField.getText().toString());
-		cardParams.put(getString(R.string.email), mEmailField.getText().toString());
+		cardParams.put(getString(R.string.card_number), mCardField.getText()
+				.toString());
+		cardParams.put(getString(R.string.email), mEmailField.getText()
+				.toString());
 		cardParams.put(getString(R.string.cvc), mCVCField.getText().toString());
-		cardParams.put(getString(R.string.exp_month), mMonthSpinner.getSelectedItem().toString());
-		cardParams.put(getString(R.string.exp_year), mYearSpinner.getSelectedItem().toString());
+		cardParams.put(getString(R.string.exp_month), mMonthSpinner
+				.getSelectedItem().toString());
+		cardParams.put(getString(R.string.exp_year), mYearSpinner
+				.getSelectedItem().toString());
 
 		return cardParams;
 	}
-	
 
 	private void setRecipientListview() {
 		ArrayList<String> recipientNames = new ArrayList<String>();
@@ -298,30 +303,30 @@ public class PayActivity extends Activity implements DialogExitListener {
 			else
 				recipientNames.add(name);
 		}
-		
+
 		ListView listView = (ListView) findViewById(R.id.ui_pay_activity_recipients_list);
-		listView.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.list_item, recipientNames));
+		listView.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item,
+				recipientNames));
 	}
-	
+
 	private double calculateCost(int numRecipients) {
 		return COST_PER_CARD * numRecipients;
 	}
-	
+
 	private int costToCents(double cost) {
-		return (int) (100*cost);
+		return (int) (100 * cost);
 	}
-	
+
 	private void setPayButtonText() {
 		int numRecipients = mRecipients.size();
-		
+
 		double totalCost = calculateCost(numRecipients);
-		
+
 		DecimalFormat format = new DecimalFormat("#.##");
 		format.setMinimumFractionDigits(2);
 		mPayButton.setText("Pay: $" + format.format(totalCost));
 	}
-	
+
 	private boolean validateCard(Map<String, String> params) {
 		boolean cardFlag = false;
 		boolean numberFlag = false;
@@ -329,12 +334,12 @@ public class PayActivity extends Activity implements DialogExitListener {
 		boolean monthFlag = false;
 		boolean yearFlag = false;
 		boolean dateFlag = false;
-		
+
 		String month = params.get(getString(R.string.exp_month));
 		String year = params.get(getString(R.string.exp_year));
-		
-		//First make sure they've selected a month and year
-		//If either value is invalid, set it to an invalid number
+
+		// First make sure they've selected a month and year
+		// If either value is invalid, set it to an invalid number
 		if (month.equals("MM")) {
 			monthFlag = true;
 			month = "13";
@@ -343,11 +348,11 @@ public class PayActivity extends Activity implements DialogExitListener {
 			yearFlag = true;
 			year = "11";
 		}
-		
-		Card card = new Card(params.get(getString(R.string.card_number)), 
-				Integer.parseInt(month), Integer.parseInt(year), 
+
+		Card card = new Card(params.get(getString(R.string.card_number)),
+				Integer.parseInt(month), Integer.parseInt(year),
 				params.get(getString(R.string.cvc)));
-		
+
 		if (!card.validateCVC()) {
 			cvcFlag = true;
 		}
@@ -360,13 +365,11 @@ public class PayActivity extends Activity implements DialogExitListener {
 		if (!card.validateCard()) {
 			cardFlag = true;
 		}
-		
-		//If any flag is true, return false
-		return !(cardFlag || numberFlag || cvcFlag || 
-				monthFlag || yearFlag || dateFlag);
+
+		// If any flag is true, return false
+		return !(cardFlag || numberFlag || cvcFlag || monthFlag || yearFlag || dateFlag);
 	}
-	
-	
+
 	public static class CreditCardFormatWatcher implements TextWatcher {
 	    private static final char space = ' ';
 
@@ -432,145 +435,171 @@ public class PayActivity extends Activity implements DialogExitListener {
 	    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 	}
 
-	
-	public class StripeTask extends AsyncTask<Void,Void,Boolean> {
+	public class StripeTask extends AsyncTask<Void, Void, Boolean> {
 		private Activity activity;
 		private Map<String, String> params;
-		
+
 		public StripeTask(Activity activity, Map<String, String> params) {
 			this.activity = activity;
 			this.params = params;
 		}
-		
+
 		@Override
-		protected Boolean doInBackground(Void ... p) {
+		protected Boolean doInBackground(Void... p) {
 			if (params.containsKey(getString(R.string.customer_id))) {
 				Log.d("doInBackground", "Using customer id");
 				Map<String, String> chargeParams = new HashMap<String, String>();
-				chargeParams.put("customer", params.get(getString(R.string.customer_id)));
+				chargeParams.put("customer",
+						params.get(getString(R.string.customer_id)));
 
-				chargeParams.put("amount", 
-						String.valueOf(costToCents(calculateCost(mRecipients.size()))));
+				chargeParams.put("amount",
+						String.valueOf(costToCents(calculateCost(mRecipients
+								.size()))));
 				chargeParams.put("currency", "usd");
-				
+
 				return StripeUtilities.charge(chargeParams);
-			}
-			else if (mRememberSwitch.isChecked()){
+			} else if (mRememberSwitch.isChecked()) {
 				Log.d("doInBackground", "New customer with remember me");
 
 				Map<String, String> customerParams = new HashMap<String, String>();
 				String email = params.get(getString(R.string.email));
-				customerParams.put("description", 
-						"Customer for " + email);
+				customerParams.put("description", "Customer for " + email);
 				customerParams.put("email", email);
-				
-				String customerId = 
-						StripeUtilities.createCustomer(customerParams, getApplicationContext());
-				
-				if (null != customerId) {					
+
+				String customerId = StripeUtilities.createCustomer(
+						customerParams, getApplicationContext());
+
+				if (null != customerId) {
 					Map<String, String> cardParams = new HashMap<String, String>();
-					cardParams.put("card[number]", params.get(getString(R.string.card_number)));
-					cardParams.put("card[exp_month]", params.get(getString(R.string.exp_month)));
-					cardParams.put("card[exp_year]", params.get(getString(R.string.exp_year)));
-					cardParams.put("card[cvc]", params.get(getString(R.string.cvc)));
-	
-					CardResponse resp = StripeUtilities.createCard(cardParams, customerId);
+					cardParams.put("card[number]",
+							params.get(getString(R.string.card_number)));
+					cardParams.put("card[exp_month]",
+							params.get(getString(R.string.exp_month)));
+					cardParams.put("card[exp_year]",
+							params.get(getString(R.string.exp_year)));
+					cardParams.put("card[cvc]",
+							params.get(getString(R.string.cvc)));
+
+					CardResponse resp = StripeUtilities.createCard(cardParams,
+							customerId);
 					saveCard(email, resp);
-					
+
 					Map<String, String> chargeParams = new HashMap<String, String>();
 					chargeParams.put("customer", customerId);
-	
-					chargeParams.put("amount", 
-							String.valueOf(costToCents(calculateCost(mRecipients.size()))));
+
+					chargeParams.put("amount", String
+							.valueOf(costToCents(calculateCost(mRecipients
+									.size()))));
 					chargeParams.put("currency", "usd");
-	
-					return StripeUtilities.charge(chargeParams);	
-				}
-				else {
+
+					return StripeUtilities.charge(chargeParams);
+				} else {
 					return false;
 				}
 			}
-			
+
 			else {
 				Log.d("doInBackground", "New customer without remember me");
 
 				Map<String, String> chargeParams = new HashMap<String, String>();
-				chargeParams.put("card[number]", params.get(getString(R.string.card_number)));
-				chargeParams.put("card[exp_month]", params.get(getString(R.string.exp_month)));
-				chargeParams.put("card[exp_year]", params.get(getString(R.string.exp_year)));
-				chargeParams.put("card[cvc]", params.get(getString(R.string.cvc)));
-				chargeParams.put("description", "Charge for " + params.get(getString(R.string.email)));
+				chargeParams.put("card[number]",
+						params.get(getString(R.string.card_number)));
+				chargeParams.put("card[exp_month]",
+						params.get(getString(R.string.exp_month)));
+				chargeParams.put("card[exp_year]",
+						params.get(getString(R.string.exp_year)));
+				chargeParams.put("card[cvc]",
+						params.get(getString(R.string.cvc)));
+				chargeParams.put("description",
+						"Charge for " + params.get(getString(R.string.email)));
 
-				chargeParams.put("amount", 
-						String.valueOf(costToCents(calculateCost(mRecipients.size()))));
+				chargeParams.put("amount",
+						String.valueOf(costToCents(calculateCost(mRecipients
+								.size()))));
 				chargeParams.put("currency", "usd");
 
-				return StripeUtilities.charge(chargeParams);	
+				return StripeUtilities.charge(chargeParams);
 
 			}
 		}
-		
+
 		private void saveCard(String email, CardResponse resp) {
-			edu.dartmouth.cs.dartcard.Card card = new edu.dartmouth.cs.dartcard.Card(email, resp.getCustomer(), 
-					resp.getlast4(), resp.getType(), resp.getExpMonth(), resp.getExpYear());
-			
+			edu.dartmouth.cs.dartcard.Card card = new edu.dartmouth.cs.dartcard.Card(
+					email, resp.getCustomer(), resp.getlast4(), resp.getType(),
+					resp.getExpMonth(), resp.getExpYear());
+
 			mCardDBHelper.insertCard(card);
-			
+
 		}
 
 		@Override
 		protected void onPostExecute(Boolean result) {
-			if (!result) {			
+			if (!result) {
 				mProgressDialog.dismiss();
-				mPayButton.setEnabled(true);	
-			}
-			else {
+				mPayButton.setEnabled(true);
+	
+				DartCardDialogFragment frag = DartCardDialogFragment
+						.newInstance(Globals.DIALOG_LOB_ERRORS);
+				frag.show(activity.getFragmentManager(), "lob dialog");
+
+			} else {
 				LobPostCardTask lob_task = new LobPostCardTask(activity);
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-					lob_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[])null);
+					lob_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+							(Void[]) null);
 				else
-					lob_task.execute((Void[])null);
+					lob_task.execute((Void[]) null);
 			}
 		}
 	};
 	
 	public class LobPostCardTask extends AsyncTask<Void,Void,ArrayList<LobResult>> {
 		private Activity activity;
-		
+
 		public LobPostCardTask(Activity activity) {
 			this.activity = activity;
 		}
-		
-	    /**
-	     * Calculates the transform the print an Image to fill the page
-	     *https://github.com/rknoll/presit/blob/32fc951f5b799f74a0da3ec5210957750896cd95/Components/zxing.net.mobile-1.4.4/lib/android/19.1.0/content/support/v4/src/kitkat/android/support/v4/print/PrintHelperKitkat.java
-	     * @param imageWidth  with of bitmap
-	     * @param imageHeight height of bitmap
-	     * @param content     The output page dimensions
-	     * @param fittingMode The mode of fitting {@link #SCALE_MODE_FILL} vs {@link #SCALE_MODE_FIT}
-	     * @return Matrix to be used in canvas.drawBitmap(bitmap, matrix, null) call
-	     */
-	    private Matrix getMatrix(int imageWidth, int imageHeight, RectF content, int fittingMode) {
-	        Matrix matrix = new Matrix();
 
-	        // Compute and apply scale to fill the page.
-	        float scale = content.width() / imageWidth;
-	        if (fittingMode == 2) {
-	            scale = Math.max(scale, content.height() / imageHeight);
-	        } else {
-	            scale = Math.min(scale, content.height() / imageHeight);
-	        }
-	        matrix.postScale(scale, scale);
+		/**
+		 * Calculates the transform the print an Image to fill the page
+		 * https://github
+		 * .com/rknoll/presit/blob/32fc951f5b799f74a0da3ec5210957750896cd95
+		 * /Components
+		 * /zxing.net.mobile-1.4.4/lib/android/19.1.0/content/support/
+		 * v4/src/kitkat/android/support/v4/print/PrintHelperKitkat.java
+		 * 
+		 * @param imageWidth
+		 *            with of bitmap
+		 * @param imageHeight
+		 *            height of bitmap
+		 * @param content
+		 *            The output page dimensions
+		 * @param fittingMode
+		 *            The mode of fitting {@link #SCALE_MODE_FILL} vs
+		 *            {@link #SCALE_MODE_FIT}
+		 * @return Matrix to be used in canvas.drawBitmap(bitmap, matrix, null)
+		 *         call
+		 */
+		private Matrix getMatrix(int imageWidth, int imageHeight,
+				RectF content, int fittingMode) {
+			Matrix matrix = new Matrix();
 
-	        // Center the content.
-	        final float translateX = (content.width()
-	                - imageWidth * scale) / 2;
-	        final float translateY = (content.height()
-	                - imageHeight * scale) / 2;
-	        matrix.postTranslate(translateX, translateY);
-	        return matrix;
-	    }
-		
+			// Compute and apply scale to fill the page.
+			float scale = content.width() / imageWidth;
+			if (fittingMode == 2) {
+				scale = Math.max(scale, content.height() / imageHeight);
+			} else {
+				scale = Math.min(scale, content.height() / imageHeight);
+			}
+			matrix.postScale(scale, scale);
+
+			// Center the content.
+			final float translateX = (content.width() - imageWidth * scale) / 2;
+			final float translateY = (content.height() - imageHeight * scale) / 2;
+			matrix.postTranslate(translateX, translateY);
+			return matrix;
+		}
+
 		private PdfDocument getPDFImage() {
 			FileInputStream fis = null;
 			try {
@@ -580,22 +609,23 @@ public class PayActivity extends Activity implements DialogExitListener {
 			}
 
 			Bitmap bmap = BitmapFactory.decodeStream(fis);
-	        try {
+			try {
 				fis.close();
 			} catch (IOException e) {
 				Log.d("ex2", e.getMessage());
 			}
 
 			PdfDocument document = new PdfDocument();
-			Page page = document.startPage(new PageInfo.Builder(432, 288, 1).create());
-	        RectF content = new RectF(page.getInfo().getContentRect());
+			Page page = document.startPage(new PageInfo.Builder(432, 288, 1)
+					.create());
+			RectF content = new RectF(page.getInfo().getContentRect());
 
-	        Matrix matrix = getMatrix(bmap.getWidth(), bmap.getHeight(),
-	                content, 2);
+			Matrix matrix = getMatrix(bmap.getWidth(), bmap.getHeight(),
+					content, 2);
 
 			page.getCanvas().drawBitmap(bmap, matrix, null);
 			document.finishPage(page);
-			
+
 			File file = new File(getFilesDir(), getString(R.string.pdf_name));
 			OutputStream os = null;
 			try {
@@ -615,65 +645,82 @@ public class PayActivity extends Activity implements DialogExitListener {
 				Log.d("ex5", e.getMessage());
 			}
 
-			//file path is Uri.fromFile(file)
-		    return document;
+			// file path is Uri.fromFile(file)
+			return document;
 		}
-		
-		private ArrayList<NameValuePair> constructSingleParams(Recipient recipient) {
-			ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-			
-			//Set name on postcard (Note: this is optional)
-			params.add(new BasicNameValuePair("name", "DartCard Postcard from " + mEmailField.getText().toString()));
 
-			//Put in Recipient information
+		private ArrayList<NameValuePair> constructSingleParams(
+				Recipient recipient) {
+			ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+
+			// Set name on postcard (Note: this is optional)
+			params.add(new BasicNameValuePair("name", "DartCard Postcard from "
+					+ mEmailField.getText().toString()));
+
+			// Put in Recipient information
 			params.add(new BasicNameValuePair("to[name]", recipient.getName()));
-			params.add(new BasicNameValuePair("to[address_line1]", recipient.getStreet1()));
+			params.add(new BasicNameValuePair("to[address_line1]", recipient
+					.getStreet1()));
 			String street2 = recipient.getStreet2();
-			if (!street2.isEmpty()) {
+			if (!street2.isEmpty() && street2 != null) {
 				params.add(new BasicNameValuePair("to[address_line2]", street2));
 			}
-			params.add(new BasicNameValuePair("to[address_city]", recipient.getCity()));
-			params.add(new BasicNameValuePair("to[address_state]", recipient.getState()));
-			params.add(new BasicNameValuePair("to[address_zip]", recipient.getZip()));
+			params.add(new BasicNameValuePair("to[address_city]", recipient
+					.getCity()));
+			params.add(new BasicNameValuePair("to[address_state]", recipient
+					.getState().toUpperCase(Locale.ENGLISH)));
+			params.add(new BasicNameValuePair("to[address_zip]", recipient
+					.getZip()));
 			params.add(new BasicNameValuePair("to[address_country]", "US"));
-			
-			//Put in Sender information
+
+			// Put in Sender information
 			params.add(new BasicNameValuePair("from[name]", mSender.getName()));
-			params.add(new BasicNameValuePair("from[address_line1]", mSender.getStreet1()));
+			params.add(new BasicNameValuePair("from[address_line1]", mSender
+					.getStreet1()));
 			String senderStreet2 = mSender.getStreet2();
-			if (!senderStreet2.isEmpty()) {
-				params.add(new BasicNameValuePair("to[address_line2]", senderStreet2));
+			if (!senderStreet2.isEmpty() && senderStreet2 != null) {
+				params.add(new BasicNameValuePair("from[address_line2]",
+						senderStreet2));
 			}
-			params.add(new BasicNameValuePair("from[address_city]", mSender.getCity()));
-			params.add(new BasicNameValuePair("from[address_state]", mSender.getState()));
-			params.add(new BasicNameValuePair("from[address_zip]", mSender.getZip()));
+			params.add(new BasicNameValuePair("from[address_city]", mSender
+					.getCity()));
+			params.add(new BasicNameValuePair("from[address_state]", mSender
+					.getState().toUpperCase(Locale.ENGLISH)));
+			params.add(new BasicNameValuePair("from[address_zip]", mSender
+					.getZip()));
 			params.add(new BasicNameValuePair("from[address_country]", "US"));
-			
-			//Set message, which substitutes for back
-			params.add(new BasicNameValuePair("message", recipient.getMessage()));
-			
+
+			// Set message, which substitutes for back
+			if (recipient.getMessage() != null && !recipient.getMessage().isEmpty()) {
+				params.add(new BasicNameValuePair("message", recipient
+						.getMessage()));
+			} 
+//			else {
+//				params.add(new BasicNameValuePair("message", " "));
+//			}
+
 			return params;
 		}
-		
+
 		private ArrayList<ArrayList<NameValuePair>> constructAllParams() {
-			ArrayList<ArrayList<NameValuePair>> allParams = 
-					new ArrayList<ArrayList<NameValuePair>>();
-			
-			//If the image is converted to PDF successfully, we really only need to know the 
-			//file name for the Lob API calls
+			ArrayList<ArrayList<NameValuePair>> allParams = new ArrayList<ArrayList<NameValuePair>>();
+
+			// If the image is converted to PDF successfully, we really only
+			// need to know the
+			// file name for the Lob API calls
 			PdfDocument image = getPDFImage();
 			if (null == image) {
 				Log.d("in constructAllparams", "image is null");
 				return null;
 			}
-			
+
 			for (Recipient recipient : mRecipients) {
 				allParams.add(constructSingleParams(recipient));
 			}
-			
+
 			return allParams;
 		}
-		
+
 		@Override
 		protected ArrayList<LobResult> doInBackground(Void ... params) {
 			ArrayList<ArrayList<NameValuePair>> allParams = constructAllParams();
@@ -690,7 +737,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 		}
 		
 		private String getPostcardUrls(ArrayList<LobResult> results) {
-			String urls = "Check out your postcards here";
+			String urls = "Check out your postcards here: ";
 			
 			int length = results.size();
 			for (int i = 0; i < length - 1; i++) {
@@ -711,6 +758,9 @@ public class PayActivity extends Activity implements DialogExitListener {
 				}
 			}
 			if (success) {
+				mProgressDialog.dismiss();
+				mPayButton.setEnabled(true);	
+
 				Intent intent = new Intent(activity, ResultActivity.class);
 				String postcardUrls = getPostcardUrls(result);
 				intent.putExtra("Postcardurls", postcardUrls);
@@ -722,7 +772,6 @@ public class PayActivity extends Activity implements DialogExitListener {
 				mProgressDialog.dismiss();
 				mPayButton.setEnabled(true);	
 	
-				//Change that later
 				DartCardDialogFragment frag = DartCardDialogFragment
 						.newInstance(Globals.DIALOG_LOB_ERRORS);
 				frag.show(activity.getFragmentManager(), "lob dialog");
@@ -731,14 +780,24 @@ public class PayActivity extends Activity implements DialogExitListener {
 	}
 
 	@Override
-	public void onSavePhotoExit(boolean savePhoto) {}
+	public void onSavePhotoExit(boolean savePhoto) {
+	}
 
 	@Override
-	public void onTrySaveAgainExit(boolean tryAgain) {}
+	public void onTrySaveAgainExit(boolean tryAgain) {
+	}
 
 	@Override
-	public void onReturn() {}
+	public void onReturn() {
+	}
 
-
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if (mProgressDialog != null) {
+			mProgressDialog.dismiss();
+			mProgressDialog = null;
+		}
+	}
 
 }

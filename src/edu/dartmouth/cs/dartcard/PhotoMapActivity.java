@@ -50,6 +50,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 	PriorityQueue<PhotoEntry> closest100Photos;
 	
 	private ProgressDialog mProgressDialog;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,8 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 
 		// setup action tabs
 		ActionBar actionbar = getActionBar();
+		actionbar.setDisplayShowTitleEnabled(false);
+		actionbar.setDisplayShowHomeEnabled(false);
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		// set up the tabs for the action bar
@@ -230,6 +233,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		//go through all entries, if the list fills up, keep the shortest
 		//distanced photos
 		for (PhotoEntry currEntry : sectorPhotoList){
+			Log.d("DartCard","Adding to pq a photo from " + currEntry.getLatitude() + ", " + currEntry.getLongitude());
 			photoQueue.add(currEntry);
 			if (photoQueue.size() > 100){
 				photoQueue.poll();
@@ -298,14 +302,26 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 			location1.setLongitude(photo1.getLongitude());
 			
 			Location location2 = new Location("");
-			location1.setLatitude(photo2.getLatitude());
-			location1.setLongitude(photo2.getLongitude());
+			location2.setLatitude(photo2.getLatitude());
+			location2.setLongitude(photo2.getLongitude());
 			
 			double distance1 = location.distanceTo(location1);
 			double distance2 = location.distanceTo(location2);
+			Log.d("DartCard", "Current location is " + location.getLatitude() + ", " + location.getLongitude());
+			Log.d("DartCard", "distance to photo 1 is " + distance1);
+			Log.d("DartCard", "distance to photo 2 is " + distance2);
 			//want the furtherst distance to stay at top of queue, so we can get it when
 			//we poll. so return positive if distance 1 is greater than distance 2
-			return distance1 > distance2 ? 1: -1;
+			if (distance1 > distance2){
+				Log.d("DartCard", "returning photo1 > photo2");
+				return 1;
+			}
+			else if (distance1 < distance2){
+				Log.d("DartCard", "returning photo1 < photo2");
+				return -1;
+			}
+			else
+				return 0;
 		}
 		
 	}

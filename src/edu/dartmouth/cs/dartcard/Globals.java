@@ -14,5 +14,6 @@ public class Globals {
 	public static final int DIALOG_RECIPIENT_ERRORS = 2;
 	public static final int DIALOG_PHOTO_MAP_ERROR = 3;
 	public static final int DIALOG_LOB_ERRORS = 4;
+	public static final int DIALOG_MESSAGE_ERRORS = 5;
 
 }

@@ -9,8 +9,28 @@
     tools:context=".ResultActivity" >
 
     <TextView
+        android:id="@+id/ui_activity_result_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:text="@string/ui_activity_result_header_text" />
 
+    <TextView
+        android:id="@+id/ui_activity_result_urls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ui_activity_result_header"
+        android:layout_below="@+id/ui_activity_result_header"
+        android:layout_marginTop="25dp"
+        android:autoLink="web"/>
+
+     <Button
+         android:id="@+id/ui_activity_result_button"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_alignLeft="@+id/ui_activity_result_urls"
+         android:layout_alignParentBottom="true"
+         android:layout_marginBottom="104dp"
+         android:onClick="onSendAnotherClicked"
+         android:text="@string/button_title_send_another" />
+    
 </RelativeLayout>

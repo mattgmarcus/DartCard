@@ -40,14 +40,16 @@ public class PhotoMapFragment extends MapFragment implements
 		}
 
 		map = getMap();
-		map.setOnMarkerClickListener(this);
-		if (location != null) {
-			LatLng latLng = new LatLng(location.getLatitude(),
-					location.getLongitude());
-			map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+		if (map != null) {
+			map.setOnMarkerClickListener(this);
+			if (location != null) {
+				LatLng latLng = new LatLng(location.getLatitude(),
+						location.getLongitude());
+				map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+			}
+			PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closest100Photos;
+			updateMap(photoQueue);
 		}
-		PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closest100Photos;
-		updateMap(photoQueue);
 	}
 
 	public void updateMap(PriorityQueue<PhotoEntry> photos) {
@@ -60,7 +62,6 @@ public class PhotoMapFragment extends MapFragment implements
 				Marker marker = map.addMarker(new MarkerOptions()
 						.position(latlng));
 				markerPhotos.put(marker, photo);
-
 			}
 		}
 	}
