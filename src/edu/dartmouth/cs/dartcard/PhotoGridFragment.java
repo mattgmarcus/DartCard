@@ -115,7 +115,6 @@ public class PhotoGridFragment extends Fragment {
 		// this is from Google....
 		// create a new ImageView for each item referenced by the Adapter
 		public View getView(int position, View convertView, ViewGroup parent) {
-			Log.i("DartCard", "getView");
 			ImageView imageView;
 			if (convertView == null) { // if it's not recycled, initialize some
 										// attributes
