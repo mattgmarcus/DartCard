@@ -48,12 +48,6 @@ public class HomeActivity extends Activity {
 		mActionBar.setDisplayShowHomeEnabled(false);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.home, menu);
-		return true;
-	}
 
 	public void onTakeClicked(View v) {
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

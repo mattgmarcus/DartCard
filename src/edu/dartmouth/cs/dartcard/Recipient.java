@@ -129,6 +129,7 @@ public class Recipient implements Parcelable {
 		addressMap.put("address_city", this.city);
 		addressMap.put("address_state", this.state);
 		addressMap.put("address_zip", this.zip);
+		addressMap.put("address_country", "US");
         
         return addressMap; 
 	}
