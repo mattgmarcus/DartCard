@@ -31,10 +31,9 @@ public class FromActivity extends Activity {
 		setContentView(R.layout.activity_from);
 		
 		mActionBar = getActionBar();
-		mActionBar.setDisplayHomeAsUpEnabled(true);
 		mActionBar.setDisplayShowTitleEnabled(false);
-		//mActionBar.setTitle("Enter your personal information");
-
+		mActionBar.setDisplayShowHomeEnabled(false);
+		
 		mNameField = (EditText) findViewById(R.id.ui_from_activity_enterName);
 		mAddress1Field = (EditText) findViewById(R.id.ui_from_activity_enterAddress1);
 		mAddress2Field = (EditText) findViewById(R.id.ui_from_activity_enterAddress2);
@@ -52,17 +51,6 @@ public class FromActivity extends Activity {
 
 	}
 
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	    // Respond to the action bar's Up/Home button
-	    case android.R.id.home:
-	        NavUtils.navigateUpFromSameTask(this);
-	        return true;
-	    }
-	    return super.onOptionsItemSelected(item);
-	}
 
 	
 	public void onNextClicked(View v) {

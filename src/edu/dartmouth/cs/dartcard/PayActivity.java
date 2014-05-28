@@ -69,9 +69,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 	private Switch mRememberSwitch;
 		
 	private Button mPayButton;
-	
-	private ActionBar mActionBar;
-	
+		
 	private ProgressDialog mProgressDialog;
 	
 	private Double COST_PER_CARD = 1.50;
@@ -84,7 +82,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 	private boolean isUsingSavedCard;
 	private String customerId;
 	
-	private Bitmap mBitmap;
+	private ActionBar mActionBar;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -109,9 +107,8 @@ public class PayActivity extends Activity implements DialogExitListener {
 	    this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 		mActionBar = getActionBar();
-		mActionBar.setDisplayHomeAsUpEnabled(true);
 		mActionBar.setDisplayShowTitleEnabled(false);
-		//mActionBar.setTitle("Enter your personal information");
+		mActionBar.setDisplayShowHomeEnabled(false);
 
 		Bundle bundle = getIntent().getExtras();
 		if (null != bundle) {
@@ -289,16 +286,6 @@ public class PayActivity extends Activity implements DialogExitListener {
 		return cardParams;
 	}
 	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	    // Respond to the action bar's Up/Home button
-	    case android.R.id.home:
-	        NavUtils.navigateUpFromSameTask(this);
-	        return true;
-	    }
-	    return super.onOptionsItemSelected(item);
-	}
 
 	private void setRecipientListview() {
 		ArrayList<String> recipientNames = new ArrayList<String>();

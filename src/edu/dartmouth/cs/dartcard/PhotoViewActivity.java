@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -65,6 +66,7 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 	
 	private ProgressDialog mProgressDialog;
 
+	private ActionBar mActionBar;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -75,6 +77,10 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 		mImageView = (ImageView) findViewById(R.id.imageView);
 		
 		loadImage();
+		
+		mActionBar = getActionBar();
+		mActionBar.setDisplayShowTitleEnabled(false);
+		mActionBar.setDisplayShowHomeEnabled(false);
 
 		mLocationClient = new LocationClient(this, this, this);
 	}

@@ -43,8 +43,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 	//These variables deal with formatting the messages box
 	private LayoutParams mMessageParams;
 	
-	private ActionBar mActionBar;
-
 	private Button mNextButton;
 	private Button mAddAnotherButton;
 	
@@ -54,6 +52,7 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 	
 	private ProgressDialog mProgressDialog;
 
+	private ActionBar mActionBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,12 +73,11 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		mRecipientFields = new ArrayList<TextView>();
 		
 		mMessageParams = new LayoutParams(LayoutParams.FILL_PARENT, 500); 
-		
+				
 		mActionBar = getActionBar();
-		mActionBar.setDisplayHomeAsUpEnabled(true);
 		mActionBar.setDisplayShowTitleEnabled(false);
-		//mActionBar.setTitle("Enter your personal information");
-		
+		mActionBar.setDisplayShowHomeEnabled(false);
+
 		mNextButton = (Button) findViewById(R.id.ui_recipient_activity_nextButton);
 		mNextButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -112,17 +110,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 	}
 
 	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	    // Respond to the action bar's Up/Home button
-	    case android.R.id.home:
-	        NavUtils.navigateUpFromSameTask(this);
-	        return true;
-	    }
-	    return super.onOptionsItemSelected(item);
-	}
-
 	private void onNextClicked(View v) {
 		mNextButton.setEnabled(false);
 		mProgressDialog = new ProgressDialog(this);

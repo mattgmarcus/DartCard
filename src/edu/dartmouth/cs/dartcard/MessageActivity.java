@@ -19,21 +19,21 @@ public class MessageActivity extends Activity {
 	
 	private RelativeLayout mLayout;
 	
-	private ActionBar mActionBar;
-
 	private Button mNextButton;
+	
+	private ActionBar mActionBar;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_message);
-		mActionBar = getActionBar();
-		mActionBar.setDisplayHomeAsUpEnabled(true);
-		mActionBar.setDisplayShowTitleEnabled(false);
-		//mActionBar.setTitle("Write a message");
 		
 		mLayout = (RelativeLayout) findViewById(R.id.ui_message_relative_layout);
 		
+		mActionBar = getActionBar();
+		mActionBar.setDisplayShowTitleEnabled(false);
+		mActionBar.setDisplayShowHomeEnabled(false);
+
 		mMessageField = new LimitedEditText(this);
 		mMessageField.setMaxTextSize(350);
 		mMessageField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
@@ -51,17 +51,6 @@ public class MessageActivity extends Activity {
 
 	}
 	
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	    // Respond to the action bar's Up/Home button
-	    case android.R.id.home:
-	        NavUtils.navigateUpFromSameTask(this);
-	        return true;
-	    }
-	    return super.onOptionsItemSelected(item);
-	}
 	
 	
 	public void onNextClicked(View v) {
