@@ -8,9 +8,11 @@ import java.util.Map;
 import com.stripe.android.model.Card;
 import com.stripe.model.Customer;
 
+import edu.dartmouth.cs.dartcard.DartCardDialogFragment.DialogExitListener;
 import edu.dartmouth.cs.dartcard.RecipientActivity.LobVerifyTask;
 import edu.dartmouth.cs.dartcard.StripeUtilities.CardResponse;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,7 +24,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -46,11 +51,11 @@ import java.net.MalformedURLException;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
+import android.graphics.pdf.*;
+import android.graphics.pdf.PdfDocument.Page;
+import android.graphics.pdf.PdfDocument.PageInfo;
 
-
-public class PayActivity extends Activity {
+public class PayActivity extends Activity implements DialogExitListener {
 	private ArrayList<Recipient> mRecipients;
 	private Recipient mSender;
 
@@ -78,6 +83,8 @@ public class PayActivity extends Activity {
 	
 	private boolean isUsingSavedCard;
 	private String customerId;
+	
+	private Bitmap mBitmap;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -132,8 +139,7 @@ public class PayActivity extends Activity {
 			public void onClick(View v) {
 				onPayClicked(v);
 			}
-		});
-
+		});		
 	}
 	
 	private void populateCardChoices() {
@@ -237,6 +243,7 @@ public class PayActivity extends Activity {
 		});
 
 	}
+
 
 	
 	private void onPayClicked(View v) {
@@ -528,58 +535,82 @@ public class PayActivity extends Activity {
 			this.activity = activity;
 		}
 		
-		private Document getPDFImage() {
-	        Document document = new Document();
-	        try {
-	        	FileOutputStream file = openFileOutput(getString(R.string.pdf_name), Context.MODE_PRIVATE);
-				PdfWriter.getInstance(document, file);
-				file.close();
-			} catch (FileNotFoundException e) {
-				Log.d("failed", e.getMessage());
-				return null;
-			} catch (DocumentException e) {
-				Log.d("failed", "2");
+	    /**
+	     * Calculates the transform the print an Image to fill the page
+	     *https://github.com/rknoll/presit/blob/32fc951f5b799f74a0da3ec5210957750896cd95/Components/zxing.net.mobile-1.4.4/lib/android/19.1.0/content/support/v4/src/kitkat/android/support/v4/print/PrintHelperKitkat.java
+	     * @param imageWidth  with of bitmap
+	     * @param imageHeight height of bitmap
+	     * @param content     The output page dimensions
+	     * @param fittingMode The mode of fitting {@link #SCALE_MODE_FILL} vs {@link #SCALE_MODE_FIT}
+	     * @return Matrix to be used in canvas.drawBitmap(bitmap, matrix, null) call
+	     */
+	    private Matrix getMatrix(int imageWidth, int imageHeight, RectF content, int fittingMode) {
+	        Matrix matrix = new Matrix();
 
-				return null;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	        
-	        document.open();
-	        Image image;
+	        // Compute and apply scale to fill the page.
+	        float scale = content.width() / imageWidth;
+	        if (fittingMode == 2) {
+	            scale = Math.max(scale, content.height() / imageHeight);
+	        } else {
+	            scale = Math.min(scale, content.height() / imageHeight);
+	        }
+	        matrix.postScale(scale, scale);
+
+	        // Center the content.
+	        final float translateX = (content.width()
+	                - imageWidth * scale) / 2;
+	        final float translateY = (content.height()
+	                - imageHeight * scale) / 2;
+	        matrix.postTranslate(translateX, translateY);
+	        return matrix;
+	    }
+		
+		private PdfDocument getPDFImage() {
+			FileInputStream fis = null;
 			try {
-		        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-				FileInputStream fis = openFileInput(getString(R.string.selected_photo_name));
-		        Log.d("got the fis", fis.toString());
-
-				Bitmap bmap = BitmapFactory.decodeStream(fis);
-		        Log.d("got the bmap1", bmap.toString());
-
-		        bmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-		        Log.d("got the bmap2", bmap.toString());
-		        fis.close();
-
-		        image = Image.getInstance(stream.toByteArray());
-				//image = Image.getInstance(getFilesDir().getAbsolutePath() + "/" +
-				//		getString(R.string.selected_photo_name));
-		        document.add(image);               
-		        document.close();
-			} catch (BadElementException e) {
-				Log.d("failed", "3");
-
-				return null;
-			} catch (IOException e) {
-				Log.d("failed", e.getMessage());
-
-				return null;
-			} catch (DocumentException e) {
-				Log.d("failed", e.getMessage());
-
-				return null;
+				fis = openFileInput(getString(R.string.selected_photo_name));
+			} catch (FileNotFoundException e) {
+				Log.d("ex1", e.getMessage());
 			}
+
+			Bitmap bmap = BitmapFactory.decodeStream(fis);
+	        try {
+				fis.close();
+			} catch (IOException e) {
+				Log.d("ex2", e.getMessage());
+			}
+
+			PdfDocument document = new PdfDocument();
+			Page page = document.startPage(new PageInfo.Builder(432, 288, 1).create());
+	        RectF content = new RectF(page.getInfo().getContentRect());
+
+	        Matrix matrix = getMatrix(bmap.getWidth(), bmap.getHeight(),
+	                content, 2);
+
+			page.getCanvas().drawBitmap(bmap, matrix, null);
+			document.finishPage(page);
 			
-			return document;
+			File file = new File(getFilesDir(), getString(R.string.pdf_name));
+			OutputStream os = null;
+			try {
+				os = new FileOutputStream(file);
+			} catch (FileNotFoundException e) {
+				Log.d("ex3", e.getMessage());
+			}
+			try {
+				document.writeTo(os);
+			} catch (IOException e) {
+				Log.d("ex4", e.getMessage());
+			}
+			document.close();
+			try {
+				os.close();
+			} catch (IOException e) {
+				Log.d("ex5", e.getMessage());
+			}
+
+			//file path is Uri.fromFile(file)
+		    return document;
 		}
 		
 		private ArrayList<NameValuePair> constructSingleParams(Recipient recipient) {
@@ -624,7 +655,7 @@ public class PayActivity extends Activity {
 			
 			//If the image is converted to PDF successfully, we really only need to know the 
 			//file name for the Lob API calls
-			Document image = getPDFImage();
+			PdfDocument image = getPDFImage();
 			if (null == image) {
 				Log.d("in constructAllparams", "image is null");
 				return null;
@@ -642,9 +673,10 @@ public class PayActivity extends Activity {
 			ArrayList<ArrayList<NameValuePair>> allParams = constructAllParams();
 			ArrayList<Boolean> results = new ArrayList<Boolean>();
 			
+			String fileName = getFilesDir() + "/" + activity.getString(R.string.pdf_name);
 			for (ArrayList<NameValuePair> parameters : allParams) {
 				results.add(LobUtilities.sendPostcards(parameters, 
-						activity.getString(R.string.pdf_name)));
+						fileName));
 			}
 			return results;
 		}
@@ -653,9 +685,8 @@ public class PayActivity extends Activity {
 		protected void onPostExecute(ArrayList<Boolean> result) {
 			if (!result.contains(false)) {
 				Intent intent = new Intent(activity, HomeActivity.class);
-				
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 				activity.startActivity(intent);
-				finish();
 			}
 			else {
 				mProgressDialog.dismiss();
@@ -663,11 +694,20 @@ public class PayActivity extends Activity {
 
 				//Change that later
 				DartCardDialogFragment frag = DartCardDialogFragment
-						.newInstance(Globals.DIALOG_RECIPIENT_ERRORS);
-				frag.show(activity.getFragmentManager(), "recipient dialog");
+						.newInstance(Globals.DIALOG_LOB_ERRORS);
+				frag.show(activity.getFragmentManager(), "lob dialog");
 			}
 		}
 	}
+
+	@Override
+	public void onSavePhotoExit(boolean savePhoto) {}
+
+	@Override
+	public void onTrySaveAgainExit(boolean tryAgain) {}
+
+	@Override
+	public void onReturn() {}
 
 
 

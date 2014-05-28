@@ -47,12 +47,13 @@ public class LobUtilities extends HttpUtilities {
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(url);
 		
+		Log.d("params are ", parameters.toString());
 		//Attach the parameters
-		try {
+		/*try {
 			httppost.setEntity(new UrlEncodedFormEntity(parameters));
 		} catch (UnsupportedEncodingException e1) {
 			return false;
-		}
+		}*/
 
 		//Attach the file
 		/*MultipartEntity reqEntity = new MultipartEntity();
@@ -63,7 +64,11 @@ public class LobUtilities extends HttpUtilities {
 	    builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 	    File file = new File(fileName);
 	    FileBody fileBody = new FileBody(file);
-	    builder.addPart("file", fileBody);  
+	    builder.addPart("front", fileBody);
+
+	    for (NameValuePair pair : parameters) {
+	    	builder.addTextBody(pair.getName(), pair.getValue());
+	    }
 	    HttpEntity entity = builder.build();
 	    httppost.setEntity(entity);
 	    
@@ -79,6 +84,7 @@ public class LobUtilities extends HttpUtilities {
 
 			Log.d("return string is", returnString);
 		} catch (IOException e) {
+			Log.d("ex", e.getMessage());
 			return false;
 		}
 

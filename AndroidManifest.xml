@@ -5,8 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="18" />
+        android:minSdkVersion="19"
+        android:targetSdkVersion="19" />
 
     <permission
         android:name="edu.dartmouth.cs.dartcard.permission.MAPS_RECEIVE"
@@ -64,7 +64,7 @@
         <activity
             android:name="edu.dartmouth.cs.dartcard.PayActivity"
             android:label="@string/title_activity_pay"
-            android:parentActivityName="edu.dartmouth.cs.dartcard.RecipientActivity" >
+            android:parentActivityName="edu.dartmouth.cs.dartcard.RecipientActivity" >          
         </activity>
         <activity
             android:name="edu.dartmouth.cs.dartcard.FromActivity"

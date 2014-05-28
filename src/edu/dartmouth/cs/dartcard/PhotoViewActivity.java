@@ -108,6 +108,7 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 		} else {
 
 			Intent intent = new Intent(this, FromActivity.class);
+
 			startActivity(intent);
 		}
 	}
@@ -141,6 +142,7 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 		}
 		else {
 			Intent intent = new Intent(this, FromActivity.class);
+
 			startActivity(intent);
 		}
 
@@ -287,7 +289,7 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 			}
 			else {
 				Intent intent = new Intent(activity, FromActivity.class);
-				
+
 				activity.startActivity(intent);
 			}
 		}

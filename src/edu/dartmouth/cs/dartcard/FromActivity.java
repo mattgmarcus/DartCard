@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -71,7 +72,7 @@ public class FromActivity extends Activity {
 				mZipField.getText().toString());
 		
 		Intent intent = new Intent(this, MessageActivity.class);
-		intent.putExtra(getString(R.string.from_activity_intent_key), recipient);
+		intent.putExtra(getString(R.string.from_activity_intent_key), recipient);		
 
 		startActivity(intent);
 	}

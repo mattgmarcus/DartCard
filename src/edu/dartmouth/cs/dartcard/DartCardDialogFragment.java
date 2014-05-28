@@ -95,7 +95,18 @@ public class DartCardDialogFragment extends DialogFragment {
 						}
 					});
 			break;
-		
+			
+		case Globals.DIALOG_LOB_ERRORS:
+			builder.setTitle(R.string.dialog_title_lob_error);
+			builder.setNeutralButton(R.string.dialog_button_photo_map_error,
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							listener.onReturn();
+						}
+					});
+			break;
+
 		default:
 			break;
 		}
