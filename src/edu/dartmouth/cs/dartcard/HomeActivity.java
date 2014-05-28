@@ -80,8 +80,6 @@ public class HomeActivity extends Activity {
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d("DartCard", "in onactivityresult");
-		Toast.makeText(this, "in onactivityresult", Toast.LENGTH_SHORT).show();
 		String key = getString(R.string.shared_prefs_name);
 		SharedPreferences prefs = getSharedPreferences(key, MODE_PRIVATE);
 		if (resultCode != RESULT_OK)
@@ -95,9 +93,6 @@ public class HomeActivity extends Activity {
 			// Update image view after image crop
 			Bundle extras = data.getExtras();
 			try {
-				Log.d("DartCard", "onactivityresult from cropphoto");
-				Toast.makeText(this, "back from crop", Toast.LENGTH_SHORT)
-						.show();
 				Bitmap photo = (Bitmap) extras.getParcelable("data");
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				photo.compress(Bitmap.CompressFormat.PNG, 100, bos);
@@ -115,28 +110,16 @@ public class HomeActivity extends Activity {
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
 			}
-			// Set the picture image in UI
-			if (extras != null) {
-				// mImageView.setImageBitmap((Bitmap)
-				// extras.getParcelable("data"));
-			}
+
 			// Delete temporary image taken by camera after crop.
 			if (isTakenFromCamera) {
 				File f = new File(mImageCaptureUri.getPath());
-				if (f.exists()) {
-					// f.delete();
-				}
 			}
 			break;
 		case REQUEST_CODE_GET_FROM_GALLERY:
-			// cropImage();
 			Uri selectedImageUri = data.getData();
-			// final String selectedImagePath =
-			// getRealPathFromURI(selectedImageUri);
 			mImageCaptureUri = selectedImageUri;
 			cropImage();
-			// tv.setText(selectedImagePath);
-			// mImageView.setImageURI(selectedImageUri);
 			break;
 		}
 	}

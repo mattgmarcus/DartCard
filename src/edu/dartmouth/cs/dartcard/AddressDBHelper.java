@@ -72,13 +72,6 @@ public class AddressDBHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = getWritableDatabase();
 		db.delete(ADDRESSES, ROW_KEY + " = " + rowIndex, null);
 		db.close();
-		Log.d("In removeEntry!", "Deleting row " + rowIndex);
-		/*
-		Use getWritableDatabase() to get the database
-		db.delete(ENTRIES, key_rowID + "=" + rowIndex, null);
-		Then use built in delete from SQLiteDatabsse
-		Close the database
-		 */
 	}
 	
 	public ArrayList<Address> fetchAddresses() {
@@ -88,7 +81,6 @@ public class AddressDBHelper extends SQLiteOpenHelper {
 				null, null, null);
 		while (cursor.moveToNext()) {
             Address add= cursorToEntry(cursor);
-            Log.d("Address!", "Fetching address = " + cursorToEntry(cursor).getId());
             entryList.add(add);
         }
 		cursor.close();

@@ -218,7 +218,6 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 	public class PhotoTask extends AsyncTask<Void, Void, Boolean> {
 		private PhotoEntry photo;
 		private Activity activity;
-		private boolean DEBUG = false;
 
 		public PhotoTask(PhotoEntry photo, Activity activity) {
 			this.photo = photo;
@@ -248,14 +247,6 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 			}
 
 			httpClient = new DefaultHttpClient();
-			if (DEBUG) {
-				Log.d("original upload url is", uploadURL);
-
-				String[] url_parts = uploadURL.split("_");
-				uploadURL = activity.getString(R.string.server_addr) + "/_"
-						+ url_parts[1];
-			}
-			Log.d("upload url is", uploadURL);
 
 			HttpPost httppost = new HttpPost(uploadURL);
 
@@ -275,7 +266,6 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 						.toString(response.getEntity());
 
 				blobKey = returnString.split(":")[1].split("\"")[1];
-				Log.d("blobkey is ", blobKey);
 			} catch (IOException e) {
 				return false;
 			}

@@ -43,12 +43,9 @@ public class PhotoGridFragment extends Fragment {
 		gridView = new GridView(getActivity());
 
 		if (photos == null) {
-			Log.d("DartCard", "photolist is null");
 			PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closest100Photos;
 			getPhotoListFromQueue(photoQueue);
-		} else {
-			Log.d("DartCard", "photolist is not null");
-		}
+		} 
 		setAdapter();
 
 		gridView.setNumColumns(3);
@@ -56,10 +53,6 @@ public class PhotoGridFragment extends Fragment {
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				if ((ImageView) gridView.getChildAt(position) == null) {
-					Log.d("dartcard",
-							"gridfragment imageview clicked on is null");
-				}
 				savePhoto(thumbnailPhotos.get((ImageView) v)
 						.getPhotoByteArray());
 				// savePhoto((ImageView) gridView.getChildAt(position));
@@ -76,26 +69,8 @@ public class PhotoGridFragment extends Fragment {
 		// load photos from database
 		photos = new ArrayList<PhotoEntry>();
 		if (photoQueue != null) {
-			for (PhotoEntry photo : photoQueue) {
-				Log.d("DartCard", "In photogridfragment, photoqueue has photo "
-						+ photo.getId());
-				Log.d("DartCard", "In photogridfragment, photo has lat "
-						+ photo.getLatitude());
-				Log.d("DartCard", "In photogridfragment, photo has long "
-						+ photo.getLongitude());
-				
-			}
-			// priQueueToSortedArrayList(photoQueue, photos);
 			photos.addAll(photoQueue);
-			// reverse order of photos so closest come up first
-//			if (location != null)
-//				Log.d("dartcard", "photgrid sorting photos");
-//				Collections.sort(photos,
-//						new PhotoMapActivity.LocationComparator(location));
-//			 Collections.reverse(photos);
-		} else {
-			Log.d("DartCard", "photoQueue is null in photogridfragment");
-		}
+		} 
 	}
 
 	public void updateGridView(PriorityQueue<PhotoEntry> pq) {

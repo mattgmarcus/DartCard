@@ -31,7 +31,6 @@ public class LobUtilities extends HttpUtilities {
 	
 	public static boolean verifyAddress(Map<String, String> address) {
 		String url = BASE_URL + "/verify";
-		Log.d("LobUtilities", "verifyAddress");
 		
 		key = Passwords.getLobKey();
 
@@ -46,7 +45,6 @@ public class LobUtilities extends HttpUtilities {
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(url);
 		
-		Log.d("params are ", parameters.toString());
 	    MultipartEntityBuilder builder = MultipartEntityBuilder.create();        
 	    builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 	    File file = new File(fileName);
@@ -68,15 +66,11 @@ public class LobUtilities extends HttpUtilities {
 		try {
 			response = httpClient.execute(httppost);
 			returnString = EntityUtils.toString(response.getEntity());
-
-			Log.d("return string is", returnString);
 		} catch (IOException e) {
-			Log.d("ex", e.getMessage());
 			return new LobResult(false, null);
 		}
 
 		returnString = getUrl(returnString);
-		Log.d("url is", returnString);
 		return new LobResult(true, returnString);
 	}
 	

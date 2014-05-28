@@ -407,8 +407,6 @@ public class PayActivity extends Activity implements DialogExitListener {
 			        }
 			        break;
 		    	default:
-		    		Log.d("Heref", s.toString().charAt(0)+"");
-
 			        // Remove spacing char
 			        if (s.length() > 0 && (s.length() % 5) == 0) {
 			            final char c = s.charAt(s.length() - 1);
@@ -447,7 +445,6 @@ public class PayActivity extends Activity implements DialogExitListener {
 		@Override
 		protected Boolean doInBackground(Void... p) {
 			if (params.containsKey(getString(R.string.customer_id))) {
-				Log.d("doInBackground", "Using customer id");
 				Map<String, String> chargeParams = new HashMap<String, String>();
 				chargeParams.put("customer",
 						params.get(getString(R.string.customer_id)));
@@ -459,8 +456,6 @@ public class PayActivity extends Activity implements DialogExitListener {
 
 				return StripeUtilities.charge(chargeParams);
 			} else if (mRememberSwitch.isChecked()) {
-				Log.d("doInBackground", "New customer with remember me");
-
 				Map<String, String> customerParams = new HashMap<String, String>();
 				String email = params.get(getString(R.string.email));
 				customerParams.put("description", "Customer for " + email);
@@ -499,8 +494,6 @@ public class PayActivity extends Activity implements DialogExitListener {
 			}
 
 			else {
-				Log.d("doInBackground", "New customer without remember me");
-
 				Map<String, String> chargeParams = new HashMap<String, String>();
 				chargeParams.put("card[number]",
 						params.get(getString(R.string.card_number)));
@@ -605,14 +598,14 @@ public class PayActivity extends Activity implements DialogExitListener {
 			try {
 				fis = openFileInput(getString(R.string.selected_photo_name));
 			} catch (FileNotFoundException e) {
-				Log.d("ex1", e.getMessage());
+				// Fail silently
 			}
 
 			Bitmap bmap = BitmapFactory.decodeStream(fis);
 			try {
 				fis.close();
 			} catch (IOException e) {
-				Log.d("ex2", e.getMessage());
+				// Fail silently
 			}
 
 			PdfDocument document = new PdfDocument();
@@ -631,18 +624,18 @@ public class PayActivity extends Activity implements DialogExitListener {
 			try {
 				os = new FileOutputStream(file);
 			} catch (FileNotFoundException e) {
-				Log.d("ex3", e.getMessage());
+				// Fail silently
 			}
 			try {
 				document.writeTo(os);
 			} catch (IOException e) {
-				Log.d("ex4", e.getMessage());
+				// Fail silently
 			}
 			document.close();
 			try {
 				os.close();
 			} catch (IOException e) {
-				Log.d("ex5", e.getMessage());
+				// Fail silently
 			}
 
 			// file path is Uri.fromFile(file)
@@ -710,7 +703,6 @@ public class PayActivity extends Activity implements DialogExitListener {
 			// file name for the Lob API calls
 			PdfDocument image = getPDFImage();
 			if (null == image) {
-				Log.d("in constructAllparams", "image is null");
 				return null;
 			}
 
@@ -780,16 +772,11 @@ public class PayActivity extends Activity implements DialogExitListener {
 	}
 
 	@Override
-	public void onSavePhotoExit(boolean savePhoto) {
-	}
-
+	public void onSavePhotoExit(boolean savePhoto) {}
 	@Override
-	public void onTrySaveAgainExit(boolean tryAgain) {
-	}
-
+	public void onTrySaveAgainExit(boolean tryAgain) {}
 	@Override
-	public void onReturn() {
-	}
+	public void onReturn() {}
 
 	@Override
 	public void onDestroy() {

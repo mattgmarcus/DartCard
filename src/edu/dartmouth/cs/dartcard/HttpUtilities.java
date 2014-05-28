@@ -63,7 +63,6 @@ public class HttpUtilities {
 			}
 		}
 		String body = bodyBuilder.toString();
-		Log.d("Httputilities.constructparams", body);
 		
 		byte[] bytes = body.getBytes();
 		
@@ -108,9 +107,7 @@ public class HttpUtilities {
 		
 		String authKey = new String(Base64.encodeBase64((key+":").getBytes()));
 		conn.setRequestProperty("Authorization", "Basic " + authKey);
-		
-		Log.d("Httputilities.makepostconnection", conn.getRequestProperties().toString());
-		
+				
 		
 		OutputStream out = conn.getOutputStream();
 		out.write(bytes);
@@ -140,24 +137,17 @@ public class HttpUtilities {
 		
 		byte[] bytes = constructParams(params);
 		
-		Log.d("HttpUtilities", "post");
-		Log.d("HttpUtilities", "post-params" + params.toString());
-
-
 		HttpURLConnection conn;
 
 		long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
 		for (int i = 1; i <= HttpUtilities.MAX_ATTEMPTS; i++) {
 			try {
 					conn = makePostConnection(url, bytes);
-					Log.d("url should be ", conn.toString());
 
 					// handle the response
 					int status = conn.getResponseCode();
-					Log.d("HttpUtilities", "post-status" + status);
 
 					if (status == 200) {	
-						Log.d("httputilities.post", "stauts is 200");
 						BufferedReader br = 
 								new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		                StringBuilder sb = new StringBuilder();
@@ -167,7 +157,6 @@ public class HttpUtilities {
 		                }
 		                br.close();
 
-		                Log.d("httputilities.post", sb.toString());
 						if (null != conn) {
 							conn.disconnect();
 						}
@@ -216,24 +205,17 @@ public class HttpUtilities {
 		
 		byte[] bytes = constructParams(params);
 		
-		Log.d("HttpUtilities", "post");
-		Log.d("HttpUtilities", "post-params" + params.toString());
-
-
 		HttpURLConnection conn;
 
 		long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
 		for (int i = 1; i <= HttpUtilities.MAX_ATTEMPTS; i++) {
 			try {
 					conn = makePostConnection(url, bytes);
-					Log.d("url should be ", conn.toString());
 
 					// handle the response
 					int status = conn.getResponseCode();
-					Log.d("HttpUtilities", "post-status" + status);
 
 					if (status == 200) {	
-						Log.d("httputilities.post", "stauts is 200");
 						
 						BufferedReader br = 
 								new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -280,7 +262,6 @@ public class HttpUtilities {
 		} catch (MalformedURLException e) {
 			//Fail silently
 		}
-		Log.d("url is", endpoint);
 		
 		HttpURLConnection conn;
 
@@ -288,14 +269,11 @@ public class HttpUtilities {
 		for (int i = 1; i <= HttpUtilities.MAX_ATTEMPTS; i++) {
 			try {
 					conn = makeGetConnection(url);
-					Log.d("url should be ", conn.toString());
 
 					// handle the response
 					int status = conn.getResponseCode();
-					Log.d("HttpUtilities", "get-status" + status);
 
 					if (status == 200) {	
-						Log.d("httputilities.get", "stauts is 200");
 						
 						BufferedReader br = 
 								new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -344,7 +322,6 @@ public class HttpUtilities {
 		
 		byte[] bytes = constructParams(params);
 
-		Log.d("url is", endpoint);
 		
 		HttpURLConnection conn;
 
@@ -352,14 +329,11 @@ public class HttpUtilities {
 		for (int i = 1; i <= HttpUtilities.MAX_ATTEMPTS; i++) {
 			try {
 					conn = makeGetConnection(url, bytes);
-					Log.d("url should be ", conn.toString());
 
 					// handle the response
 					int status = conn.getResponseCode();
-					Log.d("HttpUtilities", "get-status" + status);
 
 					if (status == 200) {	
-						Log.d("httputilities.get", "stauts is 200");
 						
 						BufferedReader br = 
 								new BufferedReader(new InputStreamReader(conn.getInputStream()));

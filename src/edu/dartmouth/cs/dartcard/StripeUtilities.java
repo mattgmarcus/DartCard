@@ -15,7 +15,6 @@ public class StripeUtilities extends HttpUtilities {
 	
 	public static boolean charge(Map<String, String> information) {
 		String url = BASE_URL + "/charges";
-		Log.d("StripeUtilities", "charge");
 		
 		key = Passwords.getStripeKey();
 
@@ -25,7 +24,6 @@ public class StripeUtilities extends HttpUtilities {
 	
 	public static String createCustomer(Map<String, String> information, Context context) {
 		String url = BASE_URL + "/customers";
-		Log.d("StripeUtilities", "customers");
 		
 		key = Passwords.getStripeKey();
 
@@ -37,7 +35,6 @@ public class StripeUtilities extends HttpUtilities {
 		else {
 			Gson gson = new GsonBuilder().create();
 			CustomerResponse resp = gson.fromJson(results, CustomerResponse.class);
-			Log.d("Stripeutilitlies.createCustomer", resp.toString());
 			return resp.getId();
 		}
 	}

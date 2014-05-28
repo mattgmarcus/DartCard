@@ -195,13 +195,8 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 					public void onItemSelected(AdapterView<?> parentView,
 							View selectedItemView, int position, long id) {
 						position -= 1;
-						// mPosition = position + 1;
 						Button saveButton;
 						if (position == -1) {
-							
-							// if (mAddressSelected == true) {
-							// Log.d("TAG", "setting all shit to zero!");
-							// mAddressSelected = false;
 							enableEditTexts(j);
 							currentId = -1;
 							mNameFields.get(j).setText("");
@@ -276,7 +271,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 							.getText().toString(), mZipFields.get(i).getText()
 							.toString(), mMessageFields.get(i).getText()
 							.toString());
-			Log.d("recipientactivity", "before validate");
 
 			recipients.add(recipient);
 		}
@@ -292,7 +286,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		if (num == -1) {
 			mNumRecipients++;
 		}
-		Log.d("TAG", "creating recipient " + num);
 		LinearLayout parentLayout = (LinearLayout) findViewById(R.id.ui_recipient_activity_linearlayout);
 
 		Spinner recipSpinner = new Spinner(this);
@@ -314,8 +307,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		recipSpinner.setAdapter(adapter);
 		mAdapters.add(adapter);
 		if (mSavedInstanceState != null) {
-			Log.d("TAG", "got " + mSavedInstanceState.getInt("spinnerPos", 0)
-					+ " from bundle");
 			recipSpinner.setSelection(mSavedInstanceState.getInt("spinnerPos",
 					0));
 		}
@@ -379,7 +370,7 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 
 		EditText labelField = new EditText(this);
 		labelField.setHint("Label, if saving recipient");
-		labelField.setInputType(InputType.TYPE_CLASS_TEXT);
+		labelField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 		mLabelFields.add(labelField);
 
 		Button saveButton = new Button(this);
@@ -402,7 +393,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		setupSpinner(num);
 
 		messageField.setText(mMessage);
-		Log.d("TAG", "added all saved text");
 
 		// Add all the text fields
 		recipientLayout.addView(recipSpinner);
@@ -484,7 +474,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 			}
 			long id = helper.insertAddress(recip);
 			recip.setId(id);
-			Log.d("TAG", recip.toString());
 			Toast.makeText(
 					getApplicationContext(),
 					"Saved address \""
@@ -543,7 +532,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 			} else {
 				Intent intent = new Intent(activity, PayActivity.class);
 				if (null != recipients) {
-					Log.d("here", "passing in values");
 					intent.putParcelableArrayListExtra(
 							getString(R.string.recipient_activity_intent_key),
 							recipients);

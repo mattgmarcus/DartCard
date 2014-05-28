@@ -97,7 +97,7 @@ public class PhotoEntry {
 				longitude = obj.getDouble("longitude");
 				sectorId = obj.getInt("sector");
 			} catch (JSONException e) {
-				Log.d("photoentry", "Issue getting from json object " + obj.toString());
+				// Fail silently
 			}
 	}
 	public JSONObject toJSONObject() {
