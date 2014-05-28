@@ -44,8 +44,7 @@ public class HomeActivity extends Activity {
 		setContentView(R.layout.activity_home);
 
 		mActionBar = getActionBar();
-		mActionBar.setDisplayShowTitleEnabled(false);
-		mActionBar.setDisplayShowHomeEnabled(false);
+		mActionBar.setTitle("DartCard");
 	}
 
 

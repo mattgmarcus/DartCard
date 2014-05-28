@@ -36,8 +36,7 @@ public class MessageActivity extends Activity implements DialogExitListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_message);
 		mActionBar = getActionBar();
-		mActionBar.setDisplayShowTitleEnabled(false);
-		mActionBar.setDisplayShowHomeEnabled(false);
+		mActionBar.setTitle("DartCard");
 		
 		mLayout = (LinearLayout) findViewById(R.id.ui_message_relative_layout);
 
@@ -48,7 +47,7 @@ public class MessageActivity extends Activity implements DialogExitListener {
 		mMessageField = (LimitedEditText) findViewById(R.id.ui_message_activity_enterMessage);
 		mMessageField.setText(mMessageString);
 		mMessageField.setMaxTextSize(350);
-		//mLayout.addView(mMessageField);
+		mMessageField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
 		mNextButton = (Button) findViewById(R.id.ui_message_activity_nextButton);
 		mNextButton.setOnClickListener(new View.OnClickListener() {

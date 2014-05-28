@@ -21,8 +21,7 @@ public class ResultActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_result);
 		mActionBar = getActionBar();
-		mActionBar.setDisplayShowTitleEnabled(false);
-		mActionBar.setDisplayShowHomeEnabled(false);
+		mActionBar.setTitle("DartCard");
 
 		mUrlsText = (TextView) findViewById(R.id.ui_activity_result_urls);
 		Bundle bundle = getIntent().getExtras();

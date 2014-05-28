@@ -111,8 +111,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 		mActionBar = getActionBar();
-		mActionBar.setDisplayShowTitleEnabled(false);
-		mActionBar.setDisplayShowHomeEnabled(false);
+		mActionBar.setTitle("DartCard");
 
 		Bundle bundle = getIntent().getExtras();
 		if (null != bundle) {

@@ -80,8 +80,7 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 		loadImage();
 		
 		mActionBar = getActionBar();
-		mActionBar.setDisplayShowTitleEnabled(false);
-		mActionBar.setDisplayShowHomeEnabled(false);
+		mActionBar.setTitle("DartCard");
 
 		mLocationClient = new LocationClient(this, this, this);
 	}

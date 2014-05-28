@@ -107,9 +107,7 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		currentId = -1;
 		
 		mActionBar = getActionBar();
-		mActionBar.setDisplayShowTitleEnabled(false);
-
-		mActionBar.setDisplayShowHomeEnabled(false);
+		mActionBar.setTitle("DartCard");
 
 		mNextButton = (Button) findViewById(R.id.ui_recipient_activity_nextButton);
 		mNextButton.setOnClickListener(new View.OnClickListener() {
