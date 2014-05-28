@@ -65,7 +65,14 @@ public class FromActivity extends Activity {
 
 	
 	public void onNextClicked(View v) {
+		Recipient recipient = new Recipient(mNameField.getText().toString(), 
+				mAddress1Field.getText().toString(), mAddress2Field.getText().toString(),
+				mCityField.getText().toString(), mStateField.getText().toString(),
+				mZipField.getText().toString());
+		
 		Intent intent = new Intent(this, MessageActivity.class);
+		intent.putExtra(getString(R.string.from_activity_intent_key), recipient);
+
 		startActivity(intent);
 	}
 

@@ -44,7 +44,7 @@ import android.util.Log;
  */
 public class HttpUtilities {
 	
-	protected static final int MAX_ATTEMPTS = 5;
+	protected static final int MAX_ATTEMPTS = 3;
 	protected static final int BACKOFF_MILLI_SECONDS = 2000;
 	protected static final Random random = new Random();
 	

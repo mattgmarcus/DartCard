@@ -68,6 +68,9 @@ public class MessageActivity extends Activity {
 		Intent intent = new Intent(this, RecipientActivity.class);
 		intent.putExtra(getString(R.string.message_activity_intent_key),
 				mMessageField.getText().toString());
+		//Pass along the from address
+		intent.putExtra(getString(R.string.from_activity_intent_key),
+				getIntent().getExtras().getParcelable(getString(R.string.from_activity_intent_key)));
 
 		startActivity(intent);
 	}

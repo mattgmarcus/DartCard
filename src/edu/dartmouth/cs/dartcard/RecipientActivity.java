@@ -3,11 +3,15 @@ package edu.dartmouth.cs.dartcard;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import edu.dartmouth.cs.dartcard.DartCardDialogFragment.DialogExitListener;
+
 
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract.Document;
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Intent;
@@ -26,8 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-
-public class RecipientActivity extends Activity {
+public class RecipientActivity extends Activity implements DialogExitListener {
 	private ArrayList<TextView> mRecipientFields;
 	private ArrayList<EditText> mNameFields;
 	private ArrayList<EditText> mStreet1Fields;
@@ -48,6 +51,9 @@ public class RecipientActivity extends Activity {
 	private int mNumRecipients;
 	
 	private String mGenericMessage;
+	
+	private ProgressDialog mProgressDialog;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -119,10 +125,16 @@ public class RecipientActivity extends Activity {
 
 	private void onNextClicked(View v) {
 		mNextButton.setEnabled(false);
+		mProgressDialog = new ProgressDialog(this);
+		mProgressDialog.setTitle("Checking your addresses");
+		mProgressDialog.setMessage("This should take only a second");
+		mProgressDialog.setCanceledOnTouchOutside(false);
+		mProgressDialog.show();
+
 		
 		ArrayList<Recipient> recipients = getRecipients();
 
-		LobTask lob_task = new LobTask(this, recipients);
+		LobVerifyTask lob_task = new LobVerifyTask(this, recipients);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			lob_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[])null);
 		else
@@ -185,6 +197,7 @@ public class RecipientActivity extends Activity {
 
 		EditText cityField = new EditText(this);
 		cityField.setHint(getString(R.string.ui_recipient_activity_enterCity_hint));
+		cityField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 		mCityFields.add(cityField);
 
 		EditText stateField = new EditText(this);
@@ -218,11 +231,11 @@ public class RecipientActivity extends Activity {
 		parentLayout.addView(recipientLayout);
 	}
 	
-	public class LobTask extends AsyncTask<Void,Void,ArrayList<Boolean>> {
+	public class LobVerifyTask extends AsyncTask<Void,Void,ArrayList<Boolean>> {
 		private Activity activity;
 		private ArrayList<Recipient> recipients;
 		
-		public LobTask(Activity activity, ArrayList<Recipient> recipients) {
+		public LobVerifyTask(Activity activity, ArrayList<Recipient> recipients) {
 			this.activity = activity;
 			this.recipients = recipients;
 		}
@@ -240,15 +253,20 @@ public class RecipientActivity extends Activity {
 		@Override
 		protected void onPostExecute(ArrayList<Boolean> results) {
 			if (results.contains(false)) {
-				Log.d("Recipientactivity", "Failed!");
-				
+				mProgressDialog.dismiss();
+				DartCardDialogFragment frag = DartCardDialogFragment
+						.newInstance(Globals.DIALOG_RECIPIENT_ERRORS);
+				frag.show(activity.getFragmentManager(), "recipient dialog");
+
 				for (int i = 0; i < results.size(); i++) {
 					// If the address is incorrect
 					if (!results.get(i)) {
-						mRecipientFields.get(i).setTextColor(Color.RED);
+						TextView field = mRecipientFields.get(i);
+						field.setTextAppearance(activity, R.style.boldText);
 					}
 					else {
-						mRecipientFields.get(i).setTextColor(Color.BLACK);	
+						TextView field = mRecipientFields.get(i);
+						field.setTextAppearance(activity, R.style.normalText);
 					}
 				}
 				
@@ -257,13 +275,26 @@ public class RecipientActivity extends Activity {
 			else {
 				Intent intent = new Intent(activity, PayActivity.class);
 				if (null != recipients) {
+					Log.d("here", "passing in values");
 					intent.putParcelableArrayListExtra(
 							getString(R.string.recipient_activity_intent_key), recipients);
+					//Pass along the from address
+					intent.putExtra(getString(R.string.from_activity_intent_key),
+							getIntent().getExtras()
+							.getParcelable(getString(R.string.from_activity_intent_key)));
+
 					activity.startActivity(intent);
 				}
 
 			}
 		}
-	};
+	}
+
+	@Override
+	public void onSavePhotoExit(boolean savePhoto) {}
+	@Override
+	public void onTrySaveAgainExit(boolean tryAgain) {}
+	@Override
+	public void onReturn() {};
 
 }

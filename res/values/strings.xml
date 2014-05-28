@@ -10,7 +10,7 @@
     <string name="title_activity_photo_view">PhotoViewActivity</string>
     <string name="button_title_make_card">Make Card</string>
     
-    <string name="server_addr">http://10.31.230.229:8888</string>
+    <string name="server_addr">http://1-dot-dartcard.appspot.com</string>
     
      <!-- Strings in Home Activity -->
     <string name="take_photo">Take a Photo</string>
@@ -38,6 +38,7 @@
     <string name="ui_from_activity_enterCity_hint">City</string>
     <string name="ui_from_activity_enterState_hint">State</string>
     <string name="ui_from_activity_enterZip_hint">Zip Code</string>
+    <string name="from_activity_intent_key">From activity recipient key</string>
 
     <!-- Message Activity -->
     <string name="ui_message_activity_enterMessage_hint">Message</string>
@@ -91,16 +92,18 @@
 	<string name="email">Email</string>
 	<string name="exp_month">Expire month</string>
 	<string name="exp_year">Expire year</string>
+	<string name="pdf_name">postcard.pdf</string>
 	
     
     <string name="dialog_title_save_photo">Save Photo to Database?</string>
     <string name="button_save_title">Save</string>
     <string name="button_no_save_title">Don\'t Save</string>
-    <string name="dialog_title_try_save_again">Location not found. Unable to save photo. Try again?</string>
+    <string name="dialog_title_try_save_again">Unable to save photo. Try again?</string>
     <string name="button_try_again_title">Try Again</string>
     <string name="button_cancel_title">Cancel</string>
-    
-
-    
-    
+    <string name="dialog_title_recipient_error">Fix the highlighted addresses and resubmit</string>
+    <string name="dialog_button_recipient_error">Ok</string>   
+    <string name="dialog_title_photo_map_error">Issue loading the photo map</string> 
+    <string name="dialog_message_photo_map_error">Check your internet connection and try again.</string>
+    <string name="dialog_button_photo_map_error">Ok</string>       
 </resources>

@@ -8,7 +8,7 @@ import java.util.Map;
 import com.stripe.android.model.Card;
 import com.stripe.model.Customer;
 
-import edu.dartmouth.cs.dartcard.RecipientActivity.LobTask;
+import edu.dartmouth.cs.dartcard.RecipientActivity.LobVerifyTask;
 import edu.dartmouth.cs.dartcard.StripeUtilities.CardResponse;
 
 import android.os.AsyncTask;
@@ -19,6 +19,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
@@ -37,9 +39,20 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
+import java.io.*;
+import java.net.MalformedURLException;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
+
 
 public class PayActivity extends Activity {
 	private ArrayList<Recipient> mRecipients;
+	private Recipient mSender;
 
 	private EditText mEmailField;
 	private EditText mCardField;
@@ -98,6 +111,7 @@ public class PayActivity extends Activity {
 			mRecipients = bundle.getParcelableArrayList(
 					getString(R.string.recipient_activity_intent_key));
 			setRecipientListview();
+			mSender = bundle.getParcelable(getString(R.string.from_activity_intent_key));
 		}
 		else {
 			mRecipients = new ArrayList<Recipient>();
@@ -417,7 +431,6 @@ public class PayActivity extends Activity {
 		
 		@Override
 		protected Boolean doInBackground(Void ... p) {
-
 			if (params.containsKey(getString(R.string.customer_id))) {
 				Log.d("doInBackground", "Using customer id");
 				Map<String, String> chargeParams = new HashMap<String, String>();
@@ -494,19 +507,167 @@ public class PayActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Boolean result) {
-			mProgressDialog.dismiss();
-			if (!result) {
-				Log.d("PayActivity.async.onpostexecute", "Failed!");
-				
+			if (!result) {			
+				mProgressDialog.dismiss();
 				mPayButton.setEnabled(true);	
 			}
 			else {
-				Intent intent = new Intent(activity, HomeActivity.class);
-				
-				activity.startActivity(intent);
+				LobPostCardTask lob_task = new LobPostCardTask(activity);
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+					lob_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[])null);
+				else
+					lob_task.execute((Void[])null);
 			}
 		}
 	};
+	
+	public class LobPostCardTask extends AsyncTask<Void,Void,ArrayList<Boolean>> {
+		private Activity activity;
+		
+		public LobPostCardTask(Activity activity) {
+			this.activity = activity;
+		}
+		
+		private Document getPDFImage() {
+	        Document document = new Document();
+	        try {
+	        	FileOutputStream file = openFileOutput(getString(R.string.pdf_name), Context.MODE_PRIVATE);
+				PdfWriter.getInstance(document, file);
+				file.close();
+			} catch (FileNotFoundException e) {
+				Log.d("failed", e.getMessage());
+				return null;
+			} catch (DocumentException e) {
+				Log.d("failed", "2");
+
+				return null;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        
+	        document.open();
+	        Image image;
+			try {
+		        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				FileInputStream fis = openFileInput(getString(R.string.selected_photo_name));
+		        Log.d("got the fis", fis.toString());
+
+				Bitmap bmap = BitmapFactory.decodeStream(fis);
+		        Log.d("got the bmap1", bmap.toString());
+
+		        bmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+		        Log.d("got the bmap2", bmap.toString());
+		        fis.close();
+
+		        image = Image.getInstance(stream.toByteArray());
+				//image = Image.getInstance(getFilesDir().getAbsolutePath() + "/" +
+				//		getString(R.string.selected_photo_name));
+		        document.add(image);               
+		        document.close();
+			} catch (BadElementException e) {
+				Log.d("failed", "3");
+
+				return null;
+			} catch (IOException e) {
+				Log.d("failed", e.getMessage());
+
+				return null;
+			} catch (DocumentException e) {
+				Log.d("failed", e.getMessage());
+
+				return null;
+			}
+			
+			return document;
+		}
+		
+		private ArrayList<NameValuePair> constructSingleParams(Recipient recipient) {
+			ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+			
+			//Set name on postcard (Note: this is optional)
+			params.add(new BasicNameValuePair("name", "DartCard Postcard from " + mEmailField.getText().toString()));
+
+			//Put in Recipient information
+			params.add(new BasicNameValuePair("to[name]", recipient.getName()));
+			params.add(new BasicNameValuePair("to[address_line1]", recipient.getStreet1()));
+			String street2 = recipient.getStreet2();
+			if (!street2.isEmpty()) {
+				params.add(new BasicNameValuePair("to[address_line2]", street2));
+			}
+			params.add(new BasicNameValuePair("to[address_city]", recipient.getCity()));
+			params.add(new BasicNameValuePair("to[address_state]", recipient.getState()));
+			params.add(new BasicNameValuePair("to[address_zip]", recipient.getZip()));
+			params.add(new BasicNameValuePair("to[address_country]", "US"));
+			
+			//Put in Sender information
+			params.add(new BasicNameValuePair("from[name]", mSender.getName()));
+			params.add(new BasicNameValuePair("from[address_line1]", mSender.getStreet1()));
+			String senderStreet2 = mSender.getStreet2();
+			if (!senderStreet2.isEmpty()) {
+				params.add(new BasicNameValuePair("to[address_line2]", senderStreet2));
+			}
+			params.add(new BasicNameValuePair("from[address_city]", mSender.getCity()));
+			params.add(new BasicNameValuePair("from[address_state]", mSender.getState()));
+			params.add(new BasicNameValuePair("from[address_zip]", mSender.getZip()));
+			params.add(new BasicNameValuePair("from[address_country]", "US"));
+			
+			//Set message, which substitutes for back
+			params.add(new BasicNameValuePair("message", recipient.getMessage()));
+			
+			return params;
+		}
+		
+		private ArrayList<ArrayList<NameValuePair>> constructAllParams() {
+			ArrayList<ArrayList<NameValuePair>> allParams = 
+					new ArrayList<ArrayList<NameValuePair>>();
+			
+			//If the image is converted to PDF successfully, we really only need to know the 
+			//file name for the Lob API calls
+			Document image = getPDFImage();
+			if (null == image) {
+				Log.d("in constructAllparams", "image is null");
+				return null;
+			}
+			
+			for (Recipient recipient : mRecipients) {
+				allParams.add(constructSingleParams(recipient));
+			}
+			
+			return allParams;
+		}
+		
+		@Override
+		protected ArrayList<Boolean> doInBackground(Void ... params) {
+			ArrayList<ArrayList<NameValuePair>> allParams = constructAllParams();
+			ArrayList<Boolean> results = new ArrayList<Boolean>();
+			
+			for (ArrayList<NameValuePair> parameters : allParams) {
+				results.add(LobUtilities.sendPostcards(parameters, 
+						activity.getString(R.string.pdf_name)));
+			}
+			return results;
+		}
+		
+		@Override
+		protected void onPostExecute(ArrayList<Boolean> result) {
+			if (!result.contains(false)) {
+				Intent intent = new Intent(activity, HomeActivity.class);
+				
+				activity.startActivity(intent);
+				finish();
+			}
+			else {
+				mProgressDialog.dismiss();
+				mPayButton.setEnabled(true);	
+
+				//Change that later
+				DartCardDialogFragment frag = DartCardDialogFragment
+						.newInstance(Globals.DIALOG_RECIPIENT_ERRORS);
+				frag.show(activity.getFragmentManager(), "recipient dialog");
+			}
+		}
+	}
 
 
 
