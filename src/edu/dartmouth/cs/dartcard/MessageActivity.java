@@ -33,7 +33,6 @@ public class MessageActivity extends Activity implements DialogExitListener {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d("TAG", "version is " + Build.VERSION.SDK_INT);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_message);
 		mActionBar = getActionBar();
@@ -41,17 +40,11 @@ public class MessageActivity extends Activity implements DialogExitListener {
 		mActionBar.setDisplayShowHomeEnabled(false);
 		
 		mLayout = (LinearLayout) findViewById(R.id.ui_message_relative_layout);
-		/*
-		mMessageField = new LimitedEditText(this);
-		mMessageField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-		mMessageField.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 0.4f));
-		mMessageField.setHint("Enter a message");
-		*/
-		Log.d("TAG", "mMessageString is " + mMessageString);
+
 		if (savedInstanceState != null) {
 			mMessageString = savedInstanceState.getString(MESSAGE_KEY);
 		}
-		Log.d("TAG", "now, mMessageString is " + mMessageString);
+
 		mMessageField = (LimitedEditText) findViewById(R.id.ui_message_activity_enterMessage);
 		mMessageField.setText(mMessageString);
 		mMessageField.setMaxTextSize(350);
@@ -70,7 +63,7 @@ public class MessageActivity extends Activity implements DialogExitListener {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		Log.d("TAG", "in onSaveInstanceState");
+
 		// Save the image capture uri before the activity goes into background
 		outState.putString(MESSAGE_KEY, mMessageString);
 		// save bitmap representing image in savedinstancestate 
@@ -80,9 +73,7 @@ public class MessageActivity extends Activity implements DialogExitListener {
 	@Override
     protected void onPause() {
 		super.onPause();
-		Log.d("TAG", "in onPause!");
 		mMessageString = mMessageField.getText().toString();
-		Log.d("TAG", "messageString is " + mMessageString);
 	}
 	
 		
@@ -130,8 +121,6 @@ public class MessageActivity extends Activity implements DialogExitListener {
 		       i++;
 		}
 		
-		Log.d("TAG", "# of newlines in this string is " + newCounter);            
-		Log.d("TAG", "Message contains newline: " + message.contains("\n"));
 		if (newCounter > 10) {
 		  return false;
 		}
@@ -141,20 +130,11 @@ public class MessageActivity extends Activity implements DialogExitListener {
 	}
 
 	@Override
-	public void onSavePhotoExit(boolean savePhoto) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onSavePhotoExit(boolean savePhoto) {}
 
 	@Override
-	public void onTrySaveAgainExit(boolean tryAgain) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onTrySaveAgainExit(boolean tryAgain) {}
 
 	@Override
-	public void onReturn() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onReturn() {}
 }

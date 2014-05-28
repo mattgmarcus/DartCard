@@ -53,7 +53,6 @@ public class FromActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mSavedInstanceState = savedInstanceState;
-		Log.d("TAG", "onCreate called!");
 		setContentView(R.layout.activity_from);
 		mActionBar = getActionBar();
 		mActionBar.setDisplayShowTitleEnabled(false);
@@ -85,7 +84,6 @@ public class FromActivity extends Activity {
 	
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		Log.d("TAG", "put " + mAddressSpinner.getSelectedItemPosition() + " into bundle");
 		outState.putInt("spinnerPos", mAddressSpinner.getSelectedItemPosition());
 	}
 	
@@ -93,12 +91,10 @@ public class FromActivity extends Activity {
 	public void onConfigurationChanged(Configuration newConfig) {
 	    super.onConfigurationChanged(newConfig);
 	    mConfigurationChanged = true;
-	    Log.d("TAG", "Configuration changed!");
 	}
 	
 	public void onResume() {
 		super.onResume();
-		Log.d("TAG", "onResume called!");
 		mAddressSelected = false;
 		
 		mSpinnerArray =  new ArrayList<String>();
@@ -117,14 +113,12 @@ public class FromActivity extends Activity {
 	    mAddressSpinner = (Spinner) findViewById(R.id.address_spinner);
 	    mAddressSpinner.setAdapter(adapter);
 	    if (mSavedInstanceState != null) {
-			Log.d("TAG", "got " + mSavedInstanceState.getInt("spinnerPos", 0) + " from bundle");
 	        mAddressSpinner.setSelection(mSavedInstanceState.getInt("spinnerPos", 0));
 		}
 	}
 	
 	public void onStart() {
 		super.onStart();
-		Log.d("TAG", "onStart called!");
 		mAddressSpinner = (Spinner) findViewById(R.id.address_spinner);
 		mAddressSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
@@ -133,8 +127,7 @@ public class FromActivity extends Activity {
 				position -= 1;
 				mPosition = position + 1;
 		    	if (position == -1) {
-		    		if (mAddressSelected == true) {
-		    		Log.d("TAG", "setting all shit to zero!");
+		    		if (mAddressSelected) {
 			    	mAddressSelected = false;
 			    	enableEditTexts();
 			    	mNameField.setText("");
@@ -147,7 +140,6 @@ public class FromActivity extends Activity {
 			    	mSaveButton = (Button) findViewById(R.id.ui_from_activity_saveButton);
 			    	mSaveButton.setText("Save");
 		    		}
-		    		else { Log.d("TAG", "nah just rotation not setting shit to zero"); }
 			    }
 		    	else {
 		    		mAddressSelected = true;
@@ -249,9 +241,8 @@ public class FromActivity extends Activity {
 	public void onSaveClicked(View v) {
 		AddressDBHelper helper = new AddressDBHelper(this);
 		Address add = new Address();
-		if (mAddressSelected == true) {
+		if (mAddressSelected) {
 			for (Address address : mAddressList) {
-				Log.d("TAG", "label is " + address.getLabel() + " and spinnerArray pos is " + mSpinnerArray.get(mPosition));
 				if (address.getLabel() == mSpinnerArray.get(mPosition)) {
 					helper.removeAddress(address.getId());
 					break;
@@ -319,7 +310,6 @@ public class FromActivity extends Activity {
 		}
 		long id = helper.insertAddress(add);
 		add.setId(id);
-		Log.d("TAG", add.toString());
 		Toast.makeText(getApplicationContext(),
      			"Saved address \"" + mLabelField.getText().toString() + "\"",
      			Toast.LENGTH_SHORT).show();

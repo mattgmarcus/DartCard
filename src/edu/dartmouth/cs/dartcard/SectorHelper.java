@@ -68,7 +68,6 @@ public class SectorHelper {
 	//finding adjacent sectors, need to check for boundary cases
 	private static boolean isLeftEdgeOfMapping(int sector){
 		if (sector % NUM_COLUMNS == 0){
-			Log.d("DartCard", "left edge boundary");
 			return true;
 		}
 		else
@@ -77,7 +76,6 @@ public class SectorHelper {
 	
 	private static boolean isRightEdgeOfMapping(int sector){
 		if (isLeftEdgeOfMapping(sector + 1) == true){
-			Log.d("DartCard", "right edge boundary");
 			return true;
 		}
 		else
@@ -86,7 +84,6 @@ public class SectorHelper {
 	
 	private static boolean isTopEdgeOfMapping(int sector){
 		if (sector >= 0 && sector <= NUM_COLUMNS - 1){
-			Log.d("DartCard", "top edge boundary");
 			return true;
 		}
 		else
@@ -97,7 +94,6 @@ public class SectorHelper {
 		int firstValInLastRow = NUM_COLUMNS * (NUM_ROWS - 1);
 		int lastValInLastRow = NUM_COLUMNS * NUM_ROWS - 1;
 		if (sector >= firstValInLastRow && sector <= lastValInLastRow){
-			Log.d("DartCard", "bottom edge boundary");
 			return true;
 		}
 		else 
@@ -118,8 +114,6 @@ public class SectorHelper {
 		    result[5] = sector + NUM_COLUMNS - 1; //bottom left corner
 		    result[6] = sector + NUM_COLUMNS; //directly below
 		    result[7] = sector + NUM_COLUMNS + 1; //bottom right corner
-		}else{
-			Log.d("DartCard", "boundary case for adjacent sectors");
 		}
 		//returns empty array if boundary case
 		return result;

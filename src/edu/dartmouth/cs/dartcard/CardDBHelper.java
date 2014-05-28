@@ -69,13 +69,6 @@ public class CardDBHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = getWritableDatabase();
 		db.delete(CARDS, ROW_KEY + " = " + rowIndex, null);
 		db.close();
-		Log.d("In removeEntry!", "Deleting row " + rowIndex);
-		/*
-		Use getWritableDatabase() to get the database
-		db.delete(ENTRIES, key_rowID + "=" + rowIndex, null);
-		Then use built in delete from SQLiteDatabsse
-		Close the database
-		 */
 	}
 	
 	public ArrayList<Card> fetchCards() {
@@ -85,7 +78,6 @@ public class CardDBHelper extends SQLiteOpenHelper {
 				null, null, null);
 		while (cursor.moveToNext()) {
             Card card= cursorToEntry(cursor);
-            Log.d("Card!", "Fetching card = " + cursorToEntry(cursor).getId());
             entryList.add(card);
         }
 		cursor.close();

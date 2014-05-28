@@ -196,7 +196,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		ArrayList<PhotoEntry> photos = new ArrayList<PhotoEntry>(); 
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("sector", String.valueOf(sectorId));
-		Log.d("params", params.toString());
 		String result = HttpUtilities.get(getString(R.string.server_addr)+"/serve?sector="+sectorId);
 		
 		if (null == result) {
@@ -222,7 +221,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		PriorityQueue<PhotoEntry> photoQueue = new PriorityQueue<PhotoEntry>(100, comparator);
 		//calculate the sector id for current location
 		int sectorId = SectorHelper.getSectorIdFromLatLong(location.getLatitude(), location.getLongitude());
-		Log.d("DartCard", "Current Sector Id is " + sectorId);
 		
 		ArrayList<PhotoEntry> sectorPhotoList = fetchPhotos(sectorId);
 		
@@ -233,7 +231,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		//go through all entries, if the list fills up, keep the shortest
 		//distanced photos
 		for (PhotoEntry currEntry : sectorPhotoList){
-			Log.d("DartCard","Adding to pq a photo from " + currEntry.getLatitude() + ", " + currEntry.getLongitude());
 			photoQueue.add(currEntry);
 			if (photoQueue.size() > 100){
 				photoQueue.poll();
@@ -243,50 +240,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		return photoQueue;
 	}
 
-	/*public static PriorityQueue<PhotoEntry> fetch100ClosestPhotoEntries(Context context, Location location) {
-		Comparator<PhotoEntry> comparator = new LocationComparator(location);
-		PriorityQueue<PhotoEntry> photoQueue = new PriorityQueue<PhotoEntry>(100, comparator);
-		//calculate the sector id for current location
-		int sectorId = SectorHelper.getSectorIdFromLatLong(location.getLatitude(), location.getLongitude());
-		Log.d("DartCard", "Current Sector Id is " + sectorId);
-		PhotoEntryDbHelper db = new PhotoEntryDbHelper(context);
-		ArrayList<PhotoEntry> sectorPhotoList = db.fetchSectorEntries(sectorId);
-		ArrayList<PhotoEntry> allPhotos = db.fetchEntries();
-		Log.d("DartCard", "size of photolist for sector is " + sectorPhotoList.size());
-		Log.d("DartCard", "number of photos in database is " + allPhotos.size());
-		//go through all entries, if the list fills up, keep the shortest
-		//distanced photos
-		for (PhotoEntry currEntry : sectorPhotoList){
-			photoQueue.add(currEntry);
-			if (photoQueue.size() > 100){
-				photoQueue.poll();
-			}
-		}
-		
-		//once you've gotten all photos from the current sector, if you
-		//aren't at the limit yet, get photos from adjacent sectors, also, mainting
-		//the hundred closest photos in the queue. locations in adjacent sectors could be closer,
-		//so just keep adding
-		if (photoQueue.size() < 100){
-			int[] adjacentSectors = SectorHelper.getAdjacentSectors(sectorId);
-			//if it's a boundary case for adjacent secotrs, the getADjacentSEctors
-			//call will return an empty array and only the current sector will be loaded
-			for (int i = 0; i < adjacentSectors.length; i++){
-				int currSecId = adjacentSectors[i];
-				ArrayList<PhotoEntry> secPhotoList = db.fetchSectorEntries(currSecId);
-				for (PhotoEntry currEntry : secPhotoList){
-					photoQueue.add(currEntry);
-					if (photoQueue.size() > 100){
-						photoQueue.poll();
-					}
-				}
-			}
-		}
-			
-		
-		return photoQueue;
-	}*/
-	
 	public static class LocationComparator implements Comparator<PhotoEntry>{
 		
 		private Location location;
@@ -307,17 +260,12 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 			
 			double distance1 = location.distanceTo(location1);
 			double distance2 = location.distanceTo(location2);
-			Log.d("DartCard", "Current location is " + location.getLatitude() + ", " + location.getLongitude());
-			Log.d("DartCard", "distance to photo 1 is " + distance1);
-			Log.d("DartCard", "distance to photo 2 is " + distance2);
 			//want the furtherst distance to stay at top of queue, so we can get it when
 			//we poll. so return positive if distance 1 is greater than distance 2
 			if (distance1 > distance2){
-				Log.d("DartCard", "returning photo1 > photo2");
 				return 1;
 			}
 			else if (distance1 < distance2){
-				Log.d("DartCard", "returning photo1 < photo2");
 				return -1;
 			}
 			else

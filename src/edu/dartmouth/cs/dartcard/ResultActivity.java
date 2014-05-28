@@ -29,7 +29,6 @@ public class ResultActivity extends Activity {
 		if (null != bundle) {
 			String urls = bundle.getString("Postcardurls");
 			mUrlsText.setText(urls);
-			//mUrlsText.setMovementMethod(LinkMovementMethod.getInstance());
 		} 
 		else {
 			mUrlsText.setText("http://www.google.com is a link");

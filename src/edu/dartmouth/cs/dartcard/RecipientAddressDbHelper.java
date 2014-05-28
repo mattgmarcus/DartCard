@@ -70,7 +70,6 @@ public class RecipientAddressDbHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = getWritableDatabase();
 		db.delete(ADDRESSES, ROW_KEY + " = " + rowIndex, null);
 		db.close();
-		Log.d("In removeEntry!", "Deleting row " + rowIndex);
 	}
 	
 	public ArrayList<Recipient> fetchAddresses() {
@@ -80,7 +79,6 @@ public class RecipientAddressDbHelper extends SQLiteOpenHelper {
 				null, null, null);
 		while (cursor.moveToNext()) {
             Recipient add= cursorToEntry(cursor);
-            Log.d("Address!", "Fetching address = " + cursorToEntry(cursor).getId());
             entryList.add(add);
         }
 		cursor.close();
@@ -97,13 +95,6 @@ public class RecipientAddressDbHelper extends SQLiteOpenHelper {
 		cursor.close();
 		db.close();
 		return add;
-		/*
-		GetReadableDatabase
-		Set Cursor object to the result of querying your database at the specified id
-		Cursor represents the row
-		If you're in the first position of that row (cursor.moveToFirst()) and then get the entry 
-		Remember to close the cursor, and close the database
-		*/
 	}
 	
 	private Recipient cursorToEntry(Cursor cursor) {

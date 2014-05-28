@@ -70,8 +70,6 @@ public class PhotoEntryDbHelper extends SQLiteOpenHelper {
 		dbObject = getWritableDatabase();
 		long entryId = dbObject.insert(TABLE_NAME_ENTRIES, null, values);
 		dbObject.close();
-		Log.d("DartCard", "inserted photo with id: " + entryId
-				+ "\n and with sector id: " + entry.getSectorId());
 		return entryId;
 	}
 
