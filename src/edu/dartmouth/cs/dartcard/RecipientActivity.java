@@ -507,9 +507,11 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 
 		@Override
 		protected void onPostExecute(ArrayList<Boolean> results) {
+			if (mProgressDialog != null)
+				mProgressDialog.dismiss();
+			mNextButton.setEnabled(true);
+
 			if (results.contains(false)) {
-				if (mProgressDialog != null)
-					mProgressDialog.dismiss();
 				DartCardDialogFragment frag = DartCardDialogFragment
 						.newInstance(Globals.DIALOG_RECIPIENT_ERRORS);
 				frag.show(activity.getFragmentManager(), "recipient dialog");
@@ -525,8 +527,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 						field.setTextAppearance(activity, R.style.normalText);
 					}
 				}
-
-				mNextButton.setEnabled(true);
 			} else {
 				Intent intent = new Intent(activity, PayActivity.class);
 				if (null != recipients) {
