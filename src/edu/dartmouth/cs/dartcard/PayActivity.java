@@ -100,6 +100,8 @@ public class PayActivity extends Activity implements DialogExitListener {
 		mYearSpinner = (Spinner) findViewById(R.id.ui_pay_activity_recipient_expiry_year);
 
 		mRememberSwitch = (Switch) findViewById(R.id.ui_pay_activity_recipient_remember);
+		mRememberSwitch.setTextOn("Yes");
+		mRememberSwitch.setTextOff("No");		
 
 		mPayButton = (Button) findViewById(R.id.ui_pay_activity_paybutton);
 
@@ -143,7 +145,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 
 	private void populateCardChoices() {
 		ArrayList<String> cardTypes = new ArrayList<String>();
-		cardTypes.add("Select a saved card");
+		cardTypes.add("Select a saved card or add a new one");
 		for (int i = 0; i < mUserCards.size(); i++) {
 			cardTypes.add(mUserCards.get(i).getType() + "--"
 					+ mUserCards.get(i).getLastFour());
@@ -369,61 +371,68 @@ public class PayActivity extends Activity implements DialogExitListener {
 	}
 
 	public static class CreditCardFormatWatcher implements TextWatcher {
-		private static final char space = ' ';
+	    private static final char space = ' ';
 
-		@Override
-		public void afterTextChanged(Editable s) {
-			if (s.length() > 0) {
-				switch (s.toString().charAt(0)) {
-				// To do for format: xxxx xxxxxx xxxxx
-				case '3':
-					// Remove spacing char
-					if (s.length() > 0 && (s.length() % 5) == 0) {
-						final char c = s.charAt(s.length() - 1);
-						if (space == c) {
-							s.delete(s.length() - 1, s.length());
-						}
-					}
-					if (s.length() > 0 && (s.length() % 5) == 0) {
-						char c = s.charAt(s.length() - 1);
-						if (Character.isDigit(c)
-								&& TextUtils.split(s.toString(),
-										String.valueOf(space)).length <= 3) {
-							s.insert(s.length() - 1, String.valueOf(space));
-						}
-					}
-				default:
-					// Remove spacing char
-					if (s.length() > 0 && (s.length() % 5) == 0) {
-						final char c = s.charAt(s.length() - 1);
-						if (space == c) {
-							s.delete(s.length() - 1, s.length());
-						}
-					}
-					// Insert char where needed.
-					if (s.length() > 0 && (s.length() % 5) == 0) {
-						char c = s.charAt(s.length() - 1);
-						// Only if it's a digit where there should be a space we
-						// insert a space
-						if (Character.isDigit(c)
-								&& TextUtils.split(s.toString(),
-										String.valueOf(space)).length <= 3) {
-							s.insert(s.length() - 1, String.valueOf(space));
-						}
-					}
-				}
-			}
-		}
+	    @Override
+	    public void afterTextChanged(Editable s) {
+	    	if (s.length() > 0) {
+		    	switch(s.toString().charAt(0)) {
+		    	//For format: xxxx xxxxxx xxxxx
+		    	case '3':
+			        // Remove spacing char
+			        if (s.length() > 0 && (s.length() % 5) == 0) {
+			            final char c = s.charAt(s.length() - 1);
+			            if (space == c) {
+			                s.delete(s.length() - 1, s.length());
+			            }
+			        }
+			        if (s.length() > 0 && (s.length() % 9) == 0) {
+			            final char c = s.charAt(s.length() - 1);
+			            if (space == c) {
+			                s.delete(s.length() - 1, s.length());
+			            }
+			        }
+			        
+			        if (s.length() > 0 && (s.length() % 5) == 0 && (s.length() < 6)) {
+			        	char c = s.charAt(s.length() - 1);
+			            if (Character.isDigit(c) && TextUtils.split(s.toString(), String.valueOf(space)).length < 2) {
+				        	s.insert(s.length() - 1, String.valueOf(space));
+			            }
+			        }
+			        if (s.length() > 0 && (s.length() % 12) == 0 && (s.length() < 13)) {
+			            char c = s.charAt(s.length() - 1);
+			            if (Character.isDigit(c) && TextUtils.split(s.toString(), String.valueOf(space)).length < 3) {
+			            	s.insert(s.length() - 1, String.valueOf(space));
+			            }
+			        }
+			        break;
+		    	default:
+		    		Log.d("Heref", s.toString().charAt(0)+"");
 
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before,
-				int count) {
-		}
-
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
-		}
+			        // Remove spacing char
+			        if (s.length() > 0 && (s.length() % 5) == 0) {
+			            final char c = s.charAt(s.length() - 1);
+			            if (space == c) {
+			                s.delete(s.length() - 1, s.length());
+			            }
+			        }
+			        // Insert char where needed.
+			        if (s.length() > 0 && (s.length() % 5) == 0) {
+			            char c = s.charAt(s.length() - 1);
+			            // Only if it's a digit where there should be a space we insert a space
+			            if (Character.isDigit(c) && TextUtils.split(s.toString(), String.valueOf(space)).length <= 3) {
+			                s.insert(s.length() - 1, String.valueOf(space));
+			            }
+			        }
+			        break;
+		    	}
+	    	}
+	    }
+	    
+	    @Override
+	    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+	    @Override
+	    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 	}
 
 	public class StripeTask extends AsyncTask<Void, Void, Boolean> {
@@ -528,6 +537,11 @@ public class PayActivity extends Activity implements DialogExitListener {
 			if (!result) {
 				mProgressDialog.dismiss();
 				mPayButton.setEnabled(true);
+	
+				DartCardDialogFragment frag = DartCardDialogFragment
+						.newInstance(Globals.DIALOG_LOB_ERRORS);
+				frag.show(activity.getFragmentManager(), "lob dialog");
+
 			} else {
 				LobPostCardTask lob_task = new LobPostCardTask(activity);
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -538,9 +552,8 @@ public class PayActivity extends Activity implements DialogExitListener {
 			}
 		}
 	};
-
-	public class LobPostCardTask extends
-			AsyncTask<Void, Void, ArrayList<Boolean>> {
+	
+	public class LobPostCardTask extends AsyncTask<Void,Void,ArrayList<LobResult>> {
 		private Activity activity;
 
 		public LobPostCardTask(Activity activity) {
@@ -709,30 +722,56 @@ public class PayActivity extends Activity implements DialogExitListener {
 		}
 
 		@Override
-		protected ArrayList<Boolean> doInBackground(Void... params) {
+		protected ArrayList<LobResult> doInBackground(Void ... params) {
 			ArrayList<ArrayList<NameValuePair>> allParams = constructAllParams();
-			ArrayList<Boolean> results = new ArrayList<Boolean>();
-
-			String fileName = getFilesDir() + "/"
-					+ activity.getString(R.string.pdf_name);
+			ArrayList<LobResult> results = new ArrayList<LobResult>();
+			
+			String fileName = getFilesDir() + "/" + activity.getString(R.string.pdf_name);
+			LobResult result;
 			for (ArrayList<NameValuePair> parameters : allParams) {
-				results.add(LobUtilities.sendPostcards(parameters, fileName));
+				result = LobUtilities.sendPostcards(parameters, 
+						fileName);
+				results.add(result);
 			}
 			return results;
 		}
-
+		
+		private String getPostcardUrls(ArrayList<LobResult> results) {
+			String urls = "Check out your postcards here: ";
+			
+			int length = results.size();
+			for (int i = 0; i < length - 1; i++) {
+				urls = urls.concat(results.get(i).getUrl() + ", ");
+			}
+			
+			urls = urls.concat(results.get(length - 1).getUrl());
+			
+			return urls;
+		}
+		
 		@Override
-		protected void onPostExecute(ArrayList<Boolean> result) {
-			if (!result.contains(false)) {
-				Intent intent = new Intent(activity, FinishActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-						| Intent.FLAG_ACTIVITY_NEW_TASK);
-				activity.startActivity(intent);
-			} else {
+		protected void onPostExecute(ArrayList<LobResult> result) {
+			boolean success = true;
+			for (LobResult res : result) {
+				if (!res.getSuccess()) {
+					success = false;
+				}
+			}
+			if (success) {
 				mProgressDialog.dismiss();
-				mPayButton.setEnabled(true);
+				mPayButton.setEnabled(true);	
 
-				// Change that later
+				Intent intent = new Intent(activity, ResultActivity.class);
+				String postcardUrls = getPostcardUrls(result);
+				intent.putExtra("Postcardurls", postcardUrls);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+				activity.startActivity(intent);
+			}
+			else {
+				//If it was unsuccessful
+				mProgressDialog.dismiss();
+				mPayButton.setEnabled(true);	
+	
 				DartCardDialogFragment frag = DartCardDialogFragment
 						.newInstance(Globals.DIALOG_LOB_ERRORS);
 				frag.show(activity.getFragmentManager(), "lob dialog");

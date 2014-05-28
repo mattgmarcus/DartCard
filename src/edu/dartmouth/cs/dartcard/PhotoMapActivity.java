@@ -50,6 +50,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 	PriorityQueue<PhotoEntry> closest100Photos;
 	
 	private ProgressDialog mProgressDialog;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,8 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 
 		// setup action tabs
 		ActionBar actionbar = getActionBar();
+		actionbar.setDisplayShowTitleEnabled(false);
+		actionbar.setDisplayShowHomeEnabled(false);
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		// set up the tabs for the action bar

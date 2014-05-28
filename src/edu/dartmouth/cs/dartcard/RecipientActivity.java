@@ -52,9 +52,10 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 	private ArrayList<EditText> mLabelFields;
 	private ArrayList<Button> mSaveButtons;
 	private ArrayList<Spinner> mSpinners;
+	private ArrayList<ArrayAdapter<String>> mAdapters;
 
-	// These variables deal with formatting the messages box
-	private LayoutParams mMessageParams;
+	
+	private long currentId;
 
 	private Button mNextButton;
 	private Button mAddAnotherButton;
@@ -90,7 +91,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		this.getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-		// mValidities = new ArrayList<Boolean>();
 		mNameFields = new ArrayList<EditText>();
 		mStreet1Fields = new ArrayList<EditText>();
 		mStreet2Fields = new ArrayList<EditText>();
@@ -102,9 +102,10 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		mLabelFields = new ArrayList<EditText>();
 		mSaveButtons = new ArrayList<Button>();
 		mSpinners = new ArrayList<Spinner>();
+		mAdapters = new ArrayList<ArrayAdapter<String>>();
 
-		mMessageParams = new LayoutParams(LayoutParams.FILL_PARENT, 500);
-
+		currentId = -1;
+		
 		mActionBar = getActionBar();
 		mActionBar.setDisplayShowTitleEnabled(false);
 
@@ -137,50 +138,55 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		}
 
 		createRecipientView(-1);
-		// if (mSavedInstanceState != null) {
-		// mNumRecipients = mSavedInstanceState.getInt(NUMRECIPIENTS_KEY);
-		// Log.d("TAG", "numRecipients is " + mNumRecipients);
-		// for (int i = 0; i < mNumRecipients; i++) {
-		// Log.d("TAG", "in loop, about to create recipient " + i);
-		// createRecipientView(i);
-		// }
-		// mSavedInstanceState = null;
-		// } else {
-		// createRecipientView(-1);
-		// }
+	}
+	public void enableEditTexts(int pos) {
+		mNameFields.get(pos).setEnabled(true);
+		mStreet1Fields.get(pos).setEnabled(true);
+		mStreet2Fields.get(pos).setEnabled(true);
+		mCityFields.get(pos).setEnabled(true);
+		mStateFields.get(pos).setEnabled(true);
+		mZipFields.get(pos).setEnabled(true);
+		mLabelFields.get(pos).setEnabled(true);
 	}
 
-	// @Override
-	// protected void onSaveInstanceState(Bundle outState) {
-	// super.onSaveInstanceState(outState);
-	// Log.d("TAG", "in onSaveInstanceState");
-	// for (int i = 0; i < mNumRecipients; i++) {
-	// // outState.putBoolean(VALIDITY_KEY, mValidities.get(i));
-	// outState.putString(NAME_KEY + i, mNameFields.get(i).getText()
-	// .toString());
-	// Log.d("TAG", "saving name "
-	// + mNameFields.get(i).getText().toString());
-	// outState.putString(STREET1_KEY + i, mStreet1Fields.get(i).getText()
-	// .toString());
-	// Log.d("TAG", "saving street "
-	// + mStreet1Fields.get(i).getText().toString());
-	// outState.putString(STREET2_KEY + i, mStreet2Fields.get(i).getText()
-	// .toString());
-	// outState.putString(CITY_KEY + i, mCityFields.get(i).getText()
-	// .toString());
-	// outState.putString(STATE_KEY + i, mStateFields.get(i).getText()
-	// .toString());
-	// if (mZipFields.get(i).getText().toString().length() > 0) {
-	// outState.putString(ZIP_KEY + i, mZipFields.get(i).getText()
-	// .toString());
-	// }
-	// Log.d("TAG", "saving zip " + mZipFields.get(i).getText().toString());
-	// outState.putString(MESSAGE_KEY + i, mMessageFields.get(i).getText()
-	// .toString());
-	// }
-	// outState.putInt(NUMRECIPIENTS_KEY, mNumRecipients);
-	// }
 
+	public void disableEditTexts(int pos) {
+		mNameFields.get(pos).setEnabled(false);
+		mNameFields.get(pos).setTextColor(Color.WHITE);
+		mStreet1Fields.get(pos).setEnabled(false);
+		mStreet1Fields.get(pos).setTextColor(Color.WHITE);
+		mStreet2Fields.get(pos).setEnabled(false);
+		mStreet2Fields.get(pos).setTextColor(Color.WHITE);
+		mCityFields.get(pos).setEnabled(false);
+		mCityFields.get(pos).setTextColor(Color.WHITE);
+		mStateFields.get(pos).setEnabled(false);
+		mStateFields.get(pos).setTextColor(Color.WHITE);
+		mZipFields.get(pos).setEnabled(false);
+		mZipFields.get(pos).setTextColor(Color.WHITE);
+		mLabelFields.get(pos).setEnabled(false);
+		mLabelFields.get(pos).setTextColor(Color.WHITE);
+	}
+
+	private void resetFields(int j) {
+		enableEditTexts(j);
+		currentId = -1;
+		mNameFields.get(j).setText("");
+		mStreet1Fields.get(j).setText("");
+		mStreet2Fields.get(j).setText("");
+		mCityFields.get(j).setText("");
+		mStateFields.get(j).setText("");
+		mZipFields.get(j).setText("");
+		mLabelFields.get(j).setText("");
+		Button saveButton = mSaveButtons.get(j);
+		saveButton.setText("Save");
+		
+		Spinner spinner = mSpinners.get(j);
+		//int position = spinner.getSelectedItemPosition();
+		ArrayAdapter<String> adapter = mAdapters.get(j);
+		adapter.remove(spinner.getSelectedItem().toString());
+		spinner.setSelection(0);
+		spinner.setAdapter(adapter);
+	}
 	private void setupSpinner(int i) {
 		final int j = i;
 		mSpinners.get(j).setOnItemSelectedListener(
@@ -192,10 +198,12 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 						// mPosition = position + 1;
 						Button saveButton;
 						if (position == -1) {
+							
 							// if (mAddressSelected == true) {
 							// Log.d("TAG", "setting all shit to zero!");
 							// mAddressSelected = false;
 							enableEditTexts(j);
+							currentId = -1;
 							mNameFields.get(j).setText("");
 							mStreet1Fields.get(j).setText("");
 							mStreet2Fields.get(j).setText("");
@@ -205,12 +213,9 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 							mLabelFields.get(j).setText("");
 							saveButton = mSaveButtons.get(j);
 							saveButton.setText("Save");
-							// }
-							// else { Log.d("TAG",
-							// "nah just rotation not setting shit to zero"); }
 						} else {
-							// mAddressSelected = true;
 							Recipient recip = mRecipientList.get(position);
+							currentId = recip.getId();
 							mNameFields.get(j).setText(recip.getName());
 							mStreet1Fields.get(j).setText(recip.getStreet1());
 							mStreet2Fields.get(j).setText(recip.getStreet2());
@@ -222,33 +227,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 							saveButton = mSaveButtons.get(j);
 							saveButton.setText("Delete");
 						}
-					}
-
-					public void disableEditTexts(int pos) {
-						mNameFields.get(pos).setEnabled(false);
-						mNameFields.get(pos).setTextColor(Color.WHITE);
-						mStreet1Fields.get(pos).setEnabled(false);
-						mStreet1Fields.get(pos).setTextColor(Color.WHITE);
-						mStreet2Fields.get(pos).setEnabled(false);
-						mStreet2Fields.get(pos).setTextColor(Color.WHITE);
-						mCityFields.get(pos).setEnabled(false);
-						mCityFields.get(pos).setTextColor(Color.WHITE);
-						mStateFields.get(pos).setEnabled(false);
-						mStateFields.get(pos).setTextColor(Color.WHITE);
-						mZipFields.get(pos).setEnabled(false);
-						mZipFields.get(pos).setTextColor(Color.WHITE);
-						mLabelFields.get(pos).setEnabled(false);
-						mLabelFields.get(pos).setTextColor(Color.WHITE);
-					}
-
-					public void enableEditTexts(int pos) {
-						mNameFields.get(pos).setEnabled(true);
-						mStreet1Fields.get(pos).setEnabled(true);
-						mStreet2Fields.get(pos).setEnabled(true);
-						mCityFields.get(pos).setEnabled(true);
-						mStateFields.get(pos).setEnabled(true);
-						mZipFields.get(pos).setEnabled(true);
-						mLabelFields.get(pos).setEnabled(true);
 					}
 
 					@Override
@@ -334,6 +312,7 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 				android.R.layout.simple_spinner_item, mSpinnerArray);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		recipSpinner.setAdapter(adapter);
+		mAdapters.add(adapter);
 		if (mSavedInstanceState != null) {
 			Log.d("TAG", "got " + mSavedInstanceState.getInt("spinnerPos", 0)
 					+ " from bundle");
@@ -347,13 +326,10 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		TextView recipientHeader = new TextView(this);
 		if (num == -1) {
 			recipientHeader.setText("Recipient " + mNumRecipients + ":");
-//			setupSpinner(mNumRecipients - 1);
 			//want num to be one less than num recipients now, for reference into arrays
 			num = mNumRecipients - 1;
-			// mValidities.set(mNumRecipients, true);
 		} else {
 			recipientHeader.setText("Recipient " + (num + 1) + ":");
-			// mValidities.set(num, true);
 		}
 
 		mRecipientFields.add(recipientHeader);
@@ -368,7 +344,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 				.setHint(getString(R.string.ui_recipient_activity_enterName_hint));
 		nameField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 		mNameFields.add(nameField);
-		// nameField.setId(R.id.recipient_name);
 
 		EditText street1Field = new EditText(this);
 		street1Field
@@ -422,43 +397,11 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		messageField.setInputType(InputType.TYPE_CLASS_TEXT
 				| InputType.TYPE_TEXT_FLAG_MULTI_LINE);
 		messageField.setText(mGenericMessage);
-		messageField.setLayoutParams(mMessageParams);
 		mMessageFields.add(messageField);
 		
 		setupSpinner(num);
 
-		// if (mSavedInstanceState != null) {
-		// // mValidities.set(num,
-		// mSavedInstanceState.getBoolean(VALIDITY_KEY));
-		// nameField.setText(mSavedInstanceState.getString(NAME_KEY + num)
-		// .toString());
-		// // if (!mValidities.get(num))
-		// // nameField.setTextAppearance(this, R.style.boldText);
-		// Log.d("TAG",
-		// "setting name "
-		// + mSavedInstanceState.getString(NAME_KEY + num)
-		// .toString());
-		// street1Field.setText(mSavedInstanceState.getString(
-		// STREET1_KEY + num).toString());
-		// Log.d("TAG",
-		// "setting street "
-		// + mSavedInstanceState.getString(STREET1_KEY + num)
-		// .toString());
-		// street2Field.setText(mSavedInstanceState.getString(
-		// STREET2_KEY + num).toString());
-		// cityField.setText(mSavedInstanceState.getString(CITY_KEY + num)
-		// .toString());
-		// stateField.setText(mSavedInstanceState.getString(STATE_KEY + num)
-		// .toString());
-		// Log.d("TAG",
-		// "setting zip "
-		// + mSavedInstanceState.getString(ZIP_KEY + num));
-		// zipField.setText((mSavedInstanceState.getString(ZIP_KEY + num)));
-		// messageField.setText(mSavedInstanceState.getString(
-		// MESSAGE_KEY + num).toString());
-		// } else {
 		messageField.setText(mMessage);
-		// }
 		Log.d("TAG", "added all saved text");
 
 		// Add all the text fields
@@ -482,84 +425,76 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		RecipientAddressDbHelper helper = new RecipientAddressDbHelper(this);
 		Recipient recip = new Recipient();
 		int counter = 0;
+		String text = null;
+		Button clickedButton = null;
 		for (Button but : mSaveButtons) {
 			if (but == v) {
 				counter = mSaveButtons.indexOf(but);
+				text = but.getText().toString();
+				clickedButton = but;
 			}
 		}
-		// if (mAddressSelected == true) {
-//		if (true) {
-//			for (Recipient iter : helper.fetchAddresses()) {
-//				Log.d("TAG",
-//						"label is " + iter.getLabel()
-//								+ " and spinnerArray pos is "
-//								+ mSpinnerArray.get(mPosition));
-//				if (iter.getLabel() == mSpinnerArray.get(mPosition)) {
-//					helper.removeAddress(iter.getId());
-//					break;
-//				}
-//			}
-//			Toast.makeText(getApplicationContext(), "Address removed.",
-//					Toast.LENGTH_SHORT).show();
-//			finish();
-//			startActivity(getIntent());
-//			return;
-//		}
-		if ((mNameFields.get(counter).getText().toString().length() >= 1)) {
-			recip.setName(mNameFields.get(counter).getText().toString());
-		} else {
-			Toast.makeText(getApplicationContext(), "Name is blank.",
+		if (text.equals("Save")) {
+			if ((mNameFields.get(counter).getText().toString().length() >= 1)) {
+				recip.setName(mNameFields.get(counter).getText().toString());
+			} else {
+				Toast.makeText(getApplicationContext(), "Name is blank.",
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
+			if ((mStreet1Fields.get(counter).getText().toString().length() >= 1)) {
+				recip.setStreet1(mStreet1Fields.get(counter).getText().toString());
+			} else {
+				Toast.makeText(getApplicationContext(),
+						"Address Line One is blank.", Toast.LENGTH_SHORT).show();
+				return;
+			}
+			if ((mStreet2Fields.get(counter).getText().toString().length() >= 1)) {
+				recip.setStreet2(mStreet2Fields.get(counter).getText().toString());
+			} else {
+				recip.setStreet2(" ");
+			}
+			if ((mCityFields.get(counter).getText().toString().length() >= 1)) {
+				recip.setCity(mCityFields.get(counter).getText().toString());
+			} else {
+				Toast.makeText(getApplicationContext(), "City is blank.",
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
+			if ((mStateFields.get(counter).getText().toString().length() >= 1)) {
+				recip.setState(mStateFields.get(counter).getText().toString());
+			} else {
+				Toast.makeText(getApplicationContext(), "State is blank.",
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
+			if ((mZipFields.get(counter).getText().toString().length() >= 1)) {
+				recip.setZip(mZipFields.get(counter).getText().toString());
+			} else {
+				Toast.makeText(getApplicationContext(), "Zip is blank.",
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
+			if ((mLabelFields.get(counter).getText().toString().length() >= 1)) {
+				recip.setLabel(mLabelFields.get(counter).getText().toString());
+			} else {
+				Toast.makeText(getApplicationContext(), "Address label is blank.",
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
+			long id = helper.insertAddress(recip);
+			recip.setId(id);
+			Log.d("TAG", recip.toString());
+			Toast.makeText(
+					getApplicationContext(),
+					"Saved address \""
+							+ mLabelFields.get(counter).getText().toString() + "\"",
 					Toast.LENGTH_SHORT).show();
-			return;
 		}
-		if ((mStreet1Fields.get(counter).getText().toString().length() >= 1)) {
-			recip.setStreet1(mStreet1Fields.get(counter).getText().toString());
-		} else {
-			Toast.makeText(getApplicationContext(),
-					"Address Line One is blank.", Toast.LENGTH_SHORT).show();
-			return;
+		else if (-1 != currentId) {
+			helper.removeAddress(currentId);
+			resetFields(counter);
 		}
-		if ((mStreet2Fields.get(counter).getText().toString().length() >= 1)) {
-			recip.setStreet2(mStreet2Fields.get(counter).getText().toString());
-		} else {
-			recip.setStreet2(" ");
-		}
-		if ((mCityFields.get(counter).getText().toString().length() >= 1)) {
-			recip.setCity(mCityFields.get(counter).getText().toString());
-		} else {
-			Toast.makeText(getApplicationContext(), "City is blank.",
-					Toast.LENGTH_SHORT).show();
-			return;
-		}
-		if ((mStateFields.get(counter).getText().toString().length() >= 1)) {
-			recip.setState(mStateFields.get(counter).getText().toString());
-		} else {
-			Toast.makeText(getApplicationContext(), "State is blank.",
-					Toast.LENGTH_SHORT).show();
-			return;
-		}
-		if ((mZipFields.get(counter).getText().toString().length() >= 1)) {
-			recip.setZip(mZipFields.get(counter).getText().toString());
-		} else {
-			Toast.makeText(getApplicationContext(), "Zip is blank.",
-					Toast.LENGTH_SHORT).show();
-			return;
-		}
-		if ((mLabelFields.get(counter).getText().toString().length() >= 1)) {
-			recip.setLabel(mLabelFields.get(counter).getText().toString());
-		} else {
-			Toast.makeText(getApplicationContext(), "Address label is blank.",
-					Toast.LENGTH_SHORT).show();
-			return;
-		}
-		long id = helper.insertAddress(recip);
-		recip.setId(id);
-		Log.d("TAG", recip.toString());
-		Toast.makeText(
-				getApplicationContext(),
-				"Saved address \""
-						+ mLabelFields.get(counter).getText().toString() + "\"",
-				Toast.LENGTH_SHORT).show();
 	}
 
 	public class LobVerifyTask extends

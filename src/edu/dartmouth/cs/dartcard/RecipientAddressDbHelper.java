@@ -71,12 +71,6 @@ public class RecipientAddressDbHelper extends SQLiteOpenHelper {
 		db.delete(ADDRESSES, ROW_KEY + " = " + rowIndex, null);
 		db.close();
 		Log.d("In removeEntry!", "Deleting row " + rowIndex);
-		/*
-		Use getWritableDatabase() to get the database
-		db.delete(ENTRIES, key_rowID + "=" + rowIndex, null);
-		Then use built in delete from SQLiteDatabsse
-		Close the database
-		 */
 	}
 	
 	public ArrayList<Recipient> fetchAddresses() {

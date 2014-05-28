@@ -69,8 +69,8 @@
             android:label="@string/title_activity_from" >
         </activity>
         <activity
-            android:name="edu.dartmouth.cs.dartcard.FinishActivity"
-            android:label="@string/title_activity_finish" >
+            android:name="edu.dartmouth.cs.dartcard.ResultActivity"
+            android:label="@string/title_activity_result" >
         </activity>
     </application>
 
