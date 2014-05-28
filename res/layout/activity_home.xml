@@ -9,45 +9,46 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".HomeActivity" >
 
-    <TextView
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name" 
-		android:gravity="center"
-		android:layout_weight="0.4"
-		android:layout_margin="5dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
-    
+        android:layout_margin="5dp"
+        android:layout_weight="0.4"
+        android:gravity="center"
+        android:src="@drawable/dartcard_title"
+        android:contentDescription="app title"
+        android:text="@string/app_name" >
+    </ImageView>
+
     <Button
-		android:id="@+id/btnTake"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_weight="0.2"
-	    android:gravity="center"
-	    android:onClick="onTakeClicked"
-	    android:text="@string/take_photo" >
-	</Button>
-	
-	<Button
-		android:id="@+id/btnFind"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_weight="0.2"
-	    android:gravity="center"
-	    android:layout_gravity="bottom"
-	    android:onClick="onFindClicked"
-	    android:text="@string/find_local" >
-	</Button>
-	
-	<Button
-		android:id="@+id/btnChoose"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_weight="0.2"
-	    android:gravity="center"
-	    android:onClick="onChooseClicked"
-	    android:text="@string/choose_gallery" >
-	</Button>
-	
+        android:id="@+id/btnTake"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:gravity="center"
+        android:onClick="onTakeClicked"
+        android:text="@string/take_photo" >
+    </Button>
+
+    <Button
+        android:id="@+id/btnFind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_weight="0.2"
+        android:gravity="center"
+        android:onClick="onFindClicked"
+        android:text="@string/find_local" >
+    </Button>
+
+    <Button
+        android:id="@+id/btnChoose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:gravity="center"
+        android:onClick="onChooseClicked"
+        android:text="@string/choose_gallery" >
+    </Button>
 
 </LinearLayout>

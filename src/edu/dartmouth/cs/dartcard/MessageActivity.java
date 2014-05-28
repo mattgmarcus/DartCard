@@ -105,7 +105,7 @@ public class MessageActivity extends Activity implements DialogExitListener {
 		else{
 			DartCardDialogFragment frag = DartCardDialogFragment
 					.newInstance(Globals.DIALOG_MESSAGE_ERRORS);
-			frag.show(this.getFragmentManager(), "recipient dialog");
+			frag.show(this.getFragmentManager(), "message error dialog");
 		}
 	}
 	
