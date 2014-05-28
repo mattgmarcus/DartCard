@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
+
+import com.google.android.gms.maps.model.Marker;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -27,10 +31,10 @@ import android.widget.ImageView;
 public class PhotoGridFragment extends Fragment {
 
 	private GridView gridView;
-	private ImageView chosenPhoto;
 	private Context context;
 	private ArrayList<PhotoEntry> photos;
 	private boolean photosLoaded = false;
+	Map<ImageView, PhotoEntry> thumbnailPhotos = new HashMap<ImageView, PhotoEntry>();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,11 +54,15 @@ public class PhotoGridFragment extends Fragment {
 		setAdapter();
 
 		gridView.setNumColumns(3);
+		gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				chosenPhoto = (ImageView) gridView.getChildAt(position);
-				savePhoto();
+				if ((ImageView) gridView.getChildAt(position) == null){
+					Log.d("dartcard", "gridfragment imageview clicked on is null");
+				}
+				savePhoto((ImageView) v);
+//				savePhoto((ImageView) gridView.getChildAt(position));
 				Intent intent = new Intent(context, PhotoViewActivity.class);
 				intent.putExtra(Globals.IS_FROM_DB_KEY, true);
 				startActivity(intent);
@@ -129,7 +137,7 @@ public class PhotoGridFragment extends Fragment {
 										// attributes
 				imageView = new ImageView(mContext);
 				imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
-				imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+				imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 				imageView.setPadding(8, 8, 8, 8);
 
 				// set image view to one third width of phone
@@ -137,32 +145,33 @@ public class PhotoGridFragment extends Fragment {
 						.getSystemService(Context.WINDOW_SERVICE);
 				DisplayMetrics metrics = new DisplayMetrics();
 				wm.getDefaultDisplay().getMetrics(metrics);
-				imageView.getLayoutParams().width = metrics.widthPixels / 3;
-				imageView.getLayoutParams().height = metrics.widthPixels / 3;
+				int width = metrics.widthPixels / 3;
+				imageView.getLayoutParams().width = width;
+				imageView.getLayoutParams().height = 2 * width / 3;
 			} else {
 				imageView = (ImageView) convertView;
 			}
 
 			imageView.setImageBitmap(photos.get(position).getBitmapPhoto());
-
+			thumbnailPhotos.put(imageView, photos.get(position));
 			return imageView;
 
 		}
 
 	}
 
-	private void savePhoto() {
+	private void savePhoto(ImageView chosenPhoto) {
 		// the image we want to save is displayed in the image view for the
 		// profile
 		// photo, so take the bitmap representation of that photo that photo,
 		// and save it to the pre-defined file name on the phone
 		chosenPhoto.buildDrawingCache();
-		Bitmap bmapProfPhoto = chosenPhoto.getDrawingCache();
+		Bitmap bmapPhoto = chosenPhoto.getDrawingCache();
 		try {
 			FileOutputStream fileOut = context.openFileOutput(
 					getString(R.string.selected_photo_name),
 					context.MODE_PRIVATE);
-			bmapProfPhoto.compress(Bitmap.CompressFormat.PNG, 100, fileOut);
+			bmapPhoto.compress(Bitmap.CompressFormat.PNG, 100, fileOut);
 			fileOut.flush();
 			fileOut.close();
 		} catch (IOException e) {

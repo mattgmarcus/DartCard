@@ -62,18 +62,17 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 
 	private boolean fromDatabase;
 	private Bitmap bmap;
-	
-	private ProgressDialog mProgressDialog;
 
+	private ProgressDialog mProgressDialog;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.photoview);
+		setContentView(R.layout.activity_photoview);
 
 		fromDatabase = getIntent().getBooleanExtra(Globals.IS_FROM_DB_KEY,
 				false);
 		mImageView = (ImageView) findViewById(R.id.imageView);
-		
+
 		loadImage();
 
 		mLocationClient = new LocationClient(this, this, this);
@@ -115,37 +114,37 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 	@Override
 	public void onSavePhotoExit(boolean savePhoto) {
 		if (savePhoto) {
+			Location location = null;
 			// save photo
-
-			Location location = mLocationClient.getLastLocation();
+			if (mLocationClient.isConnected())
+				location = mLocationClient.getLastLocation();
 
 			if (location == null) {
-				DartCardDialogFragment frag = 
-						DartCardDialogFragment.newInstance(Globals.DIALOG_KEY_TRY_SAVE_AGAIN);
+				DartCardDialogFragment frag = DartCardDialogFragment
+						.newInstance(Globals.DIALOG_KEY_TRY_SAVE_AGAIN);
 				frag.show(getFragmentManager(), "try again save dialog");
 			} else {
 				// create new Photo entry
 				PhotoEntry photo = new PhotoEntry();
-				//mImageView.buildDrawingCache();
-				//photo.setPhotoFromBitmap(mImageView.getDrawingCache());
+				// mImageView.buildDrawingCache();
+				// photo.setPhotoFromBitmap(mImageView.getDrawingCache());
 				double lat = location.getLatitude();
 				double longi = location.getLongitude();
 				photo.setLatitude(lat);
 				photo.setLongitude(longi);
-				photo.setSectorId(SectorHelper.getSectorIdFromLatLong(lat, longi));
+				photo.setSectorId(SectorHelper.getSectorIdFromLatLong(lat,
+						longi));
 				photo.setPhotoFromBitmap(bmap);
 				savePhoto(photo);
 				PhotoEntryDbHelper db = new PhotoEntryDbHelper(this);
 				db.insertPhoto(photo);
 			}
-		}
-		else {
+		} else {
 			Intent intent = new Intent(this, FromActivity.class);
 			startActivity(intent);
 		}
 
 	}
-	
 
 	@Override
 	public void onTrySaveAgainExit(boolean tryAgain) {
@@ -186,7 +185,7 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	private boolean savePhoto(PhotoEntry photo) {
 		mProgressDialog = new ProgressDialog(this);
 		mProgressDialog.setTitle("Saving");
@@ -195,59 +194,63 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 		mProgressDialog.show();
 
 		PhotoTask task = new PhotoTask(photo, this);
-		
+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[])null);
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+					(Void[]) null);
 		else
-			task.execute((Void[])null);
-		
+			task.execute((Void[]) null);
+
 		return true;
 
 	}
 
-	public class PhotoTask extends AsyncTask<Void,Void,Boolean> {
+	public class PhotoTask extends AsyncTask<Void, Void, Boolean> {
 		private PhotoEntry photo;
 		private Activity activity;
 		private boolean DEBUG = false;
-		
+
 		public PhotoTask(PhotoEntry photo, Activity activity) {
 			this.photo = photo;
 			this.activity = activity;
 		}
-		
-		protected Boolean doInBackground(Void ... p) {
+
+		protected Boolean doInBackground(Void... p) {
 			HttpClient httpClient = new DefaultHttpClient();
 
-	        HttpGet get = new HttpGet(activity.getString(R.string.server_addr)+"/blob/getuploadurl");
-	        HttpResponse response = null;
+			HttpGet get = new HttpGet(activity.getString(R.string.server_addr)
+					+ "/blob/getuploadurl");
+			HttpResponse response = null;
 			try {
 				response = httpClient.execute(get);
 			} catch (IOException e1) {
 			}
-			
+
 			if (null == response) {
 				return false;
 			}
-			
-	        String uploadURL = "";
-	        try {
+
+			String uploadURL = "";
+			try {
 				uploadURL = EntityUtils.toString(response.getEntity()).trim();
 			} catch (IOException e) {
 				return false;
 			}
-	        
+
 			httpClient = new DefaultHttpClient();
 			if (DEBUG) {
-		        Log.d("original upload url is", uploadURL);
+				Log.d("original upload url is", uploadURL);
 
 				String[] url_parts = uploadURL.split("_");
-				uploadURL = activity.getString(R.string.server_addr)+"/_"+url_parts[1];
+				uploadURL = activity.getString(R.string.server_addr) + "/_"
+						+ url_parts[1];
 			}
-			Log.d("upload url is" , uploadURL);
-			
+			Log.d("upload url is", uploadURL);
+
 			HttpPost httppost = new HttpPost(uploadURL);
 
-			ByteArrayBody attachment = new ByteArrayBody(photo.getPhotoByteArray(), "image");				
+			ByteArrayBody attachment = new ByteArrayBody(
+					photo.getPhotoByteArray(), "image");
 			MultipartEntity reqEntity = new MultipartEntity();
 
 			reqEntity.addPart("image", attachment);
@@ -258,7 +261,8 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 
 			try {
 				response = httpClient.execute(httppost);
-				String returnString = EntityUtils.toString(response.getEntity());
+				String returnString = EntityUtils
+						.toString(response.getEntity());
 
 				blobKey = returnString.split(":")[1].split("\"")[1];
 				Log.d("blobkey is ", blobKey);
@@ -272,9 +276,9 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 			HashMap<String, String> data = new HashMap<String, String>();
 			data.put("blobKey", blobKey);
 			data.put("data", jsonArray.toString());
-			return HttpUtilities.post(activity.getString(R.string.server_addr)+"/save", data);
+			return HttpUtilities.post(activity.getString(R.string.server_addr)
+					+ "/save", data);
 		}
-		
 
 		@Override
 		protected void onPostExecute(Boolean result) {
@@ -282,19 +286,19 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 			if (!result) {
 				DartCardDialogFragment frag = DartCardDialogFragment
 						.newInstance(Globals.DIALOG_KEY_TRY_SAVE_AGAIN);
-				frag.show(activity.getFragmentManager(), "try again save dialog");
+				frag.show(activity.getFragmentManager(),
+						"try again save dialog");
 
-			}
-			else {
+			} else {
 				Intent intent = new Intent(activity, FromActivity.class);
-				
+
 				activity.startActivity(intent);
 			}
 		}
 	}
 
 	@Override
-	public void onReturn() {};
-
+	public void onReturn() {
+	};
 
 }
