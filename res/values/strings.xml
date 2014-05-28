@@ -107,5 +107,13 @@
     <string name="dialog_title_photo_map_error">Issue loading the photo map</string>
     <string name="dialog_message_photo_map_error">Check your internet connection and try again.</string>
     <string name="dialog_button_photo_map_error">Ok</string>
+    <string name="dialog_title_lob_error">There was an issue sending</string>
+    <string name="dialog_title_message_error">Message invalid.</string>
+    <string name="dialog_text_message_error">Make sure the message isn\'t blank, does not have more than 10 lines, and does not contain a word longer than 28 characters.</string>
+    <string name="title_activity_finish">FinishActivity</string>
 
+    
+    <!-- Finish Activity -->
+    <string name="finish_activity_header_text">Congratulations! Your postcard has been sent.</string>
+    <string name="button_title_send_another">Send another!</string>
 </resources>

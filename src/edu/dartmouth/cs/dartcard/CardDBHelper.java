@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 public class CardDBHelper extends SQLiteOpenHelper {
 	
-	private static String DATABASE_NAME = "DartCardDB";
+	private static String DATABASE_NAME = "card.db";
 	public static final String COLUMN_ID = "_id";
 	private static final int DATABASE_VERSION = 1;
 	private static final String CARDS = "CARDS";

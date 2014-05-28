@@ -5,12 +5,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -33,12 +35,17 @@ public class HomeActivity extends Activity {
 	private static final String URI_INSTANCE_STATE_KEY = "saved_uri";
 
 	private byte[] mProfilePictureArray;
+	
+	private ActionBar mActionBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
-//		 deleteDatabase("photos.db");
+
+		mActionBar = getActionBar();
+		mActionBar.setDisplayShowTitleEnabled(false);
+		mActionBar.setDisplayShowHomeEnabled(false);
 	}
 
 	@Override

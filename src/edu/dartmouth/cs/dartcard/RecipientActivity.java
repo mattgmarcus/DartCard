@@ -51,8 +51,6 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 	// These variables deal with formatting the messages box
 	private LayoutParams mMessageParams;
 
-	private ActionBar mActionBar;
-
 	private Button mNextButton;
 	private Button mAddAnotherButton;
 
@@ -65,6 +63,7 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 	private String mMessage;
 
 	private Bundle mSavedInstanceState;
+	private ActionBar mActionBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,9 +93,9 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		mMessageParams = new LayoutParams(LayoutParams.FILL_PARENT, 500);
 
 		mActionBar = getActionBar();
-		mActionBar.setDisplayHomeAsUpEnabled(true);
 		mActionBar.setDisplayShowTitleEnabled(false);
-		// mActionBar.setTitle("Enter your personal information");
+
+		mActionBar.setDisplayShowHomeEnabled(false);
 
 		mNextButton = (Button) findViewById(R.id.ui_recipient_activity_nextButton);
 		mNextButton.setOnClickListener(new View.OnClickListener() {
@@ -157,25 +156,14 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 			outState.putString(STATE_KEY + i, mStateFields.get(i).getText()
 					.toString());
 			if (mZipFields.get(i).getText().toString().length() > 0) {
-				outState.putInt(ZIP_KEY + i, Integer.parseInt(mZipFields.get(i)
-						.getText().toString()));
+				outState.putString(ZIP_KEY + i, mZipFields.get(i).getText()
+						.toString());
 			}
 			Log.d("TAG", "saving zip " + mZipFields.get(i).getText().toString());
 			outState.putString(MESSAGE_KEY + i, mMessageFields.get(i).getText()
 					.toString());
 		}
 		outState.putInt(NUMRECIPIENTS_KEY, mNumRecipients);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		// Respond to the action bar's Up/Home button
-		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 
 	private void onNextClicked(View v) {
@@ -243,35 +231,40 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		EditText nameField = new EditText(this);
 		nameField
 				.setHint(getString(R.string.ui_recipient_activity_enterName_hint));
+		nameField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 		mNameFields.add(nameField);
 		// nameField.setId(R.id.recipient_name);
 
 		EditText street1Field = new EditText(this);
 		street1Field
 				.setHint(getString(R.string.ui_recipient_activity_enterAddress1_hint));
-		street1Field.setInputType(InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
+		street1Field.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 		mStreet1Fields.add(street1Field);
 
 		EditText street2Field = new EditText(this);
 		street2Field
 				.setHint(getString(R.string.ui_recipient_activity_enterAddress2_hint));
-		street2Field.setInputType(InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
+		street2Field.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 		mStreet2Fields.add(street2Field);
 
 		EditText cityField = new EditText(this);
 		cityField
 				.setHint(getString(R.string.ui_recipient_activity_enterCity_hint));
+		cityField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 		mCityFields.add(cityField);
 
 		EditText stateField = new EditText(this);
 		stateField
 				.setHint(getString(R.string.ui_recipient_activity_enterState_hint));
 		stateField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+		stateField.setFilters(new InputFilter[] { new InputFilter.LengthFilter(
+				2) });
 		mStateFields.add(stateField);
 
 		EditText zipField = new EditText(this);
 		zipField.setHint(getString(R.string.ui_recipient_activity_enterZip_hint));
 		zipField.setInputType(InputType.TYPE_CLASS_NUMBER);
+		zipField.setFilters(new InputFilter[] { new InputFilter.LengthFilter(5) });
 		mZipFields.add(zipField);
 
 		LimitedEditText messageField = new LimitedEditText(this);
@@ -302,9 +295,9 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 			stateField.setText(mSavedInstanceState.getString(STATE_KEY + num)
 					.toString());
 			Log.d("TAG",
-					"setting zip " + mSavedInstanceState.getInt(ZIP_KEY + num));
-			zipField.setText(((Integer) mSavedInstanceState.getInt(ZIP_KEY
-					+ num)).toString());
+					"setting zip "
+							+ mSavedInstanceState.getString(ZIP_KEY + num));
+			zipField.setText((mSavedInstanceState.getString(ZIP_KEY + num)));
 			messageField.setText(mSavedInstanceState.getString(
 					MESSAGE_KEY + num).toString());
 		} else {
@@ -350,7 +343,8 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		@Override
 		protected void onPostExecute(ArrayList<Boolean> results) {
 			if (results.contains(false)) {
-				mProgressDialog.dismiss();
+				if (mProgressDialog != null)
+					mProgressDialog.dismiss();
 				DartCardDialogFragment frag = DartCardDialogFragment
 						.newInstance(Globals.DIALOG_RECIPIENT_ERRORS);
 				frag.show(activity.getFragmentManager(), "recipient dialog");
@@ -400,5 +394,14 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 	@Override
 	public void onReturn() {
 	};
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if (mProgressDialog != null) {
+			mProgressDialog.dismiss();
+			mProgressDialog = null;
+		}
+	}
 
 }

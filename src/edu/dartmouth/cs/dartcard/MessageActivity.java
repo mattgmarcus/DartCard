@@ -1,5 +1,6 @@
 package edu.dartmouth.cs.dartcard;
 
+import edu.dartmouth.cs.dartcard.DartCardDialogFragment.DialogExitListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.annotation.TargetApi;
@@ -17,7 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class MessageActivity extends Activity {
+public class MessageActivity extends Activity implements DialogExitListener {
 	
 	private LimitedEditText mMessageField;
 	
@@ -36,9 +37,8 @@ public class MessageActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_message);
 		mActionBar = getActionBar();
-		mActionBar.setDisplayHomeAsUpEnabled(true);
 		mActionBar.setDisplayShowTitleEnabled(false);
-		//mActionBar.setTitle("Write a message");
+		mActionBar.setDisplayShowHomeEnabled(false);
 		
 		mLayout = (LinearLayout) findViewById(R.id.ui_message_relative_layout);
 		/*
@@ -85,26 +85,76 @@ public class MessageActivity extends Activity {
 		Log.d("TAG", "messageString is " + mMessageString);
 	}
 	
-	
-	
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	    // Respond to the action bar's Up/Home button
-	    case android.R.id.home:
-	        NavUtils.navigateUpFromSameTask(this);
-	        return true;
-	    }
-	    return super.onOptionsItemSelected(item);
-	}
-	
+		
 	
 	public void onNextClicked(View v) {
+		
+		String message = mMessageField.getText().toString();
+		if (isMessageValid(message)){
+		
 		Intent intent = new Intent(this, RecipientActivity.class);
 		intent.putExtra(getString(R.string.message_activity_intent_key),
-				mMessageField.getText().toString());
+				message);
+		
+		//Pass along the from address
+		intent.putExtra(getString(R.string.from_activity_intent_key),
+				getIntent().getExtras().getParcelable(getString(R.string.from_activity_intent_key)));
+
 		startActivity(intent);
+		}
+		else{
+			DartCardDialogFragment frag = DartCardDialogFragment
+					.newInstance(Globals.DIALOG_MESSAGE_ERRORS);
+			frag.show(this.getFragmentManager(), "recipient dialog");
+		}
+	}
+	
+	public static boolean isMessageValid(String message){
+		
+		if (message.isEmpty() || message==null)
+			return false;
+		
+		String[] words = message.split(" ");
+		for (String word : words){
+			if (word.length() > 28){
+				return false;
+			}
+		}
+		
+		int newCounter = 0;
+		int i=0;
+		while (i < message.length()) {
+		       if (message.charAt(i) == '\n') {
+		              newCounter++;
+		       }
+		       i++;
+		}
+		
+		Log.d("TAG", "# of newlines in this string is " + newCounter);            
+		Log.d("TAG", "Message contains newline: " + message.contains("\n"));
+		if (newCounter > 10) {
+		  return false;
+		}
+		
+		return true;
+		
 	}
 
+	@Override
+	public void onSavePhotoExit(boolean savePhoto) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTrySaveAgainExit(boolean tryAgain) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onReturn() {
+		// TODO Auto-generated method stub
+		
+	}
 }
