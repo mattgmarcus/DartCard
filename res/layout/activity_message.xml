@@ -1,5 +1,12 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+	android:orientation="vertical" 
+    tools:context=".MessageActivity">
+    
+    <LinearLayout 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -9,38 +16,40 @@
     tools:context=".MessageActivity" 
     android:orientation="vertical"
     android:id="@+id/ui_message_relative_layout" >
+    
     <TextView
         android:id="@+id/ui_message_activity_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:layout_weight="0.2"
         android:text="@string/ui_message_activity_header_text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-    <Button
-        android:id="@+id/ui_message_activity_nextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_centerHorizontal="true"
-        android:text="@string/ui_message_activity_nextButton_text" />
 
-    <!-- <edu.dartmouth.cs.dartcard.LimitedEditText
+     <edu.dartmouth.cs.dartcard.LimitedEditText
         android:id="@+id/ui_message_activity_enterMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="340dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+		android:layout_margin="5dp"
+		android:layout_marginTop="100dp"
         android:ems="10"
         android:hint="@string/ui_message_activity_enterMessage_hint"
         android:inputType="textMultiLine"
         android:maxLength="350" >
 
         <requestFocus />
-    </edu.dartmouth.cs.dartcard.LimitedEditText>-->
+    </edu.dartmouth.cs.dartcard.LimitedEditText>
+    
+     <Button
+        android:id="@+id/ui_message_activity_nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.3"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:text="@string/ui_message_activity_nextButton_text" />
 
-
-</RelativeLayout>
+</LinearLayout>
+</ScrollView>

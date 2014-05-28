@@ -9,21 +9,20 @@
     <string name="grid_tab_name">Grid</string>
     <string name="title_activity_photo_view">PhotoViewActivity</string>
     <string name="button_title_make_card">Make Card</string>
-    
     <string name="server_addr">http://1-dot-dartcard.appspot.com</string>
-    
-     <!-- Strings in Home Activity -->
+
+    <!-- Strings in Home Activity -->
     <string name="take_photo">Take a Photo</string>
     <string name="find_local">Find Local Images</string>
     <string name="choose_gallery">Choose from Gallery</string>
     <string name="shared_prefs_name">photo_store</string>
     <string name="selected_photo_name">selected_photo.png</string>
-    
+
     <!-- Strings in PhotoViewActivity -->
     <string name="photo_check">Is this photo okay?</string>
     <string name="photo_okay">Yes!  Looks good.</string>
     <string name="photo_not_okay">No, find another.</string>
-	<string name="selected_photo">Selected photo</string>
+    <string name="selected_photo">Selected photo</string>
     <string name="title_activity_message">MessageActivity</string>
     <string name="title_activity_recipient">RecipientActivity</string>
     <string name="title_activity_pay">PayActivity</string>
@@ -39,13 +38,15 @@
     <string name="ui_from_activity_enterState_hint">State</string>
     <string name="ui_from_activity_enterZip_hint">Zip Code</string>
     <string name="from_activity_intent_key">From activity recipient key</string>
+    <string name="ui_from_activity_addressLabel_hint">Address Label (If saving address)</string>
+    <string name="ui_from_activity_saveButton_text">Save</string>
 
     <!-- Message Activity -->
-    <string name="ui_message_activity_enterMessage_hint">Message</string>
+    <string name="ui_message_activity_enterMessage_hint">Type message here</string>
     <string name="ui_message_activity_nextButton_text">Next</string>
     <string name="ui_message_activity_header_text">Write a message</string>
     <string name="message_activity_intent_key">Message key</string>
-    
+
     <!-- Recipient Activity -->
     <string name="ui_recipient_activity_addanother_button_text">+</string>
     <string name="ui_recipient_activity_addanother_text">Add another</string>
@@ -56,7 +57,7 @@
     <string name="ui_recipient_activity_enterState_hint">State</string>
     <string name="ui_recipient_activity_enterZip_hint">Zip Code</string>
     <string name="recipient_activity_intent_key">Recipient key</string>
-    
+
     <!-- Pay Activity -->
     <string name="ui_pay_activity_recipient_header_text">Recipients</string>
     <string name="ui_pay_activity_recipient_email_hint">you@email.com (optional)</string>
@@ -64,37 +65,37 @@
     <string name="ui_pay_activity_recipient_cvc_hint">123</string>
     <string name="ui_pay_activity_recipient_remember_text">Remember me</string>
     <string name="ui_pay_activity_stripe_description">Powered by Stripe</string>
+
     <string-array name="ui_pay_activity_recipient_expiry_year">
         <item>YY</item>
         <item>14</item>
         <item>15</item>
-		<item>16</item>
-		<item>17</item>
-	</string-array>
-	<string-array name="ui_pay_activity_recipient_expiry_month">
+        <item>16</item>
+        <item>17</item>
+    </string-array>
+    <string-array name="ui_pay_activity_recipient_expiry_month">
         <item>MM</item>
         <item>01</item>
         <item>02</item>
-		<item>03</item>
-		<item>04</item>
-		<item>05</item>
-		<item>06</item>
-		<item>07</item>
-		<item>08</item>
-		<item>09</item>
-		<item>10</item>
-		<item>11</item>
-		<item>12</item>
-	</string-array>
-	<string name="customer_id">Customer ID</string>
-	<string name="card_number">Card number</string>
-	<string name="cvc">CVC</string>
-	<string name="email">Email</string>
-	<string name="exp_month">Expire month</string>
-	<string name="exp_year">Expire year</string>
-	<string name="pdf_name">postcard.pdf</string>
-	
-    
+        <item>03</item>
+        <item>04</item>
+        <item>05</item>
+        <item>06</item>
+        <item>07</item>
+        <item>08</item>
+        <item>09</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+
+    <string name="customer_id">Customer ID</string>
+    <string name="card_number">Card number</string>
+    <string name="cvc">CVC</string>
+    <string name="email">Email</string>
+    <string name="exp_month">Expire month</string>
+    <string name="exp_year">Expire year</string>
+    <string name="pdf_name">postcard.pdf</string>
     <string name="dialog_title_save_photo">Save Photo to Database?</string>
     <string name="button_save_title">Save</string>
     <string name="button_no_save_title">Don\'t Save</string>
@@ -102,9 +103,17 @@
     <string name="button_try_again_title">Try Again</string>
     <string name="button_cancel_title">Cancel</string>
     <string name="dialog_title_recipient_error">Fix the highlighted addresses and resubmit</string>
-    <string name="dialog_button_recipient_error">Ok</string>   
-    <string name="dialog_title_photo_map_error">Issue loading the photo map</string> 
+    <string name="dialog_button_recipient_error">Ok</string>
+    <string name="dialog_title_photo_map_error">Issue loading the photo map</string>
     <string name="dialog_message_photo_map_error">Check your internet connection and try again.</string>
-    <string name="dialog_button_photo_map_error">Ok</string>   
-    <string name="dialog_title_lob_error">There was an issue sending</string>    
+    <string name="dialog_button_photo_map_error">Ok</string>
+    <string name="dialog_title_lob_error">There was an issue sending</string>
+    <string name="dialog_title_message_error">Message invalid.</string>
+    <string name="dialog_text_message_error">Make sure the message isn\'t blank, does not have more than 10 lines, and does not contain a word longer than 28 characters.</string>
+    <string name="title_activity_finish">FinishActivity</string>
+
+    
+    <!-- Finish Activity -->
+    <string name="finish_activity_header_text">Congratulations! Your postcard has been sent.</string>
+    <string name="button_title_send_another">Send another!</string>
 </resources>

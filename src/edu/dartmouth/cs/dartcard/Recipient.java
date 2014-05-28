@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Recipient implements Parcelable {
+	private Long id;
 	private String fullName;
 	private String street1;
 	private String street2;
@@ -19,6 +20,9 @@ public class Recipient implements Parcelable {
 	private String state;
 	private String zip;
 	private String message;
+	private String label;
+	
+	public Recipient(){}
 	
 	public Recipient(String fullName, String street1, String street2, String city,
 			String state, String zip) {
@@ -168,4 +172,25 @@ public class Recipient implements Parcelable {
 	            return new Recipient[size];
 	      }
 	};
+
+	public long getId() {
+		return this.id;
+	}
+	
+	public String getLabel() {
+		return this.label;
+	}
+	
+	public void setLabel(String l) {
+		this.label = l;
+	}
+	
+	public void setName(String n){
+		this.fullName=n;
+	}
+
+
+	public void setId(long l) {
+		this.id = l;
+	}
 }

@@ -26,3 +26,4 @@ proguard/
 src/edu/dartmouth/cs/dartcard_private/
 
 *~
+*.log
