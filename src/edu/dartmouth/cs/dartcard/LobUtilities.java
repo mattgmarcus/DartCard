@@ -38,9 +38,8 @@ public class LobUtilities extends HttpUtilities {
 		return post(url, address);
 	}
 	
-	public static boolean sendPostcards(ArrayList<NameValuePair> parameters, String fileName) {
+	public static LobResult sendPostcards(ArrayList<NameValuePair> parameters, String fileName) {
 		String url = BASE_URL + "/postcards";
-		Log.d("lobuitilies", "sendPostcards");
 		
 		key = Passwords.getLobKey();
 		
@@ -48,18 +47,6 @@ public class LobUtilities extends HttpUtilities {
 		HttpPost httppost = new HttpPost(url);
 		
 		Log.d("params are ", parameters.toString());
-		//Attach the parameters
-		/*try {
-			httppost.setEntity(new UrlEncodedFormEntity(parameters));
-		} catch (UnsupportedEncodingException e1) {
-			return false;
-		}*/
-
-		//Attach the file
-		/*MultipartEntity reqEntity = new MultipartEntity();
-		FileBody file = new FileBody(new File(filename));
-		reqEntity.addPart("front", file);
-		httppost.setEntity(reqEntity);*/
 	    MultipartEntityBuilder builder = MultipartEntityBuilder.create();        
 	    builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 	    File file = new File(fileName);
@@ -77,18 +64,28 @@ public class LobUtilities extends HttpUtilities {
 	    httppost.setHeader("Authorization", "Basic " + authKey);
 
 		HttpResponse response = null;
-
+		String returnString = "";
 		try {
 			response = httpClient.execute(httppost);
-			String returnString = EntityUtils.toString(response.getEntity());
+			returnString = EntityUtils.toString(response.getEntity());
 
 			Log.d("return string is", returnString);
 		} catch (IOException e) {
 			Log.d("ex", e.getMessage());
-			return false;
+			return new LobResult(false, null);
 		}
 
+		returnString = getUrl(returnString);
+		Log.d("url is", returnString);
+		return new LobResult(true, returnString);
+	}
+	
+	private static String getUrl(String string) {
+		int i = string.indexOf("http");
+		string = string.substring(i, string.length() - 1);
+		int j = string.indexOf(",");
+		string = string.substring(0, j-1);
 		
-		return true;
+		return string;
 	}
 }
