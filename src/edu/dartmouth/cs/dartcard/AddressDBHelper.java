@@ -80,7 +80,7 @@ public class AddressDBHelper extends SQLiteOpenHelper {
 		Cursor cursor = db.query(ADDRESSES, allColumns, null, null,
 				null, null, null);
 		while (cursor.moveToNext()) {
-            Address add= cursorToEntry(cursor);
+            Address add= cursorToAddress(cursor);
             entryList.add(add);
         }
 		cursor.close();
@@ -93,7 +93,7 @@ public class AddressDBHelper extends SQLiteOpenHelper {
 		Cursor cursor = db.query(ADDRESSES, allColumns, COLUMN_ID + " = " + rowId, 
 				null, null, null, null);
 		cursor.moveToFirst();
-		Address add = cursorToEntry(cursor);
+		Address add = cursorToAddress(cursor);
 		cursor.close();
 		db.close();
 		return add;
@@ -106,7 +106,7 @@ public class AddressDBHelper extends SQLiteOpenHelper {
 		*/
 	}
 	
-	private Address cursorToEntry(Cursor cursor) {
+	private Address cursorToAddress(Cursor cursor) {
 		Address add = new Address();
 		add.setId(cursor.getLong(cursor.getColumnIndex(ROW_KEY)));
 		add.setName(cursor.getString(cursor.getColumnIndex(NAME_KEY)));

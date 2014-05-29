@@ -73,37 +73,44 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_photoview);
 
+		//find out if the photo being loaded is from the online database
 		fromDatabase = getIntent().getBooleanExtra(Globals.IS_FROM_DB_KEY,
 				false);
+		
 		mImageView = (ImageView) findViewById(R.id.imageView);
 
+		//load the user's photo into the imageview
 		loadImage();
 		
 		mActionBar = getActionBar();
 		mActionBar.setTitle("DartCard");
 
+		//create a location client (need location to save to database)
 		mLocationClient = new LocationClient(this, this, this);
 	}
 
 	// Load the image
 	private void loadImage() {
-		// Load profile photo from internal storage
+		// Load user's photo from internal storage
 		try {
 			FileInputStream fis = openFileInput(getString(R.string.selected_photo_name));
 			bmap = BitmapFactory.decodeStream(fis);
 			mImageView.setImageBitmap(bmap);
 			fis.close();
 		} catch (IOException e) {
-			// Default profile photo if no photo saved before.
-			// mImageView.setImageResource(R.drawable.default_profile);
+			e.printStackTrace();
 		}
 	}
 
+	//go back to previous activity if user wants a different photo
 	public void onNotOkayClicked(View v) {
 		finish();
-		// Should also wipe photo from memory??
+		
 	}
 
+	//when user approves photo, if the photo is new (not from database)
+	//launch a dialog asking if they want to save the photo to the database
+	//otherwise, just move on to the next part in the process -- the FromActivity
 	public void onOkayClicked(View v) {
 		// if photo is not from the photo database, then ask if user wants to
 		// save
@@ -119,14 +126,19 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 		}
 	}
 
+	//called when the dialog that prompts user to save to database
+	//exits
 	@Override
 	public void onSavePhotoExit(boolean savePhoto) {
+		//if the user wants to save the photo, get the location
 		if (savePhoto) {
 			Location location = null;
 			// save photo
 			if (mLocationClient.isConnected())
 				location = mLocationClient.getLastLocation();
 
+			//if location can't be loaded, notify user and ask if they want to 
+			//try again
 			if (location == null) {
 				DartCardDialogFragment frag = DartCardDialogFragment
 						.newInstance(Globals.DIALOG_KEY_TRY_SAVE_AGAIN);
@@ -134,8 +146,6 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 			} else {
 				// create new Photo entry
 				PhotoEntry photo = new PhotoEntry();
-				// mImageView.buildDrawingCache();
-				// photo.setPhotoFromBitmap(mImageView.getDrawingCache());
 				double lat = location.getLatitude();
 				double longi = location.getLongitude();
 				photo.setLatitude(lat);
@@ -144,8 +154,6 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 						longi));
 				photo.setPhotoFromBitmap(bmap);
 				savePhoto(photo);
-				PhotoEntryDbHelper db = new PhotoEntryDbHelper(this);
-				db.insertPhoto(photo);
 			}
 		} else {
 			Intent intent = new Intent(this, FromActivity.class);
@@ -155,6 +163,8 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 
 	}
 
+	//when the save fail dialog pops up
+	//tries to save again if the user wants to
 	@Override
 	public void onTrySaveAgainExit(boolean tryAgain) {
 		if (tryAgain) {
@@ -195,6 +205,7 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 
 	}
 
+	//saves photo to online databse
 	private boolean savePhoto(PhotoEntry photo) {
 		mProgressDialog = new ProgressDialog(this);
 		mProgressDialog.setTitle("Saving");
@@ -214,6 +225,8 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 
 	}
 
+	//async task to save the user's selected photo to the database
+	//as a compressed version of a PhotoEntry communicates with database via http requests
 	public class PhotoTask extends AsyncTask<Void, Void, Boolean> {
 		private PhotoEntry photo;
 		private Activity activity;
@@ -279,6 +292,9 @@ public class PhotoViewActivity extends Activity implements DialogExitListener,
 					+ "/save", data);
 		}
 
+		//when the post has been issued, prompt user to try save again
+		//if we were unable to save to database, and move on to
+		//FromActivity if the save was successful
 		@Override
 		protected void onPostExecute(Boolean result) {
 			mProgressDialog.dismiss();

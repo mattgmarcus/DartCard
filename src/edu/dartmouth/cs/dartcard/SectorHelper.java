@@ -2,6 +2,12 @@ package edu.dartmouth.cs.dartcard;
 
 import android.util.Log;
 
+/*
+ * Contains methods used to assign sector classifications to 
+ * latitudes and longitudes as a custom index.
+ * The process and implementation is influenced by that described at:
+ * http://msdn.microsoft.com/en-us/magazine/jj133823.aspx
+ */
 public class SectorHelper {
 	private static final double FRACTION = 0.2; //determines how many units we split globe into
 	private static final int MAX_LATITUDE = 90;
@@ -37,6 +43,7 @@ public class SectorHelper {
 		return -1; //return -1 on default
 	}
 	
+	//analagous to getLatSectorIndex
 	private static int getLongSectorIndex(double longi){
 		int maxIndex = (int)((MAX_LONGITUDE*2) * (1.0 / FRACTION) - 1);
 		if (longi == -MAX_LONGITUDE)
@@ -59,6 +66,9 @@ public class SectorHelper {
 		return -1; //return -1 on default
 	}
 	
+	// the sector Id is equal to the latitude index * the number of latitude divisions (rows)
+	// divided by the fraction used to split the globe into sectors. the longitude index
+	//is added to this product
 	public static int getSectorIdFromLatLong(double lat, double longi){
 		int latIndex = getLatSectorIndex(lat);
 		int longIndex = getLongSectorIndex(longi);
@@ -100,9 +110,10 @@ public class SectorHelper {
 			return false;
 	}
 	
+	//find sectors adjacent to the current sector
+	//in boundary cases, just return an empty array
 	public static int[] getAdjacentSectors(int sector){
 		int[] result = new int[8];
-//		if (true){
 		//check if on boundary, for now just return null if so
 		if (!isLeftEdgeOfMapping(sector) && !isRightEdgeOfMapping(sector)
 				&& !isTopEdgeOfMapping(sector) && !isBottomEdgeOfMapping(sector)){

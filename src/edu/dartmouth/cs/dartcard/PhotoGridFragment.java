@@ -40,6 +40,7 @@ public class PhotoGridFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		context = getActivity();
 
+		//initialize gridview with correct adapter
 		gridView = new GridView(getActivity());
 
 		if (photos == null) {
@@ -50,6 +51,9 @@ public class PhotoGridFragment extends Fragment {
 
 		gridView.setNumColumns(3);
 		gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
+		//when gridview item is clicked, get the photoentry linked
+		//to that item, and save that photo so that the photoview activity
+		//can load it
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
@@ -64,6 +68,7 @@ public class PhotoGridFragment extends Fragment {
 		return gridView;
 	}
 
+	//load the photos from the priorityqueue into an arraylist
 	public void getPhotoListFromQueue(PriorityQueue<PhotoEntry> photoQueue) {
 		// get photo list
 		// load photos from database
@@ -73,6 +78,7 @@ public class PhotoGridFragment extends Fragment {
 		} 
 	}
 
+	//called when the locationclient in PhotoMapActivity connects
 	public void updateGridView(PriorityQueue<PhotoEntry> pq) {
 		getPhotoListFromQueue(pq);
 		setAdapter();
@@ -86,6 +92,7 @@ public class PhotoGridFragment extends Fragment {
 		gridView.setNumColumns(numColumns);
 	}
 
+	//adapter class for this fragment's gridview
 	public class ImageAdapter extends BaseAdapter {
 
 		private Context mContext;
@@ -135,6 +142,8 @@ public class PhotoGridFragment extends Fragment {
 				imageView = (ImageView) convertView;
 			}
 
+			//set the imageview to the current photoentry's photo
+			//and link the imageview to the photoentry in the thumbnailPhotos map
 			imageView.setImageBitmap(photos.get(position).getBitmapPhoto());
 			thumbnailPhotos.put(imageView, photos.get(position));
 			return imageView;
@@ -143,23 +152,10 @@ public class PhotoGridFragment extends Fragment {
 
 	}
 
+	//save photo to predetermined filepath that will be loaded by
+	//photoviewactivity
 	private void savePhoto(byte[] pic) {
-		// // the image we want to save is displayed in the image view for the
-		// // profile
-		// // photo, so take the bitmap representation of that photo that photo,
-		// // and save it to the pre-defined file name on the phone
-		// chosenPhoto.buildDrawingCache();
-		// Bitmap bmapPhoto = chosenPhoto.getDrawingCache();
-		// try {
-		// FileOutputStream fileOut = context.openFileOutput(
-		// getString(R.string.selected_photo_name),
-		// context.MODE_PRIVATE);
-		// bmapPhoto.compress(Bitmap.CompressFormat.PNG, 100, fileOut);
-		// fileOut.flush();
-		// fileOut.close();
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
+
 		try {
 			FileOutputStream fileOut = context.openFileOutput(
 					getString(R.string.selected_photo_name),

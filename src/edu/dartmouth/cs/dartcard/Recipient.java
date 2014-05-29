@@ -11,6 +11,7 @@ import com.lob.model.Verify;
 import java.util.HashMap;
 import java.util.Map;
 
+//class used to make objects that store recipient addresses in a database
 public class Recipient implements Parcelable {
 	private Long id;
 	private String fullName;
