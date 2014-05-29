@@ -1,5 +1,6 @@
 package edu.dartmouth.cs.dartcard;
 
+//class used to make objects that store addresses in a database
 public class Address {
 	
 	private Long id;

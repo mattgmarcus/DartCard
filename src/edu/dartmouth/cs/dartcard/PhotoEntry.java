@@ -15,6 +15,8 @@ import android.location.Location;
 import android.util.Base64;
 import android.util.Log;
 
+//stores a photo, the location where it was taken,
+//and a sector id corresponding to that location
 public class PhotoEntry {
 	private Long id;
 	private byte[] photo;
@@ -80,6 +82,7 @@ public class PhotoEntry {
 		return photo;
 	}
 
+	//converts a bitmap version of the photo into a byte array
 	public void setPhotoFromBitmap(Bitmap bmap) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		bmap.compress(Bitmap.CompressFormat.PNG, 100, out);
@@ -90,6 +93,7 @@ public class PhotoEntry {
 		return BitmapFactory.decodeByteArray(photo, 0, photo.length);
 	}
 
+	//generate photoentry from a JSON object
 	public void fromJSONObject(JSONObject obj) {
 			try {
 				setPhotoFromByteArray(Base64.decode(obj.getString("image").getBytes(), Base64.DEFAULT));
@@ -100,6 +104,8 @@ public class PhotoEntry {
 				// Fail silently
 			}
 	}
+	
+	//convert photoEntry into a JSON object
 	public JSONObject toJSONObject() {
 		JSONObject obj = new JSONObject();
 		
