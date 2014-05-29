@@ -19,10 +19,7 @@ import android.widget.RelativeLayout;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class MessageActivity extends Activity implements DialogExitListener {
-	
 	private LimitedEditText mMessageField;
-	
-	private LinearLayout mLayout;
 	
 	private ActionBar mActionBar;
 
@@ -38,8 +35,6 @@ public class MessageActivity extends Activity implements DialogExitListener {
 		mActionBar = getActionBar();
 		mActionBar.setTitle("DartCard");
 		
-		mLayout = (LinearLayout) findViewById(R.id.ui_message_relative_layout);
-
 		if (savedInstanceState != null) {
 			mMessageString = savedInstanceState.getString(MESSAGE_KEY);
 		}
@@ -65,8 +60,6 @@ public class MessageActivity extends Activity implements DialogExitListener {
 
 		// Save the image capture uri before the activity goes into background
 		outState.putString(MESSAGE_KEY, mMessageString);
-		// save bitmap representing image in savedinstancestate 
-		// bytearray - set image using that bytearray
 	}
 	
 	@Override
@@ -78,19 +71,17 @@ public class MessageActivity extends Activity implements DialogExitListener {
 		
 	
 	public void onNextClicked(View v) {
-		
 		String message = mMessageField.getText().toString();
 		if (isMessageValid(message)){
-		
-		Intent intent = new Intent(this, RecipientActivity.class);
-		intent.putExtra(getString(R.string.message_activity_intent_key),
-				message);
-		
-		//Pass along the from address
-		intent.putExtra(getString(R.string.from_activity_intent_key),
-				getIntent().getExtras().getParcelable(getString(R.string.from_activity_intent_key)));
-
-		startActivity(intent);
+			Intent intent = new Intent(this, RecipientActivity.class);
+			//Pass along message
+			intent.putExtra(getString(R.string.message_activity_intent_key),
+					message);
+			//Pass along the from address
+			intent.putExtra(getString(R.string.from_activity_intent_key),
+					getIntent().getExtras().getParcelable(getString(R.string.from_activity_intent_key)));
+	
+			startActivity(intent);
 		}
 		else{
 			DartCardDialogFragment frag = DartCardDialogFragment
@@ -99,14 +90,15 @@ public class MessageActivity extends Activity implements DialogExitListener {
 		}
 	}
 	
+	//Method to check if a message is valid, based upon not being empty, not having any words over
+	//28 characters, and not having too many lines
 	public static boolean isMessageValid(String message){
-		
-		if (message.isEmpty() || message==null)
+		if (message==null || message.isEmpty())
 			return false;
 		
 		String[] words = message.split(" ");
 		for (String word : words){
-			if (word.length() > 28){
+			if (word.length() > 27){
 				return false;
 			}
 		}
@@ -125,7 +117,6 @@ public class MessageActivity extends Activity implements DialogExitListener {
 		}
 		
 		return true;
-		
 	}
 
 	@Override

@@ -10,6 +10,13 @@ import edu.dartmouth.cs.dartcard_private.Passwords;
 import android.content.Context;
 import android.util.Log;
 
+//This is a class built on top of HttpUtilities. It handles the requests specific to 
+//using Stripe's API. There are three calls that we use here. The first is charges
+//a credit card. The second creates a new customer on Stripe's database. The third 
+//creates a new card object to charge. 
+//It also contains an inner class that is used for taking the response from the createCard
+//call and storing the information in the saved card dataabase. It utilizes the google
+//gson library from parsing json objects
 public class StripeUtilities extends HttpUtilities {
 	private static final String BASE_URL = "https://api.stripe.com/v1";
 	

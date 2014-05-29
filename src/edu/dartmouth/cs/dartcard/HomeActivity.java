@@ -29,10 +29,7 @@ public class HomeActivity extends Activity {
 	public static final int REQUEST_CODE_GET_FROM_GALLERY = 1;
 	public static final int REQUEST_CODE_CROP_PHOTO = 2;
 
-	private boolean isTakenFromCamera;
-
 	private static final String IMAGE_UNSPECIFIED = "image/*";
-	private static final String URI_INSTANCE_STATE_KEY = "saved_uri";
 
 	private byte[] mProfilePictureArray;
 	
@@ -81,8 +78,6 @@ public class HomeActivity extends Activity {
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		String key = getString(R.string.shared_prefs_name);
-		SharedPreferences prefs = getSharedPreferences(key, MODE_PRIVATE);
 		if (resultCode != RESULT_OK)
 			return;
 		switch (requestCode) {
@@ -90,6 +85,7 @@ public class HomeActivity extends Activity {
 			// Send image taken from camera for cropping
 			cropImage();
 			break;
+			
 		case REQUEST_CODE_CROP_PHOTO:
 			// Update image view after image crop
 			Bundle extras = data.getExtras();
@@ -109,14 +105,10 @@ public class HomeActivity extends Activity {
 				intent.putExtra(Globals.IS_FROM_DB_KEY, false);
 				startActivity(intent);
 			} catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
-
-			// Delete temporary image taken by camera after crop.
-			if (isTakenFromCamera) {
-				File f = new File(mImageCaptureUri.getPath());
+				//Pass
 			}
 			break;
+			
 		case REQUEST_CODE_GET_FROM_GALLERY:
 			Uri selectedImageUri = data.getData();
 			mImageCaptureUri = selectedImageUri;

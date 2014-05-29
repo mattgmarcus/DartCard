@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+//This class handles all interactions with a database that stores recipients used for
+//to addresses. It's pretty straightforward and similar to the one we used for MyRuns
 public class RecipientAddressDbHelper extends SQLiteOpenHelper {
 	
 	private static String DATABASE_NAME = "recipient.db";

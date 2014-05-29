@@ -10,9 +10,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-
-public class CardDBHelper extends SQLiteOpenHelper {
-	
+// This class handles all interactions with a database that stores credit cards used for
+// pay activity. It's pretty straightforward and similar to the one we used for MyRuns
+// If you have any security concerns about storing credit cards on phones, fear not!
+// We don't actually store information that's sensitive. We just keep the last four
+// digits, the credit card type (Visa, Amex, etc.), the expiration month/year, and 
+// their email. We also store an id that is used for interacting with the Stripe API
+// for later payments/postcards. Their full/actual credit card number isn't saved though.
+public class CardDBHelper extends SQLiteOpenHelper {	
 	private static String DATABASE_NAME = "card.db";
 	public static final String COLUMN_ID = "_id";
 	private static final int DATABASE_VERSION = 1;
@@ -94,13 +99,6 @@ public class CardDBHelper extends SQLiteOpenHelper {
 		cursor.close();
 		db.close();
 		return card;
-		/*
-		GetReadableDatabase
-		Set Cursor object to the result of querying your database at the specified id
-		Cursor represents the row
-		If youre in the first position of that row (cursor.moveToFirst()) and then get the entry 
-		Remember to close the cursor, and close the database
-		*/
 	}
 	
 	private Card cursorToEntry(Cursor cursor) {

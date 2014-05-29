@@ -484,6 +484,8 @@ public class RecipientActivity extends Activity implements DialogExitListener {
 		}
 	}
 
+	//This async task will send the post request to the Lob API to verify all the
+	//recipient addresses that have been entered are correct
 	public class LobVerifyTask extends
 			AsyncTask<Void, Void, ArrayList<Boolean>> {
 		private Activity activity;

@@ -47,7 +47,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 	private LocationClient mLocationClient;
 	private GoogleMap map;
 
-	PriorityQueue<PhotoEntry> closest100Photos;
+	PriorityQueue<PhotoEntry> closestPhotos;
 	
 	private ProgressDialog mProgressDialog;
 	
@@ -292,8 +292,8 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		
 		@Override
 		protected Boolean doInBackground(Void ... p) {
-			closest100Photos = fetch100ClosestPhotoEntries(activity, location);
-			return null != closest100Photos;
+			closestPhotos = fetch100ClosestPhotoEntries(activity, location);
+			return null != closestPhotos;
 		}
 		
 		//after you get the photos, update the gridview and
@@ -307,8 +307,8 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 			}
 			else {
 				//refresh both fragments once connected
-				gridFragment.updateGridView(closest100Photos);
-				mapFragment.updateMap(closest100Photos);
+				gridFragment.updateGridView(closestPhotos);
+				mapFragment.updateMap(closestPhotos);
 				
 				mProgressDialog.dismiss();
 			}

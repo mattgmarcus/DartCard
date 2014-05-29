@@ -45,7 +45,6 @@ public class FromActivity extends Activity {
 
 	private boolean mAddressSelected;
 	private int mPosition;
-	private boolean mConfigurationChanged;
 
 	private Bundle mSavedInstanceState;
 
@@ -81,16 +80,12 @@ public class FromActivity extends Activity {
 		});
 	}
 
+	// This will reload the correct location in the spinner
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("spinnerPos", mAddressSpinner.getSelectedItemPosition());
 	}
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		mConfigurationChanged = true;
-	}
 
 	public void onResume() {
 		super.onResume();
@@ -109,11 +104,14 @@ public class FromActivity extends Activity {
 		} else {
 			mSpinnerArray.add("None saved");
 		}
+		
+		// Set the addresses in the dropdown
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, mSpinnerArray);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAddressSpinner = (Spinner) findViewById(R.id.address_spinner);
 		mAddressSpinner.setAdapter(adapter);
+		//Load the correct address in the spinner
 		if (mSavedInstanceState != null) {
 			mAddressSpinner.setSelection(mSavedInstanceState.getInt(
 					"spinnerPos", 0));
@@ -160,7 +158,6 @@ public class FromActivity extends Activity {
 					mSaveButton = (Button) findViewById(R.id.ui_from_activity_saveButton);
 					mSaveButton.setText("Delete");
 				}
-				mConfigurationChanged = false;
 			}
 
 			public void disableEditTexts() {
@@ -191,12 +188,12 @@ public class FromActivity extends Activity {
 			}
 
 			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
+			public void onNothingSelected(AdapterView<?> arg0) {}
 		});
 	}
 
-	//if all the fields have information, move on to message activity
+	//If all the fields have information, move on to message activity
+	//If not, display a toast for the first empty one and end this method
 	public void onNextClicked(View v) {
 		if (mNameField.getText().toString().isEmpty()) {
 			Toast.makeText(getApplicationContext(), "Name is blank.",
@@ -229,6 +226,7 @@ public class FromActivity extends Activity {
 				mStateField.getText().toString(), mZipField.getText()
 						.toString());
 
+		//Launch Message Activity. Pass along the recipient address to it
 		Intent intent = new Intent(this, MessageActivity.class);
 		intent.putExtra(getString(R.string.from_activity_intent_key), recipient);
 		startActivity(intent);
@@ -311,6 +309,7 @@ public class FromActivity extends Activity {
 				mStateField.getText().toString(), mZipField.getText()
 						.toString());
 
+		//Launch Message Activity. Pass along the recipient address to it
 		Intent intent = new Intent(this, MessageActivity.class);
 		intent.putExtra(getString(R.string.from_activity_intent_key), recipient);
 

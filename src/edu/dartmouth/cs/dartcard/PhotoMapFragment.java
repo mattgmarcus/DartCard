@@ -51,7 +51,7 @@ public class PhotoMapFragment extends MapFragment implements
 						location.getLongitude());
 				map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
 			}
-			PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closest100Photos;
+			PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closestPhotos;
 			updateMap(photoQueue);
 		}
 	}

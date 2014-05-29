@@ -1,7 +1,7 @@
 package edu.dartmouth.cs.dartcard;
 
 /**
- * LimitedEditText
+ * LimitedEditText (we didn't write this code)
  *
  * Copyright (C) 2013  Khaled Bakhit
  * 

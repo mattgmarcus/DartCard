@@ -142,6 +142,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 		});
 	}
 
+	// This method takes the credit cards that have been saved and puts them in the dropdown
 	private void populateCardChoices() {
 		ArrayList<String> cardTypes = new ArrayList<String>();
 		cardTypes.add("Select a saved card or add a new one");
@@ -230,6 +231,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 				mRememberSwitch.setEnabled(false);
 			}
 
+			//Converts numbers from values over 2000 to double digit values
 			private int getYearChoice(int year) {
 				if (2013 > year) {
 					return 0;
@@ -247,6 +249,8 @@ public class PayActivity extends Activity implements DialogExitListener {
 
 	}
 
+	//When pay is clicked, make sure the card is valid. If it is, launch a progress
+	//dialog and start the sending/payment process
 	private void onPayClicked(View v) {
 		mPayButton.setEnabled(false);
 
@@ -293,6 +297,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 		return cardParams;
 	}
 
+	//Sets the recipient listview at the top of the view
 	private void setRecipientListview() {
 		ArrayList<String> recipientNames = new ArrayList<String>();
 		for (Recipient recipient : mRecipients) {
@@ -308,6 +313,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 				recipientNames));
 	}
 
+	//Calculates the total cost of all the cards that are being sent
 	private double calculateCost(int numRecipients) {
 		return COST_PER_CARD * numRecipients;
 	}
@@ -369,7 +375,11 @@ public class PayActivity extends Activity implements DialogExitListener {
 		return !(cardFlag || numberFlag || cvcFlag || monthFlag || yearFlag || dateFlag);
 	}
 
+	//This class watches the text in the credit card field and, depending on what type of card
+	//is being entered, will reformat the text so it appears the right way
 	public static class CreditCardFormatWatcher implements TextWatcher {
+		/*Some code borrowed from: http://stackoverflow.com/questions/11790102/format-credit-card-in-edit-text-in-android*/
+		
 	    private static final char space = ' ';
 
 	    @Override
@@ -431,7 +441,10 @@ public class PayActivity extends Activity implements DialogExitListener {
 	    @Override
 	    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 	}
-
+	
+	
+	//This class is an AsyncTask for sending the requests to the Stripe API. Upon its success,
+	//the next task that's called is LobPostCardTask
 	public class StripeTask extends AsyncTask<Void, Void, Boolean> {
 		private Activity activity;
 		private Map<String, String> params;
@@ -443,6 +456,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 
 		@Override
 		protected Boolean doInBackground(Void... p) {
+			//If there's already a customer for this request, do this
 			if (params.containsKey(getString(R.string.customer_id))) {
 				Map<String, String> chargeParams = new HashMap<String, String>();
 				chargeParams.put("customer",
@@ -454,7 +468,9 @@ public class PayActivity extends Activity implements DialogExitListener {
 				chargeParams.put("currency", "usd");
 
 				return StripeUtilities.charge(chargeParams);
-			} else if (mRememberSwitch.isChecked()) {
+			} 
+			//If it's a new customer with the Remember Me switch checked, do this
+			else if (mRememberSwitch.isChecked()) {
 				Map<String, String> customerParams = new HashMap<String, String>();
 				String email = params.get(getString(R.string.email));
 				customerParams.put("description", "Customer for " + email);
@@ -491,7 +507,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 					return false;
 				}
 			}
-
+			//If it's just a new customer, do this
 			else {
 				Map<String, String> chargeParams = new HashMap<String, String>();
 				chargeParams.put("card[number]",
@@ -514,7 +530,8 @@ public class PayActivity extends Activity implements DialogExitListener {
 
 			}
 		}
-
+		
+		//Saves credit card to the database
 		private void saveCard(String email, CardResponse resp) {
 			edu.dartmouth.cs.dartcard.Card card = new edu.dartmouth.cs.dartcard.Card(
 					email, resp.getCustomer(), resp.getlast4(), resp.getType(),
@@ -545,6 +562,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 		}
 	};
 	
+	//This async task sends the request to the Lob API for sending the postcard
 	public class LobPostCardTask extends AsyncTask<Void,Void,ArrayList<LobResult>> {
 		private Activity activity;
 
@@ -591,7 +609,9 @@ public class PayActivity extends Activity implements DialogExitListener {
 			matrix.postTranslate(translateX, translateY);
 			return matrix;
 		}
-
+		
+		//This method takes the saved photo and converts it to a PDF file, to be used
+		//by the API request
 		private PdfDocument getPDFImage() {
 			FileInputStream fis = null;
 			try {
@@ -641,6 +661,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 			return document;
 		}
 
+		//Constructs the parameters for an individual postcard
 		private ArrayList<NameValuePair> constructSingleParams(
 				Recipient recipient) {
 			ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -687,13 +708,11 @@ public class PayActivity extends Activity implements DialogExitListener {
 				params.add(new BasicNameValuePair("message", recipient
 						.getMessage()));
 			} 
-//			else {
-//				params.add(new BasicNameValuePair("message", " "));
-//			}
 
 			return params;
 		}
 
+		//Constructs an arraylist of all the parameters for each postcard
 		private ArrayList<ArrayList<NameValuePair>> constructAllParams() {
 			ArrayList<ArrayList<NameValuePair>> allParams = new ArrayList<ArrayList<NameValuePair>>();
 
@@ -712,6 +731,7 @@ public class PayActivity extends Activity implements DialogExitListener {
 			return allParams;
 		}
 
+		//This method will execute a request to the Lob API for each postcard that's being sent
 		@Override
 		protected ArrayList<LobResult> doInBackground(Void ... params) {
 			ArrayList<ArrayList<NameValuePair>> allParams = constructAllParams();
@@ -727,6 +747,8 @@ public class PayActivity extends Activity implements DialogExitListener {
 			return results;
 		}
 		
+		//Since the Lob API calls will return a string for each url for each postcard, this
+		//will combine them all
 		private String getPostcardUrls(ArrayList<LobResult> results) {
 			String urls = "Check out your postcards here: ";
 			

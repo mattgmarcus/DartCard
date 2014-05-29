@@ -8,6 +8,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+// This is a dialog fragment that we use throughout the app. There are 6 use cases:
+// 1. DIALOG_KEY_SAVE_PHOTO - this is when they're asked if they'd like to save their
+//    photo to the DartCard database
+// 2. DIALOG_KEY_TRY_SAVE_AGAIN - this prompts the user if they want to try saving
+//    the photo again when it fails
+// 3. DIALOG_RECIPIENT_ERRORS - this is when the recipient address(es) are wrong. It
+//    tells the user to inspect them and their internet connection
+// 4. DIALOG_PHOTO_MAP_ERROR - this is when there's an issue loading the photo map. It
+//    alerts the user to this.
+// 5. DIALOG_LOB_ERRORS - this is when there's an issue connecting to Lob. It tells them
+//    to try again and check their internet connection.
+// 6. DIALOG_MESSAGE_ERRORS - this is when the message they've entered is invalid
 public class DartCardDialogFragment extends DialogFragment {
 
 	int dialogId = Globals.DIALOG_KEY_DEFAULT;

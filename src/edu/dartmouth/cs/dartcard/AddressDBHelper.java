@@ -10,9 +10,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-
+// This class handles all interactions with a database that stores addresses used for
+// from addresses. It's pretty straightforward and similar to the one we used for MyRuns
 public class AddressDBHelper extends SQLiteOpenHelper {
-	
 	private static String DATABASE_NAME = "address.db";
 	public static final String TABLE_COMMENTS = "comments";
 	public static final String COLUMN_ID = "_id";
@@ -97,13 +97,6 @@ public class AddressDBHelper extends SQLiteOpenHelper {
 		cursor.close();
 		db.close();
 		return add;
-		/*
-		GetReadableDatabase
-		Set Cursor object to the result of querying your database at the specified id
-		Cursor represents the row
-		If you're in the first position of that row (cursor.moveToFirst()) and then get the entry 
-		Remember to close the cursor, and close the database
-		*/
 	}
 	
 	private Address cursorToAddress(Cursor cursor) {

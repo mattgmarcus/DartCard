@@ -44,7 +44,7 @@ public class PhotoGridFragment extends Fragment {
 		gridView = new GridView(getActivity());
 
 		if (photos == null) {
-			PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closest100Photos;
+			PriorityQueue<PhotoEntry> photoQueue = ((PhotoMapActivity) getActivity()).closestPhotos;
 			getPhotoListFromQueue(photoQueue);
 		} 
 		setAdapter();
@@ -103,19 +103,16 @@ public class PhotoGridFragment extends Fragment {
 
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
 			return photos.size();
 		}
 
 		@Override
 		public Object getItem(int arg0) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public long getItemId(int arg0) {
-			// TODO Auto-generated method stub
 			return 0;
 		}
 
@@ -155,7 +152,6 @@ public class PhotoGridFragment extends Fragment {
 	//save photo to predetermined filepath that will be loaded by
 	//photoviewactivity
 	private void savePhoto(byte[] pic) {
-
 		try {
 			FileOutputStream fileOut = context.openFileOutput(
 					getString(R.string.selected_photo_name),

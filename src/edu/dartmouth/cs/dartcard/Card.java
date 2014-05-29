@@ -1,5 +1,8 @@
 package edu.dartmouth.cs.dartcard;
 
+// This class contains the information that you could expect to see on a credit card, plus
+// an email address. It's used when we're doing the payment calls with the Stripe API in
+// Pay Activity. 
 public class Card {
 	private Long id;
 	private String cusId;

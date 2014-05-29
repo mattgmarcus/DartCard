@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+//This is the final activity displayed in the app. It just displays links to any postcards
+//that have been created
 public class ResultActivity extends Activity {
 	private TextView mUrlsText;
 	private ActionBar mActionBar;
@@ -36,6 +38,7 @@ public class ResultActivity extends Activity {
 	
 	public void onSendAnotherClicked(View v) {
 		Intent i = new Intent(this, HomeActivity.class);
+		//Clear the backstack so they can't go back after they're done
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(i);
 	}
