@@ -60,9 +60,9 @@
 
     <!-- Pay Activity -->
     <string name="ui_pay_activity_recipient_header_text">Recipients</string>
-    <string name="ui_pay_activity_recipient_email_hint">you@email.com (optional)</string>
-    <string name="ui_pay_activity_recipient_card_hint">1234 1234 1234 1234</string>
-    <string name="ui_pay_activity_recipient_cvc_hint">123</string>
+    <string name="ui_pay_activity_recipient_email_hint">you@email.com</string>
+    <string name="ui_pay_activity_recipient_card_hint">4242 4242 4242 4242</string>
+    <string name="ui_pay_activity_recipient_cvc_hint">123 (CVC)</string>
     <string name="ui_pay_activity_recipient_remember_text">Remember me</string>
     <string name="ui_pay_activity_stripe_description">Powered by Stripe</string>
 

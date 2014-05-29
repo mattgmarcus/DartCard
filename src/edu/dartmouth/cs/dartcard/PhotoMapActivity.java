@@ -60,8 +60,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 
 		// setup action tabs
 		ActionBar actionbar = getActionBar();
-		actionbar.setDisplayShowTitleEnabled(false);
-		actionbar.setDisplayShowHomeEnabled(false);
+		actionbar.setTitle("DartCard");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		// set up the tabs for the action bar

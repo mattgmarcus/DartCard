@@ -55,8 +55,7 @@ public class FromActivity extends Activity {
 		mSavedInstanceState = savedInstanceState;
 		setContentView(R.layout.activity_from);
 		mActionBar = getActionBar();
-		mActionBar.setDisplayShowTitleEnabled(false);
-		mActionBar.setDisplayShowHomeEnabled(false);
+		mActionBar.setTitle("DartCard");
 		mNameField = (EditText) findViewById(R.id.ui_from_activity_enterName);
 		mAddress1Field = (EditText) findViewById(R.id.ui_from_activity_enterAddress1);
 		mAddress2Field = (EditText) findViewById(R.id.ui_from_activity_enterAddress2);

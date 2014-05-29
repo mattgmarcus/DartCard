@@ -93,7 +93,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="@string/ui_from_activity_addressLabel_hint"
-        android:inputType="text" />
+        android:inputType="textCapWords" />
     
     <RelativeLayout
         android:layout_width="match_parent"
