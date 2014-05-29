@@ -102,7 +102,8 @@
     <string name="dialog_title_try_save_again">Unable to save photo. Try again?</string>
     <string name="button_try_again_title">Try Again</string>
     <string name="button_cancel_title">Cancel</string>
-    <string name="dialog_title_recipient_error">Fix the highlighted addresses and resubmit. Make sure you\'re connected to the internet too</string>
+    <string name="dialog_title_recipient_error">Fix the highlighted addresses and resubmit</string>
+    <string name="dialog_text_recipient_error">Make sure you\'re connected to the internet too</string>
     <string name="dialog_button_recipient_error">Ok</string>
     <string name="dialog_title_photo_map_error">Issue loading the photo map</string>
     <string name="dialog_message_photo_map_error">Check your internet connection and try again.</string>

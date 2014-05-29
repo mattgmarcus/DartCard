@@ -25,7 +25,9 @@ import edu.dartmouth.cs.dartcard_private.Passwords;
 
 import android.util.Log;
 
-
+// This is a class built on top of HttpUtilities. It handles the requests specific to 
+// using Lob's API. There are two calls that we use here. The first is address verification,
+// which is first. The second is sending postcards
 public class LobUtilities extends HttpUtilities {
 	private static final String BASE_URL = "https://api.lob.com/v1";
 	

@@ -75,6 +75,7 @@ public class DartCardDialogFragment extends DialogFragment {
 			
 		case Globals.DIALOG_RECIPIENT_ERRORS:
 			builder.setTitle(R.string.dialog_title_recipient_error);
+			builder.setMessage(R.string.dialog_text_recipient_error);
 			builder.setNeutralButton(R.string.dialog_button_recipient_error,
 					new DialogInterface.OnClickListener() {
 						@Override
