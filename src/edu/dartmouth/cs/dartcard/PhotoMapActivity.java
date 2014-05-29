@@ -89,10 +89,11 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 					TAB_KEY_INDEX, 0));
 		}
 		
-		
+		//set up the location client, get a reference to the map from the map fragment
 		mLocationClient = new LocationClient(this, this, this);
 		map = mapFragment.getMap();
 		
+		//display progress dialog while images load
 		mProgressDialog = new ProgressDialog(this);
 		mProgressDialog.setTitle("Loading images");
 		mProgressDialog.setMessage("This should take only a second");
@@ -154,7 +155,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
+        //make sure that the number of columns in the gridview are always 3
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
         	gridFragment.setAdapter();
@@ -173,6 +174,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		
 	}
 
+	//update the photogrid and photomap when the location client connects
 	@Override
 	public void onConnected(Bundle arg0) {
 		location = mLocationClient.getLastLocation();
@@ -191,6 +193,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		
 	}
 	
+	//get the photos located within the given sector
 	private ArrayList<PhotoEntry> fetchPhotos(int sectorId) {
 		ArrayList<PhotoEntry> photos = new ArrayList<PhotoEntry>(); 
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -200,7 +203,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		if (null == result) {
 			return null;
 		}
-		
+		//get the photos returned by the http request and put in the arraylist
 		try {
 			JSONArray jsonArray = new JSONArray(result);
 			for (int i = 0; i < jsonArray.length(); i++) {
@@ -215,6 +218,9 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		
 	}
 	
+	//gett the 100 closest photos to the current location
+	//returns a priorityqueue of photoentries, sorted based on proximity
+	//to the current location
 	public PriorityQueue<PhotoEntry> fetch100ClosestPhotoEntries(Context context, Location location) {
 		Comparator<PhotoEntry> comparator = new LocationComparator(location);
 		PriorityQueue<PhotoEntry> photoQueue = new PriorityQueue<PhotoEntry>(100, comparator);
@@ -239,6 +245,8 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		return photoQueue;
 	}
 
+	//comparator used for the priority queue of photos, sorts two photoentries
+	//based on their proximity to the current location
 	public static class LocationComparator implements Comparator<PhotoEntry>{
 		
 		private Location location;
@@ -273,6 +281,8 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 		
 	}
 	
+	//async task that loads nearby photos and updates the gridfragment and
+	//mapfragment appropriately
 	public class PhotoTask extends AsyncTask<Void,Void,Boolean> {
 		private Activity activity;
 		
@@ -286,7 +296,8 @@ GooglePlayServicesClient.OnConnectionFailedListener, DialogExitListener{
 			return null != closest100Photos;
 		}
 		
-
+		//after you get the photos, update the gridview and
+		//the markers on the map with the loaded photos
 		@Override
 		protected void onPostExecute(Boolean success) {
 			if (!success) {

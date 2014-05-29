@@ -26,6 +26,7 @@ public class PhotoMapFragment extends MapFragment implements
 		OnMarkerClickListener {
 	Context context;
 	GoogleMap map;
+	//this is a map that links map markers to photoentries
 	Map<Marker, PhotoEntry> markerPhotos = new HashMap<Marker, PhotoEntry>();
 	Marker locationMarker;
 	Location location;
@@ -34,11 +35,14 @@ public class PhotoMapFragment extends MapFragment implements
 	public void onResume() {
 		super.onResume();
 		context = getActivity();
+		//get the current location of the phone
 		location = ((PhotoMapActivity) getActivity()).location;
 		if (location == null) {
 			Log.i("DartCard", "location is null");
 		}
 
+		//zoom the camera in on the current location, populate the map with markers
+		//representing photoentries
 		map = getMap();
 		if (map != null) {
 			map.setOnMarkerClickListener(this);
@@ -52,6 +56,8 @@ public class PhotoMapFragment extends MapFragment implements
 		}
 	}
 
+	//given a priorityqueue of photoentries, puts markers on the map
+	//that represent those entries
 	public void updateMap(PriorityQueue<PhotoEntry> photos) {
 		map = getMap();
 		if (photos != null && map != null) {
@@ -61,6 +67,7 @@ public class PhotoMapFragment extends MapFragment implements
 						photo.getLongitude());
 				Marker marker = map.addMarker(new MarkerOptions()
 						.position(latlng));
+				//link this marker to the photoentry it corresponds to
 				markerPhotos.put(marker, photo);
 			}
 		}
@@ -70,7 +77,7 @@ public class PhotoMapFragment extends MapFragment implements
 	public boolean onMarkerClick(Marker marker) {
 		// launch photoviewactivity with photo corresponding to marker
 		// so save the photo to the location where photoviewactivity will load
-		// from
+		// its bitmap from from
 		byte[] pic = markerPhotos.get(marker).getPhoto();
 		try {
 			FileOutputStream fileOut = context.openFileOutput(

@@ -47,7 +47,7 @@ public class HomeActivity extends Activity {
 		mActionBar.setTitle("DartCard");
 	}
 
-
+	//launch intent to take a photo with the phone's camera
 	public void onTakeClicked(View v) {
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		mImageCaptureUri = Uri.fromFile(new File(Environment
@@ -65,6 +65,7 @@ public class HomeActivity extends Activity {
 		}
 	}
 
+	//launch intent to choose photo from the phone's local gallery
 	public void onChooseClicked(View v) {
 		Intent intent = new Intent(Intent.ACTION_PICK,
 				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -73,6 +74,7 @@ public class HomeActivity extends Activity {
 				REQUEST_CODE_GET_FROM_GALLERY);
 	}
 
+	//launch intent to choose photo from the app's online database
 	public void onFindClicked(View v) {
 		Intent intent = new Intent(this, PhotoMapActivity.class);
 		startActivity(intent);
