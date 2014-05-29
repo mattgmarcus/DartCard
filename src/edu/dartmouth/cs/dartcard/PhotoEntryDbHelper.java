@@ -73,13 +73,13 @@ public class PhotoEntryDbHelper extends SQLiteOpenHelper {
 		return entryId;
 	}
 
-	public void removeEntry(long rowIndex) {
+	public void removePhoto(long rowIndex) {
 		dbObject = getWritableDatabase();
 		dbObject.delete(TABLE_NAME_ENTRIES, KEY_ROW_ID + " = " + rowIndex, null);
 		dbObject.close();
 	}
 
-	public PhotoEntry fetchEntryByIndex(long rowId) {
+	public PhotoEntry fetchPhotoByIndex(long rowId) {
 		dbObject = getReadableDatabase();
 		Cursor cursor = dbObject.query(TABLE_NAME_ENTRIES, allColumns,
 				KEY_ROW_ID + " = " + rowId, null, null, null, null);

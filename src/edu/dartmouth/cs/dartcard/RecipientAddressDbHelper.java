@@ -74,16 +74,16 @@ public class RecipientAddressDbHelper extends SQLiteOpenHelper {
 	
 	public ArrayList<Recipient> fetchAddresses() {
 		SQLiteDatabase db = getReadableDatabase();
-		ArrayList<Recipient> entryList = new ArrayList<Recipient>();
+		ArrayList<Recipient> recipientList = new ArrayList<Recipient>();
 		Cursor cursor = db.query(ADDRESSES, allColumns, null, null,
 				null, null, null);
 		while (cursor.moveToNext()) {
-            Recipient add= cursorToEntry(cursor);
-            entryList.add(add);
+            Recipient add= cursorToRecipient(cursor);
+            recipientList.add(add);
         }
 		cursor.close();
 		db.close();
-		return entryList;
+		return recipientList;
 	}
 
 	public Recipient fetchAddressByIndex(long rowId) {
@@ -91,13 +91,13 @@ public class RecipientAddressDbHelper extends SQLiteOpenHelper {
 		Cursor cursor = db.query(ADDRESSES, allColumns, COLUMN_ID + " = " + rowId, 
 				null, null, null, null);
 		cursor.moveToFirst();
-		Recipient add = cursorToEntry(cursor);
+		Recipient add = cursorToRecipient(cursor);
 		cursor.close();
 		db.close();
 		return add;
 	}
 	
-	private Recipient cursorToEntry(Cursor cursor) {
+	private Recipient cursorToRecipient(Cursor cursor) {
 		Recipient add = new Recipient();
 		add.setId(cursor.getLong(cursor.getColumnIndex(ROW_KEY)));
 		add.setName(cursor.getString(cursor.getColumnIndex(NAME_KEY)));
